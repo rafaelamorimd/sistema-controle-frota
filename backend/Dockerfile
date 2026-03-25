@@ -36,8 +36,10 @@ RUN install-php-extensions \
     pcntl
 
 COPY docker/php/php-prod.ini $PHP_INI_DIR/conf.d/99-prod.ini
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 COPY Caddyfile /etc/caddy/Caddyfile
 
@@ -60,7 +62,6 @@ RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
-ENV SERVER_NAME=:${PORT:-8000}
 ENV FRANKENPHP_CONFIG="worker ./public/index.php"
 ENV APP_ENV=production
 ENV APP_DEBUG=false
@@ -69,7 +70,7 @@ USER www-data
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 \
     CMD curl -f http://localhost:${PORT:-8000}/up || exit 1
 
-ENTRYPOINT ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

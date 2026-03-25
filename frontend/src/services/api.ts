@@ -1,7 +1,13 @@
 import axios from 'axios'
 
+// Em produção (Render), VITE_API_URL aponta para o backend.
+// Em local (Docker com Nginx proxy), usa /api relativo.
+const strBaseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: strBaseURL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
