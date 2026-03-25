@@ -78,6 +78,13 @@ services:
       - key: REDIS_CLIENT
         value: phpredis
 
+      # Redis usa connectionString; host/port extraidos dela
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: gefther-redis
+          property: connectionString
+
       - key: REDIS_HOST
         fromService:
           type: redis
@@ -90,11 +97,9 @@ services:
           name: gefther-redis
           property: port
 
+      # REDIS_PASSWORD: nao exposto via Blueprint; extraido do REDIS_URL em runtime
       - key: REDIS_PASSWORD
-        fromService:
-          type: redis
-          name: gefther-redis
-          property: password
+        value: ""
 
       - key: CACHE_STORE
         value: redis

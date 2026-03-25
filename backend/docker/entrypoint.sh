@@ -4,6 +4,15 @@ set -e
 # Porta injetada pelo Render (default 8000 para local)
 export SERVER_NAME=":${PORT:-8000}"
 
+# Extrai senha do REDIS_URL se disponivel (formato: redis://:senha@host:porta)
+# O Render nao expoe password diretamente, mas passa via connectionString
+if [ -n "$REDIS_URL" ] && [ -z "$REDIS_PASSWORD" ]; then
+    REDIS_PASSWORD=$(echo "$REDIS_URL" | sed -n 's|redis://:([^@]*)@.*|\1|p' 2>/dev/null || true)
+    if [ -n "$REDIS_PASSWORD" ]; then
+        export REDIS_PASSWORD
+    fi
+fi
+
 echo "==> Iniciando Gefther Backend na porta ${PORT:-8000}"
 echo "==> Ambiente: ${APP_ENV:-production}"
 
