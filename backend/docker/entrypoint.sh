@@ -5,12 +5,16 @@ set -e
 export SERVER_NAME=":${PORT:-8000}"
 
 # Extrai senha do REDIS_URL se disponivel (formato: redis://:senha@host:porta)
-# O Render nao expoe password diretamente, mas passa via connectionString
 if [ -n "$REDIS_URL" ] && [ -z "$REDIS_PASSWORD" ]; then
     REDIS_PASSWORD=$(echo "$REDIS_URL" | sed -n 's|redis://:([^@]*)@.*|\1|p' 2>/dev/null || true)
-    if [ -n "$REDIS_PASSWORD" ]; then
-        export REDIS_PASSWORD
-    fi
+    [ -n "$REDIS_PASSWORD" ] && export REDIS_PASSWORD
+fi
+
+# No plano free do Render (sem Redis), garante drivers via database
+if [ -z "$REDIS_HOST" ]; then
+    export CACHE_STORE="${CACHE_STORE:-database}"
+    export SESSION_DRIVER="${SESSION_DRIVER:-database}"
+    export QUEUE_CONNECTION="${QUEUE_CONNECTION:-database}"
 fi
 
 echo "==> Iniciando Gefther Backend na porta ${PORT:-8000}"

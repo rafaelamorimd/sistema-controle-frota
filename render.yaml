@@ -1,12 +1,17 @@
 ##
-## Render Blueprint - Sistema Gefther
-## Documentacao: https://render.com/docs/blueprint-spec
+## Render Blueprint - Sistema Gefther (Plano Gratuito)
 ##
-## ANTES DE FAZER DEPLOY:
-##   1. Suba o repositorio no GitHub
-##   2. No Render, clique em "New" > "Blueprint"
-##   3. Conecte o repositorio e selecione este arquivo
-##   4. Apos o primeiro deploy, ajuste as URLs reais nos envVars marcados com "ALTERAR"
+## CUSTOS:
+##   - Backend:   GRATIS (dorme apos 15min sem uso; acorda em ~30s)
+##   - Frontend:  GRATIS (Static Site)
+##   - Postgres:  GRATIS por 90 dias (depois $7/mes ou migrar para outro provider)
+##   - Redis:     Removido do plano free. Cache/Sessao/Queue via banco de dados.
+##
+## ANTES DO DEPLOY:
+##   1. Suba o repo no GitHub
+##   2. Render > "New" > "Blueprint" > conecte o repo
+##   3. Apos o 1o deploy, atualize APP_URL, FRONTEND_URL e CORS_ALLOWED_ORIGINS
+##      com as URLs reais geradas pelo Render
 ##
 
 version: "1"
@@ -15,14 +20,13 @@ services:
 
   # ===========================================================
   # BACKEND - Laravel 12 + FrankenPHP
-  # starter ~$7/mes | standard ~$25/mes
   # ===========================================================
   - type: web
     name: gefther-backend
     runtime: docker
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
-    plan: starter
+    plan: free
     healthCheckPath: /up
 
     envVars:
@@ -35,7 +39,7 @@ services:
       - key: APP_KEY
         generateValue: true
 
-      # ALTERAR apos o primeiro deploy com os dominios reais
+      # ALTERAR apos o primeiro deploy com as URLs reais
       - key: APP_URL
         value: https://gefther-backend.onrender.com
 
@@ -45,7 +49,7 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         value: https://gefther-frontend.onrender.com
 
-      # Banco - preenchido automaticamente via fromDatabase
+      # Banco de dados
       - key: DB_CONNECTION
         value: pgsql
 
@@ -74,50 +78,33 @@ services:
           name: gefther-db
           property: password
 
-      # Redis - preenchido automaticamente via fromService
-      - key: REDIS_CLIENT
-        value: phpredis
+      # Sem Redis: tudo via banco de dados
+      - key: CACHE_STORE
+        value: database
 
-      # Redis usa connectionString; host/port extraidos dela
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: gefther-redis
-          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+
+      - key: QUEUE_CONNECTION
+        value: database
 
       - key: REDIS_HOST
-        fromService:
-          type: redis
-          name: gefther-redis
-          property: host
+        value: ""
 
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: gefther-redis
-          property: port
-
-      # REDIS_PASSWORD: nao exposto via Blueprint; extraido do REDIS_URL em runtime
       - key: REDIS_PASSWORD
         value: ""
 
-      - key: CACHE_STORE
-        value: redis
+      - key: REDIS_PORT
+        value: "6379"
 
-      - key: SESSION_DRIVER
-        value: redis
-
-      - key: QUEUE_CONNECTION
-        value: redis
-
-      # Logs visiveis no painel do Render
+      # Logs
       - key: LOG_CHANNEL
         value: stderr
 
       - key: LOG_LEVEL
         value: error
 
-      # Storage - trocar para "s3" ao configurar bucket externo
+      # Storage (local no free tier; configurar S3 para persistencia)
       - key: FILESYSTEM_DISK
         value: local
 
@@ -125,7 +112,7 @@ services:
         value: log
 
   # ===========================================================
-  # FRONTEND - React + Vite (Static Site - GRATUITO)
+  # FRONTEND - React + Vite (Static Site - SEMPRE GRATIS)
   # ===========================================================
   - type: web
     name: gefther-frontend
@@ -158,20 +145,9 @@ services:
       - key: VITE_API_URL
         value: https://gefther-backend.onrender.com
 
-  # ===========================================================
-  # REDIS - Cache, Sessions e Queues
-  # Plano free foi descontinuado; minimo starter ~$10/mes
-  # Alternativa gratuita: https://upstash.com (conectar manualmente)
-  # ===========================================================
-  - type: redis
-    name: gefther-redis
-    plan: starter
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
-
 # ===========================================================
-# BANCO DE DADOS - PostgreSQL gerenciado pelo Render
-# Plano free: disponivel por 90 dias (depois ~$7/mes)
+# BANCO DE DADOS - PostgreSQL gerenciado
+# Gratis por 90 dias
 # ===========================================================
 databases:
   - name: gefther-db
