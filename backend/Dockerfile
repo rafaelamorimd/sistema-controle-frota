@@ -55,8 +55,7 @@ RUN mkdir -p storage/logs \
     bootstrap/cache \
     /data/caddy \
     /config/caddy \
-    && chown -R www-data:www-data storage bootstrap/cache /data/caddy /config/caddy \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache /data/caddy /config/caddy
 
 RUN php artisan config:clear \
     && php artisan route:clear \
@@ -65,8 +64,6 @@ RUN php artisan config:clear \
 ENV FRANKENPHP_CONFIG="worker ./public/index.php"
 ENV APP_ENV=production
 ENV APP_DEBUG=false
-
-USER www-data
 
 EXPOSE 8000
 
