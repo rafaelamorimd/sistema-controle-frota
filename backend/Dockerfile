@@ -41,6 +41,9 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
     && chmod +x /usr/local/bin/entrypoint.sh
 
+# Remove capabilities do FrankenPHP (Render bloqueia setcap binaries)
+RUN setcap -r /usr/local/bin/frankenphp 2>/dev/null || true
+
 COPY Caddyfile /etc/caddy/Caddyfile
 
 WORKDIR /app

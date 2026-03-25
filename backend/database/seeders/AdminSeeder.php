@@ -10,15 +10,10 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->environment('production')) {
-            $this->command->warn('AdminSeeder ignorado em producao.');
-            return;
-        }
-
-        $strSenhaAdmin = 'admin123';
+        $strSenhaAdmin = env('ADMIN_PASSWORD', 'admin123');
 
         User::updateOrCreate(
-            ['email' => 'admin@gefther.com.br'],
+            ['email' => env('ADMIN_EMAIL', 'admin@gefther.com.br')],
             [
                 'name' => 'Administrador',
                 'password' => Hash::make($strSenhaAdmin),
@@ -26,7 +21,5 @@ class AdminSeeder extends Seeder
                 'ativo' => true,
             ]
         );
-
-        $this->command->info('Admin admin@gefther.com.br criado/atualizado. Senha inicial: admin123');
     }
 }

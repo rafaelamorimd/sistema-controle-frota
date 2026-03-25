@@ -38,6 +38,13 @@ services:
       - key: APP_KEY
         generateValue: true
 
+      # Admin - ALTERAR no painel do Render com credenciais reais
+      - key: ADMIN_EMAIL
+        value: admin@gefther.com.br
+
+      - key: ADMIN_PASSWORD
+        value: ALTERAR_SENHA_FORTE_AQUI
+
       # ALTERAR apos o primeiro deploy com as URLs reais
       - key: APP_URL
         value: https://gefther-backend.onrender.com
