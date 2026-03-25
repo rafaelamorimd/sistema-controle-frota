@@ -1,0 +1,70 @@
+import { useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAuthStore } from './stores/authStore'
+import Layout from './components/layout/Layout'
+import LoginPage from './pages/auth/LoginPage'
+import DashboardPage from './pages/dashboard/DashboardPage'
+import VeiculosListPage from './pages/veiculos/VeiculosListPage'
+import VeiculoFormPage from './pages/veiculos/VeiculoFormPage'
+import CondutoresListPage from './pages/condutores/CondutoresListPage'
+import CondutorFormPage from './pages/condutores/CondutorFormPage'
+import ContratosListPage from './pages/contratos/ContratosListPage'
+import ContratoFormPage from './pages/contratos/ContratoFormPage'
+import PagamentosPage from './pages/financeiro/PagamentosPage'
+import DespesasPage from './pages/financeiro/DespesasPage'
+import LeiturasKmPage from './pages/quilometragem/LeiturasKmPage'
+import ManutencoesPage from './pages/operacional/ManutencoesPage'
+import PecasPage from './pages/operacional/PecasPage'
+import MultasPage from './pages/operacional/MultasPage'
+import ChecklistRevisaoPage from './pages/operacional/ChecklistRevisaoPage'
+import RastreadorPage from './pages/rastreador/RastreadorPage'
+import RelatoriosPage from './pages/relatorios/RelatoriosPage'
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const isAuth = useAuthStore((s) => s.isAuthenticated)
+  const loading = useAuthStore((s) => s.loading)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      </div>
+    )
+  }
+
+  return isAuth() ? <>{children}</> : <Navigate to="/login" />
+}
+
+export default function App() {
+  const validateSession = useAuthStore((s) => s.validateSession)
+
+  useEffect(() => {
+    validateSession()
+  }, [validateSession])
+
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+        <Route index element={<DashboardPage />} />
+        <Route path="veiculos" element={<VeiculosListPage />} />
+        <Route path="veiculos/novo" element={<VeiculoFormPage />} />
+        <Route path="veiculos/:id/editar" element={<VeiculoFormPage />} />
+        <Route path="condutores" element={<CondutoresListPage />} />
+        <Route path="condutores/novo" element={<CondutorFormPage />} />
+        <Route path="condutores/:id/editar" element={<CondutorFormPage />} />
+        <Route path="contratos" element={<ContratosListPage />} />
+        <Route path="contratos/novo" element={<ContratoFormPage />} />
+        <Route path="financeiro/pagamentos" element={<PagamentosPage />} />
+        <Route path="financeiro/despesas" element={<DespesasPage />} />
+        <Route path="quilometragem/leituras" element={<LeiturasKmPage />} />
+        <Route path="operacional/manutencoes" element={<ManutencoesPage />} />
+        <Route path="operacional/pecas" element={<PecasPage />} />
+        <Route path="operacional/multas" element={<MultasPage />} />
+        <Route path="operacional/checklist" element={<ChecklistRevisaoPage />} />
+        <Route path="rastreador" element={<RastreadorPage />} />
+        <Route path="relatorios" element={<RelatoriosPage />} />
+      </Route>
+    </Routes>
+  )
+}

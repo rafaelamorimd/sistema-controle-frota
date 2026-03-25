@@ -1,0 +1,28 @@
+{
+	frankenphp
+	order php_server before file_server
+	admin off
+}
+
+{$SERVER_NAME:localhost} {
+	root * /app/public
+
+	encode zstd gzip
+
+	php_server {
+		worker {$FRANKENPHP_CONFIG}
+	}
+
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

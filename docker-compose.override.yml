@@ -1,0 +1,19 @@
+# Override para desenvolvimento local
+# Ativado automaticamente pelo docker compose
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+      - /app/vendor
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      FRANKENPHP_CONFIG: ""
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

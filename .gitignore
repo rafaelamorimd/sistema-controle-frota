@@ -1,0 +1,30 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Dependencias
+backend/vendor/
+frontend/node_modules/
+frontend/dist/
+
+# Laravel
+backend/bootstrap/cache/*.php
+backend/storage/app/public/*
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/testing/*
+backend/storage/framework/views/*
+backend/storage/logs/*.log
+
+# IDE
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
