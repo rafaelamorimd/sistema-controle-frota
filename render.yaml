@@ -6,7 +6,7 @@
 ##   1. Suba o repositorio no GitHub
 ##   2. No Render, clique em "New" > "Blueprint"
 ##   3. Conecte o repositorio e selecione este arquivo
-##   4. Ajuste os valores marcados com "ALTERAR" abaixo
+##   4. Apos o primeiro deploy, ajuste as URLs reais nos envVars marcados com "ALTERAR"
 ##
 
 version: "1"
@@ -15,14 +15,14 @@ services:
 
   # ===========================================================
   # BACKEND - Laravel 12 + FrankenPHP
+  # starter ~$7/mes | standard ~$25/mes
   # ===========================================================
   - type: web
     name: gefther-backend
     runtime: docker
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
-    plan: starter           # starter ~$7/mes | standard ~$25/mes
-
+    plan: starter
     healthCheckPath: /up
 
     envVars:
@@ -33,9 +33,9 @@ services:
         value: "false"
 
       - key: APP_KEY
-        generateValue: true   # Render gera automaticamente
+        generateValue: true
 
-      # URLs - ALTERAR apos o primeiro deploy com os dominios reais
+      # ALTERAR apos o primeiro deploy com os dominios reais
       - key: APP_URL
         value: https://gefther-backend.onrender.com
 
@@ -45,7 +45,7 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         value: https://gefther-frontend.onrender.com
 
-      # Banco de dados - preenchido automaticamente pelo Render
+      # Banco - preenchido automaticamente via fromDatabase
       - key: DB_CONNECTION
         value: pgsql
 
@@ -74,7 +74,7 @@ services:
           name: gefther-db
           property: password
 
-      # Redis - preenchido automaticamente pelo Render
+      # Redis - preenchido automaticamente via fromService
       - key: REDIS_CLIENT
         value: phpredis
 
@@ -105,34 +105,19 @@ services:
       - key: QUEUE_CONNECTION
         value: redis
 
-      # Logs para stdout (visivel no painel do Render)
+      # Logs visiveis no painel do Render
       - key: LOG_CHANNEL
         value: stderr
 
       - key: LOG_LEVEL
         value: error
 
-      # Storage S3-compatible (preencher manualmente no painel do Render)
+      # Storage - trocar para "s3" ao configurar bucket externo
       - key: FILESYSTEM_DISK
-        value: local          # trocar para "s3" ao configurar storage externo
-
-      - key: AWS_ACCESS_KEY_ID
-        value: ""
-
-      - key: AWS_SECRET_ACCESS_KEY
-        value: ""
-
-      - key: AWS_DEFAULT_REGION
-        value: auto
-
-      - key: AWS_BUCKET
-        value: ""
-
-      - key: AWS_ENDPOINT
-        value: ""
+        value: local
 
       - key: MAIL_MAILER
-        value: log             # trocar para smtp/ses em producao
+        value: log
 
   # ===========================================================
   # FRONTEND - React + Vite (Static Site - GRATUITO)
@@ -164,19 +149,9 @@ services:
         destination: /index.html
 
     envVars:
-      # URL do backend no Render - ALTERAR apos o primeiro deploy
+      # ALTERAR apos o primeiro deploy do backend
       - key: VITE_API_URL
         value: https://gefther-backend.onrender.com
-
-  # ===========================================================
-  # BANCO DE DADOS - PostgreSQL gerenciado pelo Render
-  # Plano free: disponivel por 90 dias (depois ~$7/mes)
-  # ===========================================================
-  - type: pserv
-    name: gefther-db
-    plan: free
-    databaseName: gefther
-    user: gefther
 
   # ===========================================================
   # REDIS - Cache, Sessions e Queues
@@ -187,4 +162,14 @@ services:
     name: gefther-redis
     plan: starter
     maxmemoryPolicy: allkeys-lru
-    ipAllowList: []           # apenas servicos internos do Render
+    ipAllowList: []
+
+# ===========================================================
+# BANCO DE DADOS - PostgreSQL gerenciado pelo Render
+# Plano free: disponivel por 90 dias (depois ~$7/mes)
+# ===========================================================
+databases:
+  - name: gefther-db
+    plan: free
+    databaseName: gefther
+    user: gefther
