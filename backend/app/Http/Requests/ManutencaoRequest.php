@@ -22,6 +22,7 @@ class ManutencaoRequest extends FormRequest
             'data_entrada' => ($bolAtualiza ? 'sometimes|' : '').'required|date',
             'data_saida' => 'nullable|date',
             'km_entrada' => ($bolAtualiza ? 'sometimes|' : '').'required|integer|min:0',
+            'custo_total' => 'nullable|numeric|min:0',
             'local' => 'nullable|string|max:255',
             'status' => 'nullable|string|in:EM_ANDAMENTO,CONCLUIDA',
             'observacoes' => 'nullable|string|max:5000',

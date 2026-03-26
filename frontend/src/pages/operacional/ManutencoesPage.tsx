@@ -24,6 +24,7 @@ export default function ManutencoesPage() {
     descricao: string
     data_entrada: string
     km_entrada: string
+    custo_total: string
     local: string
   }>({
     veiculo_id: '',
@@ -31,6 +32,7 @@ export default function ManutencoesPage() {
     descricao: '',
     data_entrada: new Date().toISOString().slice(0, 10),
     km_entrada: '',
+    custo_total: '',
     local: '',
   })
 
@@ -56,6 +58,7 @@ export default function ManutencoesPage() {
         descricao: form.descricao,
         data_entrada: form.data_entrada,
         km_entrada: Number(form.km_entrada),
+        custo_total: form.custo_total ? Number(form.custo_total) : 0,
         local: form.local || null,
       }),
     onSuccess: () => {
@@ -216,6 +219,15 @@ export default function ManutencoesPage() {
             placeholder="Km entrada"
             value={form.km_entrada}
             onChange={(e) => setForm((f) => ({ ...f, km_entrada: e.target.value }))}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Custo (R$)"
+            value={form.custo_total}
+            onChange={(e) => setForm((f) => ({ ...f, custo_total: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2"
           />
           <input

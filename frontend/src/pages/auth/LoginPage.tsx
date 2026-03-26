@@ -151,50 +151,12 @@ export default function LoginPage() {
                 </form>
               </div>
 
-              <div className="px-7 sm:px-8 py-4 text-center border-t border-gray-100">
-                <p className="text-xs text-gray-500">
-                  Não possui acesso?{' '}
-                  <button
-                    type="button"
-                    onClick={() => window.open('mailto:suporte@gefther.com.br?subject=Solicitação%20de%20acesso', '_self')}
-                    className="font-semibold text-brand-secondary hover:text-brand-secondary-hover"
-                  >
-                    Solicite à sua gerência
-                  </button>
-                </p>
-              </div>
-
               <div className="px-7 sm:px-8 py-3 bg-[#f7f8fc] border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-semibold uppercase tracking-wide">
                 <span className="inline-flex items-center gap-1">
                   <ShieldCheck size={12} /> Conexão segura AES-256
                 </span>
-                <span>v4.2.0-stable</span>
+                <span>v1-stable</span>
               </div>
-            </div>
-
-            <div className="mt-6 flex items-center justify-center gap-5 text-[11px] uppercase tracking-wide text-white/55 font-medium">
-              <a
-                href="https://gefther.com.br/termos"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white/80 transition-colors"
-              >
-                Termos de uso
-              </a>
-              <a
-                href="https://gefther.com.br/privacidade"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white/80 transition-colors"
-              >
-                Privacidade
-              </a>
-              <a
-                href="mailto:suporte@gefther.com.br?subject=Suporte%20técnico"
-                className="hover:text-white/80 transition-colors"
-              >
-                Suporte técnico
-              </a>
             </div>
           </div>
         </div>

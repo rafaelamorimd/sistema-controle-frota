@@ -59,7 +59,10 @@ class ManutencaoService
                 $this->adicionarItemInterno($manutencao, $item);
             }
 
-            $this->recalcularCustoTotal($manutencao->fresh());
+            // Se houver itens, custo vem da soma dos itens. Sem itens, preserva custo informado manualmente.
+            if (!empty($arrItens)) {
+                $this->recalcularCustoTotal($manutencao->fresh());
+            }
 
             return $manutencao->fresh(['veiculo', 'itens.peca']);
         });
