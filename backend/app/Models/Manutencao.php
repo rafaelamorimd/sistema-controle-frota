@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Manutencao extends Model
 {
+    protected $table = 'manutencoes';
+
     protected $fillable = [
         'veiculo_id', 'tipo', 'descricao', 'data_entrada', 'data_saida',
         'km_entrada', 'custo_total', 'local', 'status', 'observacoes',
