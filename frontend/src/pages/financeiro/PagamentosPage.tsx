@@ -3,6 +3,8 @@ import axios from 'axios'
 import { Receipt } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
+import ResponsiveTable from '../../components/shared/ResponsiveTable'
+import type { Column } from '../../components/shared/ResponsiveTable'
 import { pagamentoService } from '../../services/pagamentoService'
 import type { Pagamento } from '../../types'
 import { formatarMoedaBrl } from '../../utils/format'
@@ -85,6 +87,61 @@ export default function PagamentosPage() {
         ? (registrarMutation.error as Error).message
         : null
 
+  const arrColumns: Column<Pagamento>[] = [
+    {
+      strLabel: 'Ref.',
+      strKey: 'ref',
+      render: (p) => (
+        <span className="text-gray-700">
+          {new Date(p.data_referencia).toLocaleDateString('pt-BR')}
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Contrato',
+      strKey: 'contrato',
+      render: (p) => (
+        <span className="text-gray-900">
+          {p.contrato?.numero_contrato ?? `#${p.contrato_id}`}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Veiculo',
+      strKey: 'veiculo',
+      render: (p) => (
+        <span className="text-gray-700">
+          {p.veiculo?.placa ?? `#${p.veiculo_id}`}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Condutor',
+      strKey: 'condutor',
+      render: (p) => (
+        <span className="text-gray-700">
+          {p.condutor?.nome ?? `#${p.condutor_id}`}
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Valor',
+      strKey: 'valor',
+      render: (p) => <span className="text-gray-700">{formatarMoedaBrl(p.valor)}</span>,
+    },
+    {
+      strLabel: 'Status',
+      strKey: 'status',
+      render: (p) => (
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusCores[p.status] ?? ''}`}>
+          {p.status}
+        </span>
+      ),
+    },
+  ]
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -103,76 +160,39 @@ export default function PagamentosPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Carregando...</div>
-        ) : pagamentos.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">Nenhum pagamento encontrado.</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px]">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Ref.
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Contrato
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Veículo
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Condutor
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Valor
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {pagamentos.map((p: Pagamento) => (
-                  <tr key={p.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-gray-700">
-                      {new Date(p.data_referencia).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {p.contrato?.numero_contrato ?? `#${p.contrato_id}`}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {p.veiculo?.placa ?? `#${p.veiculo_id}`}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {p.condutor?.nome ?? `#${p.condutor_id}`}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{formatarMoedaBrl(p.valor)}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusCores[p.status] ?? ''}`}
-                      >
-                        {p.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => abrirRegistrar(p)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-brand-primary bg-brand-primary-muted rounded-lg hover:bg-brand-primary-border/50"
-                      >
-                        <Receipt size={16} /> Registrar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ResponsiveTable
+          arrColumns={arrColumns}
+          arrData={pagamentos}
+          fnKeyExtractor={(p) => p.id}
+          bolLoading={isLoading}
+          strEmptyMessage="Nenhum pagamento encontrado."
+          fnRenderCardHeader={(p) => (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900">
+                  {p.condutor?.nome ?? `#${p.condutor_id}`}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {new Date(p.data_referencia).toLocaleDateString('pt-BR')}
+                  {' - '}
+                  {p.veiculo?.placa ?? `#${p.veiculo_id}`}
+                </p>
+              </div>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusCores[p.status] ?? ''}`}>
+                {p.status}
+              </span>
+            </div>
+          )}
+          fnRenderActions={(p) => (
+            <button
+              type="button"
+              onClick={() => abrirRegistrar(p)}
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-brand-primary bg-brand-primary-muted rounded-lg hover:bg-brand-primary-border/50"
+            >
+              <Receipt size={16} /> Registrar
+            </button>
+          )}
+        />
       </div>
 
       <Modal
@@ -202,7 +222,7 @@ export default function PagamentosPage() {
               }
               className="w-full text-sm"
             />
-            <p className="text-xs text-gray-500 mt-1">JPG, PNG ou PDF (máx. 10 MB).</p>
+            <p className="text-xs text-gray-500 mt-1">JPG, PNG ou PDF (max. 10 MB).</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label>

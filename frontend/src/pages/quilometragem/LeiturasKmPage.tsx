@@ -3,6 +3,8 @@ import axios from 'axios'
 import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import Modal from '../../components/shared/Modal'
+import ResponsiveTable from '../../components/shared/ResponsiveTable'
+import type { Column } from '../../components/shared/ResponsiveTable'
 import { condutorService } from '../../services/condutorService'
 import { contratoService } from '../../services/contratoService'
 import { leituraKmService } from '../../services/leituraKmService'
@@ -23,6 +25,11 @@ const formVazio: FormNovaLeitura = {
   contrato_id: '',
   condutor_id: '',
   observacoes: '',
+}
+
+type LeituraComCalculo = LeituraKm & {
+  km_anterior?: number
+  km_percorrido?: number
 }
 
 export default function LeiturasKmPage() {
@@ -68,7 +75,7 @@ export default function LeiturasKmPage() {
   const contratos = contratosData?.data ?? []
   const condutores = condutoresData?.data ?? []
 
-  const leiturasComCalculo = useMemo(() => {
+  const leiturasComCalculo: LeituraComCalculo[] = useMemo(() => {
     const asc = [...leiturasBrutas].sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     )
@@ -117,6 +124,65 @@ export default function LeiturasKmPage() {
         ? (salvarMutation.error as Error).message
         : null
 
+  const arrColumns: Column<LeituraComCalculo>[] = [
+    {
+      strLabel: 'Data',
+      strKey: 'data',
+      render: (l) => (
+        <span className="text-gray-700">
+          {new Date(dataExibicao(l)).toLocaleString('pt-BR')}
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Contrato',
+      strKey: 'contrato',
+      render: (l) => (
+        <span className="text-gray-900">
+          {l.contrato ? l.contrato.numero_contrato : l.contrato_id ? `#${l.contrato_id}` : '\u2014'}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Condutor',
+      strKey: 'condutor',
+      render: (l) => (
+        <span className="text-gray-700">
+          {l.condutor?.nome ?? (l.condutor_id ? `#${l.condutor_id}` : '\u2014')}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'KM',
+      strKey: 'km',
+      render: (l) => (
+        <span className="font-mono text-gray-900">
+          {l.km.toLocaleString('pt-BR')} km
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Anterior',
+      strKey: 'anterior',
+      render: (l) => (
+        <span className="font-mono text-gray-600">
+          {l.km_anterior != null ? `${l.km_anterior.toLocaleString('pt-BR')} km` : '\u2014'}
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Percorrido',
+      strKey: 'percorrido',
+      render: (l) => (
+        <span className="font-mono text-gray-600">
+          {l.km_percorrido != null ? `${l.km_percorrido.toLocaleString('pt-BR')} km` : '\u2014'}
+        </span>
+      ),
+    },
+  ]
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -125,14 +191,14 @@ export default function LeiturasKmPage() {
           type="button"
           disabled={veiculoId == null}
           onClick={abrirNovo}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus size={18} /> Nova leitura
         </button>
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Veículo</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Veiculo</label>
         <select
           value={veiculoId ?? ''}
           onChange={(e) => {
@@ -141,7 +207,7 @@ export default function LeiturasKmPage() {
           }}
           className="w-full max-w-md border border-gray-300 rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">Selecione um veículo...</option>
+          <option value="">Selecione um veiculo...</option>
           {veiculos.map((v) => (
             <option key={v.id} value={v.id}>
               {v.placa} — {v.modelo}
@@ -152,62 +218,25 @@ export default function LeiturasKmPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {veiculoId == null ? (
-          <div className="p-8 text-center text-gray-500">Selecione um veículo para ver as leituras.</div>
-        ) : isLoading ? (
-          <div className="p-8 text-center text-gray-500">Carregando...</div>
-        ) : leiturasComCalculo.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">Nenhuma leitura para este veículo.</div>
+          <div className="p-8 text-center text-gray-500">Selecione um veiculo para ver as leituras.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[880px]">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Data
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Contrato
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Condutor
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    KM
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Anterior
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                    Percorrido
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {leiturasComCalculo.map((l: LeituraKm) => (
-                  <tr key={l.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-gray-700">
-                      {new Date(dataExibicao(l)).toLocaleString('pt-BR')}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {l.contrato ? l.contrato.numero_contrato : l.contrato_id ? `#${l.contrato_id}` : '—'}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {l.condutor?.nome ?? (l.condutor_id ? `#${l.condutor_id}` : '—')}
-                    </td>
-                    <td className="px-6 py-4 font-mono text-gray-900">
-                      {l.km.toLocaleString('pt-BR')} km
-                    </td>
-                    <td className="px-6 py-4 font-mono text-gray-600">
-                      {l.km_anterior != null ? `${l.km_anterior.toLocaleString('pt-BR')} km` : '—'}
-                    </td>
-                    <td className="px-6 py-4 font-mono text-gray-600">
-                      {l.km_percorrido != null ? `${l.km_percorrido.toLocaleString('pt-BR')} km` : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ResponsiveTable
+            arrColumns={arrColumns}
+            arrData={leiturasComCalculo}
+            fnKeyExtractor={(l) => l.id}
+            bolLoading={isLoading}
+            strEmptyMessage="Nenhuma leitura para este veiculo."
+            fnRenderCardHeader={(l) => (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-900">
+                  {new Date(dataExibicao(l)).toLocaleDateString('pt-BR')}
+                </span>
+                <span className="font-mono font-bold text-brand-primary">
+                  {l.km.toLocaleString('pt-BR')} km
+                </span>
+              </div>
+            )}
+          />
         )}
       </div>
 
@@ -232,7 +261,7 @@ export default function LeiturasKmPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Foto do hodômetro *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Foto do hodometro *</label>
             <input
               type="file"
               accept=".jpg,.jpeg,.png,image/jpeg,image/png"
@@ -272,7 +301,7 @@ export default function LeiturasKmPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
             <textarea
               value={form.observacoes}
               onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}
