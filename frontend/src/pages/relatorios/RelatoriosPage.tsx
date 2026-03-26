@@ -26,7 +26,7 @@ export default function RelatoriosPage() {
   return (
     <div className="p-6 space-y-8 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Relatorios</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Relatórios</h1>
         <p className="text-gray-500 text-sm">PDF (DomPDF), Excel (PhpSpreadsheet) e CSV</p>
       </div>
 
@@ -73,7 +73,7 @@ export default function RelatoriosPage() {
           onChange={(e) => setVeiculoFiltro(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         >
-          <option value="">Todos os veiculos</option>
+          <option value="">Todos os veículos</option>
           {veiculos.map((v) => (
             <option key={v.id} value={v.id}>
               {v.placa}
@@ -94,9 +94,9 @@ export default function RelatoriosPage() {
       <section className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
         <h2 className="font-semibold flex items-center gap-2">
           <FileSpreadsheet size={20} className="text-green-600" />
-          Veiculos
+          Veículos
         </h2>
-        <p className="text-sm text-gray-500">Exportacao nativa .xlsx (recomendado) ou CSV legado.</p>
+        <p className="text-sm text-gray-500">Exportação nativa .xlsx (recomendado) ou CSV legado.</p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"

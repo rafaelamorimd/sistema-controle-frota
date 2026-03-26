@@ -74,7 +74,7 @@ export default function ManutencoesPage() {
 
   const arrColumns: Column<Manutencao>[] = [
     {
-      strLabel: 'Veiculo',
+      strLabel: 'Veículo',
       strKey: 'veiculo',
       render: (m) => <span className="text-gray-700">{m.veiculo?.placa ?? m.veiculo_id}</span>,
     },
@@ -110,9 +110,9 @@ export default function ManutencoesPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Wrench className="text-brand-secondary" size={28} />
-            Manutencoes
+            Manutenções
           </h1>
-          <p className="text-gray-500 text-sm">Ordens de servico e revisoes</p>
+          <p className="text-gray-500 text-sm">Ordens de serviço e revisões</p>
         </div>
         <button
           type="button"
@@ -124,7 +124,7 @@ export default function ManutencoesPage() {
       </div>
 
       <div className="flex gap-2 items-center mb-6">
-        <label className="text-sm text-gray-600">Veiculo</label>
+        <label className="text-sm text-gray-600">Veículo</label>
         <select
           value={veiculoFiltro}
           onChange={(e) => setVeiculoFiltro(e.target.value)}
@@ -145,7 +145,7 @@ export default function ManutencoesPage() {
           arrData={lista}
           fnKeyExtractor={(m) => m.id}
           bolLoading={isLoading}
-          strEmptyMessage="Nenhuma manutencao encontrada."
+          strEmptyMessage="Nenhuma manutenção encontrada."
           fnRenderCardHeader={(m) => (
             <div className="flex items-center justify-between">
               <div>
@@ -174,7 +174,7 @@ export default function ManutencoesPage() {
       <Modal
         aberto={modalAberto}
         aoFechar={() => setModalAberto(false)}
-        titulo="Nova manutencao"
+        titulo="Nova manutenção"
       >
         <div className="space-y-3">
           <select
@@ -183,7 +183,7 @@ export default function ManutencoesPage() {
             onChange={(e) => setForm((f) => ({ ...f, veiculo_id: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2"
           >
-            <option value="">Selecione o veiculo</option>
+            <option value="">Selecione o veículo</option>
             {veiculos.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.placa}
@@ -199,7 +199,7 @@ export default function ManutencoesPage() {
             <option value="CORRETIVA">Corretiva</option>
           </select>
           <textarea
-            placeholder="Descricao"
+            placeholder="Descrição"
             value={form.descricao}
             onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2"

@@ -122,7 +122,7 @@ export default function PecasPage() {
       render: (p) => <span className="font-medium text-gray-900">{p.nome}</span>,
     },
     {
-      strLabel: 'Codigo',
+      strLabel: 'Código',
       strKey: 'codigo',
       render: (p) => <span className="text-gray-700">{p.codigo ?? '\u2014'}</span>,
       bolHideMobile: true,
@@ -133,13 +133,13 @@ export default function PecasPage() {
       render: (p) => <span className="text-gray-700">{p.quantidade_estoque}</span>,
     },
     {
-      strLabel: 'Min.',
+      strLabel: 'Mín.',
       strKey: 'min',
       render: (p) => <span className="text-gray-700">{p.estoque_minimo ?? '\u2014'}</span>,
       bolHideMobile: true,
     },
     {
-      strLabel: 'Custo medio',
+      strLabel: 'Custo médio',
       strKey: 'custo',
       render: (p) => (
         <span className="text-gray-700">
@@ -155,7 +155,7 @@ export default function PecasPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Package className="text-brand-secondary" size={28} />
-            Pecas e estoque
+            Peças e estoque
           </h1>
         </div>
         <button
@@ -163,7 +163,7 @@ export default function PecasPage() {
           onClick={abrirNovo}
           className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover text-sm font-medium"
         >
-          <Plus size={18} /> Nova peca
+          <Plus size={18} /> Nova peça
         </button>
       </div>
 
@@ -173,7 +173,7 @@ export default function PecasPage() {
           arrData={lista}
           fnKeyExtractor={(p) => p.id}
           bolLoading={isLoading}
-          strEmptyMessage="Nenhuma peca cadastrada."
+          strEmptyMessage="Nenhuma peça cadastrada."
           fnRenderCardHeader={(p) => (
             <div className="flex items-center justify-between">
               <div>
@@ -199,7 +199,7 @@ export default function PecasPage() {
                 onClick={() => setModalHistorico(p)}
                 className="text-blue-600 text-sm hover:text-blue-700 font-medium"
               >
-                Historico
+                Histórico
               </button>
               <button
                 type="button"
@@ -213,7 +213,7 @@ export default function PecasPage() {
         />
       </div>
 
-      <Modal aberto={modalPeca} aoFechar={() => setModalPeca(false)} titulo={editando ? 'Editar peca' : 'Nova peca'}>
+      <Modal aberto={modalPeca} aoFechar={() => setModalPeca(false)} titulo={editando ? 'Editar peça' : 'Nova peça'}>
         <div className="space-y-2">
           <input
             className="w-full border rounded-lg px-3 py-2"
@@ -223,7 +223,7 @@ export default function PecasPage() {
           />
           <input
             className="w-full border rounded-lg px-3 py-2"
-            placeholder="Codigo"
+            placeholder="Código"
             value={form.codigo}
             onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))}
           />
@@ -243,13 +243,13 @@ export default function PecasPage() {
           <input
             type="number"
             className="w-full border rounded-lg px-3 py-2"
-            placeholder="Estoque minimo"
+            placeholder="Estoque mínimo"
             value={form.estoque_minimo}
             onChange={(e) => setForm((f) => ({ ...f, estoque_minimo: e.target.value }))}
           />
           <input
             className="w-full border rounded-lg px-3 py-2"
-            placeholder="Custo medio"
+            placeholder="Custo médio"
             value={form.custo_medio}
             onChange={(e) => setForm((f) => ({ ...f, custo_medio: e.target.value }))}
           />
@@ -263,7 +263,7 @@ export default function PecasPage() {
         </div>
       </Modal>
 
-      <Modal aberto={!!modalMov} aoFechar={() => setModalMov(null)} titulo="Movimentacao">
+      <Modal aberto={!!modalMov} aoFechar={() => setModalMov(null)} titulo="Movimentação">
         {modalMov && (
           <div className="space-y-2">
             <p className="text-sm text-gray-600">{modalMov.nome}</p>
@@ -275,7 +275,7 @@ export default function PecasPage() {
               className="w-full border rounded-lg px-3 py-2"
             >
               <option value="ENTRADA">Entrada</option>
-              <option value="SAIDA">Saida</option>
+              <option value="SAIDA">Saída</option>
             </select>
             <input
               type="number"
@@ -291,7 +291,7 @@ export default function PecasPage() {
             />
             <input
               className="w-full border rounded-lg px-3 py-2"
-              placeholder="Observacao"
+              placeholder="Observação"
               value={movForm.observacao}
               onChange={(e) => setMovForm((f) => ({ ...f, observacao: e.target.value }))}
             />
@@ -306,11 +306,11 @@ export default function PecasPage() {
         )}
       </Modal>
 
-      <Modal aberto={!!modalHistorico} aoFechar={() => setModalHistorico(null)} titulo="Historico de movimentacoes">
+      <Modal aberto={!!modalHistorico} aoFechar={() => setModalHistorico(null)} titulo="Histórico de movimentações">
         {modalHistorico && (
           <div className="space-y-3">
             <p className="text-sm text-gray-600">
-              Peca: <span className="font-medium">{modalHistorico.nome}</span>
+              Peça: <span className="font-medium">{modalHistorico.nome}</span>
             </p>
             <div className="overflow-x-auto border border-gray-200 rounded-lg">
               <table className="w-full min-w-[640px] text-sm">
@@ -320,7 +320,7 @@ export default function PecasPage() {
                     <th className="px-3 py-2">Tipo</th>
                     <th className="px-3 py-2">Quantidade</th>
                     <th className="px-3 py-2">Custo unitario</th>
-                    <th className="px-3 py-2">Observacao</th>
+                    <th className="px-3 py-2">Observação</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -333,7 +333,7 @@ export default function PecasPage() {
                   ) : (historicoData?.data?.length ?? 0) === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-3 py-4 text-center text-gray-400">
-                        Nenhuma movimentacao registrada.
+                        Nenhuma movimentação registrada.
                       </td>
                     </tr>
                   ) : (

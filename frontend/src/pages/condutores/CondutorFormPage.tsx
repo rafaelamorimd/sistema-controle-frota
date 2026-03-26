@@ -90,7 +90,7 @@ export default function CondutorFormPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Numero CNH *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Número CNH *</label>
             <input value={form.numero_cnh} onChange={(e) => set('numero_cnh', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
@@ -110,7 +110,7 @@ export default function CondutorFormPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
           <textarea value={form.observacoes} onChange={(e) => set('observacoes', e.target.value)} rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
         </div>

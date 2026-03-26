@@ -103,12 +103,12 @@ export default function MultasPage() {
 
   const arrColumns: Column<Multa>[] = [
     {
-      strLabel: 'Veiculo',
+      strLabel: 'Veículo',
       strKey: 'veiculo',
       render: (m) => <span className="text-gray-700">{m.veiculo?.placa ?? m.veiculo_id}</span>,
     },
     {
-      strLabel: 'Infracao',
+      strLabel: 'Infração',
       strKey: 'infracao',
       render: (m) => <span className="text-gray-700 truncate max-w-xs block">{m.descricao}</span>,
     },
@@ -201,7 +201,7 @@ export default function MultasPage() {
             onChange={(e) => setForm((f) => ({ ...f, veiculo_id: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2"
           >
-            <option value="">Veiculo</option>
+            <option value="">Veículo</option>
             {veiculos.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.placa}
@@ -240,7 +240,7 @@ export default function MultasPage() {
             <option value="PENDENTE">Pendente</option>
             <option value="PAGA">Paga</option>
             <option value="RECURSO">Recurso</option>
-            <option value="TRANSFERIDA_CONDUTOR">Transferida condutor</option>
+            <option value="TRANSFERIDA_CONDUTOR">Transferida ao condutor</option>
           </select>
           <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => setArquivo(e.target.files?.[0] ?? null)} />
           <button

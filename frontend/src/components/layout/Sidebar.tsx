@@ -24,20 +24,20 @@ import { useAuthStore } from '../../stores/authStore'
 import { authService } from '../../services/authService'
 
 const menuItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Visao Geral' },
-  { to: '/veiculos', icon: Car, label: 'Veiculos' },
+  { to: '/', icon: LayoutDashboard, label: 'Visão geral' },
+  { to: '/veiculos', icon: Car, label: 'Veículos' },
   { to: '/condutores', icon: Users, label: 'Condutores' },
   { to: '/contratos', icon: FileText, label: 'Contratos' },
   { to: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos' },
   { to: '/financeiro/despesas', icon: Receipt, label: 'Despesas' },
   { to: '/quilometragem/leituras', icon: Gauge, label: 'Quilometragem' },
-  { to: '/operacional/manutencoes', icon: Wrench, label: 'Manutencoes' },
-  { to: '/operacional/pecas', icon: Package, label: 'Pecas' },
+  { to: '/operacional/manutencoes', icon: Wrench, label: 'Manutenções' },
+  { to: '/operacional/pecas', icon: Package, label: 'Peças' },
   { to: '/operacional/multas', icon: Gavel, label: 'Multas' },
   { to: '/operacional/checklist', icon: ClipboardList, label: 'Checklist' },
   { to: '/rastreador', icon: Radio, label: 'Rastreador' },
-  { to: '/relatorios', icon: FileBarChart, label: 'Relatorios' },
-  { to: '/configuracoes', icon: Settings, label: 'Configuracoes' },
+  { to: '/relatorios', icon: FileBarChart, label: 'Relatórios' },
+  { to: '/configuracoes', icon: Settings, label: 'Configurações' },
 ]
 
 interface SidebarProps {
@@ -86,7 +86,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
         onClick={() => bolMobile && onFechar()}
         className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-brand-secondary text-white text-sm font-semibold shadow-sm hover:bg-brand-secondary-hover transition-colors"
       >
-        <Car size={18} strokeWidth={2.5} /> Novo Veiculo
+        <Car size={18} strokeWidth={2.5} /> Novo veículo
       </Link>
       <a
         href="mailto:suporte@gefther.com.br"

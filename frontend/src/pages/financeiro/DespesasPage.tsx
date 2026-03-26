@@ -130,12 +130,12 @@ export default function DespesasPage() {
       bolHideMobile: true,
     },
     {
-      strLabel: 'Descricao',
+      strLabel: 'Descrição',
       strKey: 'descricao',
       render: (d) => <span className="text-gray-700">{d.descricao}</span>,
     },
     {
-      strLabel: 'Veiculo',
+      strLabel: 'Veículo',
       strKey: 'veiculo',
       render: (d) => (
         <span className="text-gray-700">
@@ -223,7 +223,7 @@ export default function DespesasPage() {
       >
         <form onSubmit={enviar} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Veiculo *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Veículo *</label>
             <select
               required
               value={form.veiculo_id}
@@ -248,7 +248,7 @@ export default function DespesasPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descricao *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
             <input
               type="text"
               required
@@ -277,7 +277,7 @@ export default function DespesasPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
             <textarea
               value={form.observacoes}
               onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}

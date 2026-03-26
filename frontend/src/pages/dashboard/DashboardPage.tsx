@@ -119,7 +119,7 @@ export default function DashboardPage() {
 
       {algumErro && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
-          Nao foi possivel carregar todos os dados do painel. Verifique se a API esta disponivel.
+          Não foi possível carregar todos os dados do painel. Verifique se a API está disponível.
         </div>
       )}
 
@@ -131,7 +131,7 @@ export default function DashboardPage() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
             <StatCard
-              strTitulo="Total de veiculos"
+              strTitulo="Total de veículos"
               strValor={resumo?.veiculos_total?.toLocaleString('pt-BR') ?? '0'}
               objIcone={Car}
               varianteIcone="primario"
@@ -305,17 +305,17 @@ export default function DashboardPage() {
                 className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm font-medium text-brand-primary hover:text-brand-secondary"
               >
                 <Wrench size={18} />
-                Ir para manutencoes
+                Ir para manutenções
               </Link>
             </div>
           </div>
 
-          {/* Banner inferior — referencia */}
+          {/* Banner inferior — referência */}
           <div className="rounded-2xl bg-brand-primary text-white p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 shadow-lg">
             <div className="max-w-2xl">
-              <h3 className="text-xl lg:text-2xl font-bold">Excelencia operacional</h3>
+              <h3 className="text-xl lg:text-2xl font-bold">Excelência operacional</h3>
               <p className="text-white/85 text-sm mt-2 leading-relaxed">
-                Acompanhe indicadores, alertas e contratos em um so lugar. Gere relatorios para sua equipe e
+                Acompanhe indicadores, alertas e contratos em um só lugar. Gere relatórios para sua equipe e
                 mantenha a frota sempre em conformidade.
               </p>
             </div>

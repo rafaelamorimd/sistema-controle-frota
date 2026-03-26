@@ -91,7 +91,7 @@ export default function ContratosListPage() {
 
   const arrColumns: Column<Contrato>[] = [
     {
-      strLabel: 'Numero',
+      strLabel: 'Número',
       strKey: 'numero',
       render: (c) => <span className="font-mono font-medium text-gray-900">{c.numero_contrato}</span>,
     },
@@ -101,7 +101,7 @@ export default function ContratosListPage() {
       render: (c) => <span className="text-gray-700">{c.condutor?.nome || '-'}</span>,
     },
     {
-      strLabel: 'Veiculo',
+      strLabel: 'Veículo',
       strKey: 'veiculo',
       render: (c) => <span className="text-gray-700">{c.veiculo ? `${c.veiculo.modelo} - ${c.veiculo.placa}` : '-'}</span>,
     },
@@ -111,7 +111,7 @@ export default function ContratosListPage() {
       render: (c) => <span className="text-gray-700">R$ {Number(c.valor_semanal).toFixed(2)}</span>,
     },
     {
-      strLabel: 'Inicio',
+      strLabel: 'Início',
       strKey: 'inicio',
       render: (c) => <span className="text-gray-700">{new Date(c.data_inicio).toLocaleDateString('pt-BR')}</span>,
       bolHideMobile: true,

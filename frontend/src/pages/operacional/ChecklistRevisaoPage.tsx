@@ -90,7 +90,7 @@ export default function ChecklistRevisaoPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ClipboardList className="text-brand-secondary" size={28} />
-            Checklist de revisao
+            Checklist de revisão
           </h1>
         </div>
         <button
@@ -104,7 +104,7 @@ export default function ChecklistRevisaoPage() {
       </div>
 
       <div className="flex gap-2 items-center mb-6">
-        <label className="text-sm text-gray-600">Veiculo</label>
+        <label className="text-sm text-gray-600">Veículo</label>
         <select
           value={veiculoId}
           onChange={(e) => setVeiculoId(e.target.value)}
@@ -150,7 +150,7 @@ export default function ChecklistRevisaoPage() {
           <input
             type="number"
             className="w-full border rounded-lg px-3 py-2"
-            placeholder="Km revisao"
+            placeholder="Km revisão"
             value={form.km_revisao}
             onChange={(e) => setForm((f) => ({ ...f, km_revisao: e.target.value }))}
           />

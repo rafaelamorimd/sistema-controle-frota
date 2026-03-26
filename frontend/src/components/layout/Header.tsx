@@ -49,7 +49,7 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
         <Link
           to="/"
           className="lg:hidden flex items-center shrink-0 rounded-lg px-1 py-0.5 hover:opacity-90"
-          aria-label="GEFTHER - Inicio"
+          aria-label="GEFTHER - Início"
         >
           <BrandLogo variant="header" />
         </Link>
@@ -68,14 +68,14 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
         <Link
           to="/configuracoes"
           className="p-2.5 text-gray-500 hover:text-brand-primary rounded-xl hover:bg-surface-muted transition-colors"
-          aria-label="Configuracoes"
+          aria-label="Configurações"
         >
           <Settings size={20} />
         </Link>
         <div className="hidden sm:flex items-center pl-2 sm:pl-3 ml-1 border-l border-gray-200/90">
           <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-surface/80 px-3 py-2 shadow-sm">
             <div className="text-right min-w-0 max-w-[140px] md:max-w-[200px]">
-              <p className="text-sm font-semibold text-brand-primary truncate">{user?.name ?? 'Usuario'}</p>
+              <p className="text-sm font-semibold text-brand-primary truncate">{user?.name ?? 'Usuário'}</p>
               <p className="text-[11px] text-gray-500 uppercase tracking-wide truncate">
                 {user?.perfil ? mapPerfilCargo[user.perfil] ?? user.perfil : ''}
               </p>

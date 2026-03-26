@@ -62,12 +62,12 @@ export default function VeiculosListPage() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Veiculos</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Veículos</h2>
         <Link
           to="/veiculos/novo"
           className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium"
         >
-          <Plus size={18} /> Novo Veiculo
+          <Plus size={18} /> Novo veículo
         </Link>
       </div>
 
@@ -77,7 +77,7 @@ export default function VeiculosListPage() {
           arrData={veiculos}
           fnKeyExtractor={(v) => v.id}
           bolLoading={isLoading}
-          strEmptyMessage="Nenhum veiculo cadastrado."
+          strEmptyMessage="Nenhum veículo cadastrado."
           fnRenderCardHeader={(v) => (
             <div className="flex items-center justify-between">
               <div>
@@ -95,7 +95,7 @@ export default function VeiculosListPage() {
                 <Pencil size={16} />
               </Link>
               <button
-                onClick={() => { if (confirm('Excluir este veiculo?')) deleteMutation.mutate(v.id) }}
+                onClick={() => { if (confirm('Excluir este veículo?')) deleteMutation.mutate(v.id) }}
                 className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50"
               >
                 <Trash2 size={16} />

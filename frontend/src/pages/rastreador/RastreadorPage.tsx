@@ -87,10 +87,10 @@ export default function RastreadorPage() {
           onChange={(e) => setVeiculoId(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 min-w-[240px]"
         >
-          <option value="">Selecione o veiculo</option>
+          <option value="">Selecione o veículo</option>
           {veiculos.map((v) => (
             <option key={v.id} value={v.id}>
-              {v.placa} — {v.numero_rastreador ?? 'sem numero'}
+              {v.placa} — {v.numero_rastreador ?? 'sem número'}
             </option>
           ))}
         </select>
@@ -107,7 +107,7 @@ export default function RastreadorPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {!veiculoId ? (
-          <div className="p-8 text-center text-gray-500">Selecione um veiculo</div>
+          <div className="p-8 text-center text-gray-500">Selecione um veículo</div>
         ) : (
           <ResponsiveTable
             arrColumns={arrColumns}

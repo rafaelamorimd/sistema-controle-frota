@@ -108,7 +108,7 @@ export default function PagamentosPage() {
       bolHideMobile: true,
     },
     {
-      strLabel: 'Veiculo',
+      strLabel: 'Veículo',
       strKey: 'veiculo',
       render: (p) => (
         <span className="text-gray-700">

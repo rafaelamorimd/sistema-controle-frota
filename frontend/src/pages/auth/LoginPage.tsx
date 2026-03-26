@@ -101,7 +101,7 @@ export default function LoginPage() {
                       </label>
                       <button
                         type="button"
-                        onClick={() => window.open('mailto:suporte@gefther.com.br?subject=Recuperacao%20de%20senha', '_self')}
+                        onClick={() => window.open('mailto:suporte@gefther.com.br?subject=Recuperação%20de%20senha', '_self')}
                         className="text-xs font-semibold text-brand-primary hover:text-brand-secondary transition-colors"
                       >
                         Esqueceu a senha?
@@ -153,20 +153,20 @@ export default function LoginPage() {
 
               <div className="px-7 sm:px-8 py-4 text-center border-t border-gray-100">
                 <p className="text-xs text-gray-500">
-                  Nao possui acesso?{' '}
+                  Não possui acesso?{' '}
                   <button
                     type="button"
-                    onClick={() => window.open('mailto:suporte@gefther.com.br?subject=Solicitacao%20de%20acesso', '_self')}
+                    onClick={() => window.open('mailto:suporte@gefther.com.br?subject=Solicitação%20de%20acesso', '_self')}
                     className="font-semibold text-brand-secondary hover:text-brand-secondary-hover"
                   >
-                    Solicite a sua gerencia
+                    Solicite à sua gerência
                   </button>
                 </p>
               </div>
 
               <div className="px-7 sm:px-8 py-3 bg-[#f7f8fc] border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-semibold uppercase tracking-wide">
                 <span className="inline-flex items-center gap-1">
-                  <ShieldCheck size={12} /> Conexao segura AES-256
+                  <ShieldCheck size={12} /> Conexão segura AES-256
                 </span>
                 <span>v4.2.0-stable</span>
               </div>
@@ -190,10 +190,10 @@ export default function LoginPage() {
                 Privacidade
               </a>
               <a
-                href="mailto:suporte@gefther.com.br?subject=Suporte%20tecnico"
+                href="mailto:suporte@gefther.com.br?subject=Suporte%20técnico"
                 className="hover:text-white/80 transition-colors"
               >
-                Suporte tecnico
+                Suporte técnico
               </a>
             </div>
           </div>
@@ -204,9 +204,9 @@ export default function LoginPage() {
             <div className="w-10 h-10 rounded-lg bg-brand-secondary-muted text-brand-secondary flex items-center justify-center mb-4">
               <ShieldCheck size={20} />
             </div>
-            <h3 className="text-2xl font-bold tracking-tight">Visao Total da Frota</h3>
+            <h3 className="text-2xl font-bold tracking-tight">Visão total da frota</h3>
             <p className="text-sm text-white/80 mt-3 leading-relaxed">
-              Monitore desempenho, custos e manutencao preventiva em uma unica interface inteligente.
+              Monitore desempenho, custos e manutenção preventiva em uma única interface inteligente.
             </p>
           </div>
         </div>

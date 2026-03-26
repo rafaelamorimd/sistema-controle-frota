@@ -198,7 +198,7 @@ export default function LeiturasKmPage() {
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Veiculo</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Veículo</label>
         <select
           value={veiculoId ?? ''}
           onChange={(e) => {
@@ -207,7 +207,7 @@ export default function LeiturasKmPage() {
           }}
           className="w-full max-w-md border border-gray-300 rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">Selecione um veiculo...</option>
+          <option value="">Selecione um veículo...</option>
           {veiculos.map((v) => (
             <option key={v.id} value={v.id}>
               {v.placa} — {v.modelo}
@@ -218,14 +218,14 @@ export default function LeiturasKmPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {veiculoId == null ? (
-          <div className="p-8 text-center text-gray-500">Selecione um veiculo para ver as leituras.</div>
+          <div className="p-8 text-center text-gray-500">Selecione um veículo para ver as leituras.</div>
         ) : (
           <ResponsiveTable
             arrColumns={arrColumns}
             arrData={leiturasComCalculo}
             fnKeyExtractor={(l) => l.id}
             bolLoading={isLoading}
-            strEmptyMessage="Nenhuma leitura para este veiculo."
+            strEmptyMessage="Nenhuma leitura para este veículo."
             fnRenderCardHeader={(l) => (
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-900">
@@ -301,7 +301,7 @@ export default function LeiturasKmPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
             <textarea
               value={form.observacoes}
               onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}
