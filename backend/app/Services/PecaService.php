@@ -49,6 +49,19 @@ class PecaService
         $peca->delete();
     }
 
+    public function listarMovimentacoes(Peca $peca, array $filtros = []): LengthAwarePaginator
+    {
+        $query = MovimentacaoPeca::query()
+            ->with(['veiculo', 'manutencao'])
+            ->where('peca_id', $peca->id);
+
+        if (!empty($filtros['tipo'])) {
+            $query->where('tipo', $filtros['tipo']);
+        }
+
+        return $query->orderByDesc('created_at')->paginate($filtros['por_pagina'] ?? 20);
+    }
+
     public function registrarMovimentacao(
         Peca $peca,
         TipoMovimentacaoPeca $tipo,

@@ -2,14 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Package, Pencil, Plus } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
+import ResponsiveTable from '../../components/shared/ResponsiveTable'
+import type { Column } from '../../components/shared/ResponsiveTable'
 import { pecaService } from '../../services/pecaService'
-import type { Peca } from '../../types'
+import type { MovimentacaoPeca, Peca } from '../../types'
 import { formatarMoedaBrl } from '../../utils/format'
 
 export default function PecasPage() {
   const queryClient = useQueryClient()
   const [modalPeca, setModalPeca] = useState(false)
   const [modalMov, setModalMov] = useState<Peca | null>(null)
+  const [modalHistorico, setModalHistorico] = useState<Peca | null>(null)
   const [editando, setEditando] = useState<Peca | null>(null)
   const [form, setForm] = useState({
     nome: '',
@@ -80,6 +83,11 @@ export default function PecasPage() {
   })
 
   const lista = data?.data ?? []
+  const { data: historicoData, isLoading: bolCarregandoHistorico } = useQuery({
+    queryKey: ['movimentacoes-peca', modalHistorico?.id],
+    queryFn: () => pecaService.listarMovimentacoes(modalHistorico!.id, { por_pagina: 50 }),
+    enabled: !!modalHistorico,
+  })
 
   function abrirNovo() {
     setEditando(null)
@@ -107,9 +115,43 @@ export default function PecasPage() {
     setModalPeca(true)
   }
 
+  const arrColumns: Column<Peca>[] = [
+    {
+      strLabel: 'Nome',
+      strKey: 'nome',
+      render: (p) => <span className="font-medium text-gray-900">{p.nome}</span>,
+    },
+    {
+      strLabel: 'Codigo',
+      strKey: 'codigo',
+      render: (p) => <span className="text-gray-700">{p.codigo ?? '\u2014'}</span>,
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Estoque',
+      strKey: 'estoque',
+      render: (p) => <span className="text-gray-700">{p.quantidade_estoque}</span>,
+    },
+    {
+      strLabel: 'Min.',
+      strKey: 'min',
+      render: (p) => <span className="text-gray-700">{p.estoque_minimo ?? '\u2014'}</span>,
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Custo medio',
+      strKey: 'custo',
+      render: (p) => (
+        <span className="text-gray-700">
+          {p.custo_medio ? formatarMoedaBrl(Number(p.custo_medio)) : '\u2014'}
+        </span>
+      ),
+    },
+  ]
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Package className="text-brand-secondary" size={28} />
@@ -119,64 +161,56 @@ export default function PecasPage() {
         <button
           type="button"
           onClick={abrirNovo}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover text-sm font-medium"
         >
           <Plus size={18} /> Nova peca
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead className="bg-gray-50 text-left text-gray-600">
-              <tr>
-                <th className="px-4 py-3">Nome</th>
-                <th className="px-4 py-3">Codigo</th>
-                <th className="px-4 py-3">Estoque</th>
-                <th className="px-4 py-3">Min.</th>
-                <th className="px-4 py-3">Custo medio</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                  Carregando...
-                </td>
-              </tr>
-            ) : (
-              lista.map((p) => (
-                <tr key={p.id} className="border-t border-gray-100">
-                  <td className="px-4 py-3 font-medium">{p.nome}</td>
-                  <td className="px-4 py-3">{p.codigo ?? '—'}</td>
-                  <td className="px-4 py-3">{p.quantidade_estoque}</td>
-                  <td className="px-4 py-3">{p.estoque_minimo ?? '—'}</td>
-                  <td className="px-4 py-3">
-                    {p.custo_medio ? formatarMoedaBrl(Number(p.custo_medio)) : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => setModalMov(p)}
-                      className="text-brand-secondary text-sm hover:text-brand-secondary-hover"
-                    >
-                      Movimentar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => abrirEditar(p)}
-                      className="text-gray-600 inline-flex items-center gap-1"
-                    >
-                      <Pencil size={14} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        </div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <ResponsiveTable
+          arrColumns={arrColumns}
+          arrData={lista}
+          fnKeyExtractor={(p) => p.id}
+          bolLoading={isLoading}
+          strEmptyMessage="Nenhuma peca cadastrada."
+          fnRenderCardHeader={(p) => (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900">{p.nome}</p>
+                {p.codigo && <p className="text-xs text-gray-500">{p.codigo}</p>}
+              </div>
+              <span className="text-sm font-semibold text-brand-primary">
+                Qtd: {p.quantidade_estoque}
+              </span>
+            </div>
+          )}
+          fnRenderActions={(p) => (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setModalMov(p)}
+                className="text-brand-secondary text-sm hover:text-brand-secondary-hover font-medium"
+              >
+                Movimentar
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalHistorico(p)}
+                className="text-blue-600 text-sm hover:text-blue-700 font-medium"
+              >
+                Historico
+              </button>
+              <button
+                type="button"
+                onClick={() => abrirEditar(p)}
+                className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
+          )}
+        />
       </div>
 
       <Modal aberto={modalPeca} aoFechar={() => setModalPeca(false)} titulo={editando ? 'Editar peca' : 'Nova peca'}>
@@ -268,6 +302,56 @@ export default function PecasPage() {
             >
               Registrar
             </button>
+          </div>
+        )}
+      </Modal>
+
+      <Modal aberto={!!modalHistorico} aoFechar={() => setModalHistorico(null)} titulo="Historico de movimentacoes">
+        {modalHistorico && (
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600">
+              Peca: <span className="font-medium">{modalHistorico.nome}</span>
+            </p>
+            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead className="bg-gray-50 text-left text-gray-600">
+                  <tr>
+                    <th className="px-3 py-2">Data</th>
+                    <th className="px-3 py-2">Tipo</th>
+                    <th className="px-3 py-2">Quantidade</th>
+                    <th className="px-3 py-2">Custo unitario</th>
+                    <th className="px-3 py-2">Observacao</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bolCarregandoHistorico ? (
+                    <tr>
+                      <td colSpan={5} className="px-3 py-4 text-center text-gray-400">
+                        Carregando...
+                      </td>
+                    </tr>
+                  ) : (historicoData?.data?.length ?? 0) === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-3 py-4 text-center text-gray-400">
+                        Nenhuma movimentacao registrada.
+                      </td>
+                    </tr>
+                  ) : (
+                    historicoData!.data.map((objMov: MovimentacaoPeca) => (
+                      <tr key={objMov.id} className="border-t border-gray-100">
+                        <td className="px-3 py-2">{new Date(objMov.created_at).toLocaleString('pt-BR')}</td>
+                        <td className="px-3 py-2">{objMov.tipo}</td>
+                        <td className="px-3 py-2">{objMov.quantidade}</td>
+                        <td className="px-3 py-2">
+                          {objMov.custo_unitario ? formatarMoedaBrl(Number(objMov.custo_unitario)) : '—'}
+                        </td>
+                        <td className="px-3 py-2">{objMov.observacao || '—'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </Modal>

@@ -2,10 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Plus, Wrench } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
+import ResponsiveTable from '../../components/shared/ResponsiveTable'
+import type { Column } from '../../components/shared/ResponsiveTable'
 import { manutencaoService } from '../../services/manutencaoService'
 import { veiculoService } from '../../services/veiculoService'
 import type { Manutencao } from '../../types'
 import { formatarMoedaBrl } from '../../utils/format'
+
+const statusCores: Record<string, string> = {
+  CONCLUIDA: 'bg-green-100 text-green-800',
+  EM_ANDAMENTO: 'bg-amber-100 text-amber-800',
+}
 
 export default function ManutencoesPage() {
   const queryClient = useQueryClient()
@@ -65,9 +72,41 @@ export default function ManutencoesPage() {
   const lista = data?.data ?? []
   const veiculos = veiculosData?.data ?? []
 
+  const arrColumns: Column<Manutencao>[] = [
+    {
+      strLabel: 'Veiculo',
+      strKey: 'veiculo',
+      render: (m) => <span className="text-gray-700">{m.veiculo?.placa ?? m.veiculo_id}</span>,
+    },
+    {
+      strLabel: 'Tipo',
+      strKey: 'tipo',
+      render: (m) => <span className="text-gray-700">{m.tipo}</span>,
+    },
+    {
+      strLabel: 'Entrada',
+      strKey: 'entrada',
+      render: (m) => <span className="text-gray-700">{m.data_entrada}</span>,
+    },
+    {
+      strLabel: 'Status',
+      strKey: 'status',
+      render: (m) => (
+        <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusCores[m.status] ?? ''}`}>
+          {m.status}
+        </span>
+      ),
+    },
+    {
+      strLabel: 'Custo',
+      strKey: 'custo',
+      render: (m) => <span className="text-gray-700">{formatarMoedaBrl(Number(m.custo_total))}</span>,
+    },
+  ]
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Wrench className="text-brand-secondary" size={28} />
@@ -78,18 +117,18 @@ export default function ManutencoesPage() {
         <button
           type="button"
           onClick={() => setModalAberto(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover text-sm font-medium"
         >
           <Plus size={18} /> Nova
         </button>
       </div>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center mb-6">
         <label className="text-sm text-gray-600">Veiculo</label>
         <select
           value={veiculoFiltro}
           onChange={(e) => setVeiculoFiltro(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
         >
           <option value="">Todos</option>
           {veiculos.map((v) => (
@@ -100,61 +139,36 @@ export default function ManutencoesPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead className="bg-gray-50 text-left text-gray-600">
-              <tr>
-                <th className="px-4 py-3">Veiculo</th>
-                <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">Entrada</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Custo</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                  Carregando...
-                </td>
-              </tr>
-            ) : (
-              lista.map((m) => (
-                <tr key={m.id} className="border-t border-gray-100">
-                  <td className="px-4 py-3">{m.veiculo?.placa ?? m.veiculo_id}</td>
-                  <td className="px-4 py-3">{m.tipo}</td>
-                  <td className="px-4 py-3">{m.data_entrada}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={
-                        m.status === 'CONCLUIDA'
-                          ? 'bg-green-100 text-green-800 px-2 py-0.5 rounded'
-                          : 'bg-amber-100 text-amber-800 px-2 py-0.5 rounded'
-                      }
-                    >
-                      {m.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">{formatarMoedaBrl(Number(m.custo_total))}</td>
-                  <td className="px-4 py-3 text-right">
-                    {m.status === 'EM_ANDAMENTO' && (
-                      <button
-                        type="button"
-                        onClick={() => concluirMutation.mutate(m)}
-                        className="text-green-600 hover:underline inline-flex items-center gap-1"
-                      >
-                        <CheckCircle size={16} /> Concluir
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        </div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <ResponsiveTable
+          arrColumns={arrColumns}
+          arrData={lista}
+          fnKeyExtractor={(m) => m.id}
+          bolLoading={isLoading}
+          strEmptyMessage="Nenhuma manutencao encontrada."
+          fnRenderCardHeader={(m) => (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900">{m.veiculo?.placa ?? m.veiculo_id}</p>
+                <p className="text-xs text-gray-500">{m.tipo} - {m.data_entrada}</p>
+              </div>
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusCores[m.status] ?? ''}`}>
+                {m.status}
+              </span>
+            </div>
+          )}
+          fnRenderActions={(m) =>
+            m.status === 'EM_ANDAMENTO' ? (
+              <button
+                type="button"
+                onClick={() => concluirMutation.mutate(m)}
+                className="text-green-600 hover:underline inline-flex items-center gap-1 text-sm"
+              >
+                <CheckCircle size={16} /> Concluir
+              </button>
+            ) : null
+          }
+        />
       </div>
 
       <Modal

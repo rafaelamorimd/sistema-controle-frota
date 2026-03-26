@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('relatorios/veiculos/csv', [RelatorioController::class, 'csvVeiculos']);
     Route::get('relatorios/veiculos/excel', [RelatorioController::class, 'excelVeiculos']);
 
+    Route::get('pecas/{peca}/movimentacoes', [MovimentacaoPecaController::class, 'index']);
     Route::post('pecas/{peca}/movimentacoes', [MovimentacaoPecaController::class, 'store']);
     Route::apiResource('pecas', PecaController::class);
 

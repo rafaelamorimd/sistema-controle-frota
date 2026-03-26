@@ -2,10 +2,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ClipboardList, Plus } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
+import ResponsiveTable from '../../components/shared/ResponsiveTable'
+import type { Column } from '../../components/shared/ResponsiveTable'
 import { checklistRevisaoService } from '../../services/checklistRevisaoService'
 import { veiculoService } from '../../services/veiculoService'
 
 const exemploJson = `{"pneus":"OK","freios":"OK","oleo":"verificar"}`
+
+type ChecklistItem = {
+  id: number
+  data_revisao: string
+  km_revisao: number
+  itens_verificados: Record<string, unknown>
+}
 
 export default function ChecklistRevisaoPage() {
   const queryClient = useQueryClient()
@@ -50,11 +59,34 @@ export default function ChecklistRevisaoPage() {
   })
 
   const veiculos = veiculosData?.data ?? []
-  const lista = data?.data ?? []
+  const lista: ChecklistItem[] = data?.data ?? []
+
+  const arrColumns: Column<ChecklistItem>[] = [
+    {
+      strLabel: 'Data',
+      strKey: 'data',
+      render: (c) => <span className="text-gray-700">{c.data_revisao}</span>,
+    },
+    {
+      strLabel: 'Km',
+      strKey: 'km',
+      render: (c) => <span className="text-gray-700">{c.km_revisao}</span>,
+    },
+    {
+      strLabel: 'Itens (resumo)',
+      strKey: 'itens',
+      render: (c) => (
+        <span className="font-mono text-xs text-gray-600 truncate max-w-md block">
+          {JSON.stringify(c.itens_verificados)}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+  ]
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ClipboardList className="text-brand-secondary" size={28} />
@@ -65,18 +97,18 @@ export default function ChecklistRevisaoPage() {
           type="button"
           disabled={!veiculoId}
           onClick={() => setModalAberto(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50 text-sm font-medium"
         >
           <Plus size={18} /> Novo registro
         </button>
       </div>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center mb-6">
         <label className="text-sm text-gray-600">Veiculo</label>
         <select
           value={veiculoId}
           onChange={(e) => setVeiculoId(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm min-w-[220px]"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[220px]"
         >
           <option value="">Selecione</option>
           {veiculos.map((v) => (
@@ -87,41 +119,24 @@ export default function ChecklistRevisaoPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-600">
-            <tr>
-              <th className="px-4 py-3">Data</th>
-              <th className="px-4 py-3">Km</th>
-              <th className="px-4 py-3">Itens (resumo)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!veiculoId ? (
-              <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
-                  Escolha um veiculo
-                </td>
-              </tr>
-            ) : isLoading ? (
-              <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
-                  Carregando...
-                </td>
-              </tr>
-            ) : (
-              lista.map((c) => (
-                <tr key={c.id} className="border-t border-gray-100">
-                  <td className="px-4 py-3">{c.data_revisao}</td>
-                  <td className="px-4 py-3">{c.km_revisao}</td>
-                  <td className="px-4 py-3 font-mono text-xs max-w-md truncate">
-                    {JSON.stringify(c.itens_verificados)}
-                  </td>
-                </tr>
-              ))
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {!veiculoId ? (
+          <div className="p-8 text-center text-gray-500">Escolha um veiculo</div>
+        ) : (
+          <ResponsiveTable
+            arrColumns={arrColumns}
+            arrData={lista}
+            fnKeyExtractor={(c) => c.id}
+            bolLoading={isLoading}
+            strEmptyMessage="Nenhum checklist encontrado."
+            fnRenderCardHeader={(c) => (
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-900">{c.data_revisao}</span>
+                <span className="text-sm text-brand-primary font-mono">{c.km_revisao} km</span>
+              </div>
             )}
-          </tbody>
-        </table>
+          />
+        )}
       </div>
 
       <Modal aberto={modalAberto} aoFechar={() => setModalAberto(false)} titulo="Novo checklist">

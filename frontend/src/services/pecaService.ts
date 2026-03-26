@@ -1,5 +1,5 @@
 import api from './api'
-import type { Peca, PaginatedResponse } from '../types'
+import type { MovimentacaoPeca, Peca, PaginatedResponse } from '../types'
 
 export const pecaService = {
   listar: (params?: Record<string, unknown>) =>
@@ -16,4 +16,9 @@ export const pecaService = {
 
   movimentar: (pecaId: number, dados: Record<string, unknown>) =>
     api.post(`/pecas/${pecaId}/movimentacoes`, dados).then((r) => r.data),
+
+  listarMovimentacoes: (pecaId: number, params?: Record<string, unknown>) =>
+    api
+      .get<PaginatedResponse<MovimentacaoPeca>>(`/pecas/${pecaId}/movimentacoes`, { params })
+      .then((r) => r.data),
 }

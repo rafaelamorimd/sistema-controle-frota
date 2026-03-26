@@ -266,6 +266,19 @@ export interface Peca {
   updated_at: string
 }
 
+export interface MovimentacaoPeca {
+  id: number
+  peca_id: number
+  tipo: 'ENTRADA' | 'SAIDA'
+  quantidade: number
+  manutencao_id: number | null
+  veiculo_id: number | null
+  custo_unitario: string
+  observacao: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface Multa {
   id: number
   veiculo_id: number

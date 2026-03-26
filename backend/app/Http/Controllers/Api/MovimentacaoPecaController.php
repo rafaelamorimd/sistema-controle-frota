@@ -8,10 +8,18 @@ use App\Models\Peca;
 use App\Enums\TipoMovimentacaoPeca;
 use App\Services\PecaService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class MovimentacaoPecaController extends Controller
 {
     public function __construct(private PecaService $service) {}
+
+    public function index(Request $request, Peca $peca): JsonResponse
+    {
+        $arrMovimentacoes = $this->service->listarMovimentacoes($peca, $request->all());
+
+        return response()->json($arrMovimentacoes);
+    }
 
     public function store(MovimentacaoPecaRequest $request, Peca $peca): JsonResponse
     {
