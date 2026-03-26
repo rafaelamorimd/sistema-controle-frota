@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, FileText, RefreshCw } from 'lucide-react'
 import { contratoService } from '../../services/contratoService'
+import { relatorioService } from '../../services/relatorioService'
 import type { Contrato } from '../../types'
 
 const statusColors: Record<string, string> = {
@@ -12,12 +14,47 @@ const statusColors: Record<string, string> = {
 }
 
 export default function ContratosListPage() {
+  const [numBaixando, setNumBaixando] = useState<number | null>(null)
+  const [numGerando, setNumGerando] = useState<number | null>(null)
+
   const { data, isLoading } = useQuery({
     queryKey: ['contratos'],
     queryFn: () => contratoService.listar(),
   })
 
   const contratos = data?.data || []
+
+  const handleBaixarPdf = async (id: number) => {
+    setNumBaixando(id)
+    try {
+      await relatorioService.downloadPdfContrato(id)
+    } catch (erro) {
+      console.error('Erro ao baixar PDF:', erro)
+      alert('Erro ao baixar PDF do contrato.')
+    } finally {
+      setNumBaixando(null)
+    }
+  }
+
+  const handleGerarPdf = async (id: number) => {
+    setNumGerando(id)
+    try {
+      const blob = await contratoService.gerarPdf(id)
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `contrato-${id}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (erro) {
+      console.error('Erro ao gerar PDF:', erro)
+      alert('Erro ao gerar PDF do contrato.')
+    } finally {
+      setNumGerando(null)
+    }
+  }
 
   return (
     <div>
@@ -44,6 +81,7 @@ export default function ContratosListPage() {
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Valor Semanal</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Inicio</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Acoes</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -56,6 +94,28 @@ export default function ContratosListPage() {
                   <td className="px-6 py-4 text-gray-700">{new Date(c.data_inicio).toLocaleDateString('pt-BR')}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[c.status] || ''}`}>{c.status}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleBaixarPdf(c.id)}
+                        disabled={numBaixando === c.id}
+                        className="text-blue-600 hover:text-blue-800 disabled:opacity-50 flex items-center gap-1 text-sm"
+                        title="Baixar PDF"
+                      >
+                        <FileText size={16} />
+                        {numBaixando === c.id ? 'Baixando...' : 'PDF'}
+                      </button>
+                      <button
+                        onClick={() => handleGerarPdf(c.id)}
+                        disabled={numGerando === c.id}
+                        className="text-green-600 hover:text-green-800 disabled:opacity-50 flex items-center gap-1 text-sm"
+                        title="Gerar contrato"
+                      >
+                        <RefreshCw size={16} />
+                        {numGerando === c.id ? 'Gerando...' : 'Gerar'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

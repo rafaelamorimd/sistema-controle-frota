@@ -16,4 +16,11 @@ export const contratoService = {
 
   encerrar: (id: number, dados: { km_final?: number; motivo_encerramento?: string }) =>
     api.patch<Contrato>(`/contratos/${id}/encerrar`, dados).then(r => r.data),
+
+  gerarPdf: async (id: number): Promise<Blob> => {
+    const res = await api.post(`/contratos/${id}/gerar-pdf`, {}, {
+      responseType: 'blob',
+    });
+    return res.data;
+  },
 }

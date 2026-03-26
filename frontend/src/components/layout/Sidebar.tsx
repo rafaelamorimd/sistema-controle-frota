@@ -12,6 +12,7 @@ import {
   Package,
   Radio,
   Receipt,
+  Settings,
   Users,
   Wrench,
   X,
@@ -31,6 +32,7 @@ const menuItems = [
   { to: '/operacional/checklist', icon: ClipboardList, label: 'Checklist' },
   { to: '/rastreador', icon: Radio, label: 'Rastreador' },
   { to: '/relatorios', icon: FileBarChart, label: 'Relatorios' },
+  { to: '/configuracoes', icon: Settings, label: 'Configuracoes' },
 ]
 
 interface SidebarProps {

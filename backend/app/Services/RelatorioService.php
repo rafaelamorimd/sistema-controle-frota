@@ -17,12 +17,37 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RelatorioService
 {
+    public function __construct(
+        private ConfiguracaoService $configuracaoService
+    ) {}
+
+    public function gerarEArmazenarPdfContrato(Contrato $contrato): string
+    {
+        $contrato->load(['condutor', 'veiculo']);
+        $arrLocador = $this->configuracaoService->obterMap();
+
+        $pdf = Pdf::loadView('relatorios.pdf.contrato', [
+            'objContrato' => $contrato,
+            'arrLocador' => $arrLocador,
+        ])->setPaper('a4');
+
+        $strNomeArquivo = $contrato->numero_contrato . '.pdf';
+        $strCaminho = 'contratos/' . $strNomeArquivo;
+        
+        \Storage::disk('public')->put($strCaminho, $pdf->output());
+
+        return $strCaminho;
+    }
+
     public function pdfContrato(Contrato $contrato): Response
     {
         $contrato->load(['condutor', 'veiculo']);
+        $arrLocador = $this->configuracaoService->obterMap();
 
-        $pdf = Pdf::loadView('relatorios.pdf.contrato', ['objContrato' => $contrato])
-            ->setPaper('a4');
+        $pdf = Pdf::loadView('relatorios.pdf.contrato', [
+            'objContrato' => $contrato,
+            'arrLocador' => $arrLocador,
+        ])->setPaper('a4');
 
         $strNome = 'contrato-'.$contrato->numero_contrato.'.pdf';
 

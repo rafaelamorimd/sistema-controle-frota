@@ -19,6 +19,7 @@ import MultasPage from './pages/operacional/MultasPage'
 import ChecklistRevisaoPage from './pages/operacional/ChecklistRevisaoPage'
 import RastreadorPage from './pages/rastreador/RastreadorPage'
 import RelatoriosPage from './pages/relatorios/RelatoriosPage'
+import ConfiguracoesPage from './pages/configuracoes/ConfiguracoesPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuth = useAuthStore((s) => s.isAuthenticated)
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="operacional/checklist" element={<ChecklistRevisaoPage />} />
         <Route path="rastreador" element={<RastreadorPage />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
+        <Route path="configuracoes" element={<ConfiguracoesPage />} />
       </Route>
     </Routes>
   )

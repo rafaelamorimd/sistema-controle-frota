@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class ContratoService
 {
-    public function __construct(private PagamentoService $pagamentoService) {}
+    public function __construct(
+        private PagamentoService $pagamentoService,
+        private RelatorioService $relatorioService
+    ) {}
 
     public function listar(array $filtros = []): LengthAwarePaginator
     {
@@ -50,6 +53,9 @@ class ContratoService
                 ->update(['status' => StatusVeiculo::ALUGADO]);
 
             $this->pagamentoService->criarPendenteInicial($contrato);
+
+            $strCaminhoPdf = $this->relatorioService->gerarEArmazenarPdfContrato($contrato);
+            $contrato->update(['caminho_contrato_pdf' => $strCaminhoPdf]);
 
             return $contrato->load(['condutor', 'veiculo']);
         });

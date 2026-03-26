@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AnotacaoController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChecklistRevisaoController;
 use App\Http\Controllers\Api\CondutorController;
+use App\Http\Controllers\Api\ConfiguracaoController;
 use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DespesaController;
@@ -38,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('contratos', ContratoController::class);
     Route::patch('contratos/{contrato}/encerrar', [ContratoController::class, 'encerrar']);
+    Route::post('contratos/{contrato}/gerar-pdf', [ContratoController::class, 'gerarPdf']);
 
     Route::get('dashboard/resumo', [DashboardController::class, 'resumo']);
     Route::get('dashboard/renda-liquida', [DashboardController::class, 'rendaLiquida']);
@@ -99,4 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->whereIn('entidadeTipo', ['veiculos', 'condutores', 'contratos']);
     Route::post('{entidadeTipo}/{entidadeId}/anotacoes', [AnotacaoController::class, 'store'])
         ->whereIn('entidadeTipo', ['veiculos', 'condutores', 'contratos']);
+
+    Route::get('configuracoes', [ConfiguracaoController::class, 'index']);
+    Route::put('configuracoes', [ConfiguracaoController::class, 'update']);
 });

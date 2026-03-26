@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ContratoRequest;
 use App\Models\Contrato;
 use App\Services\ContratoService;
+use App\Services\RelatorioService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ContratoController extends Controller
 {
-    public function __construct(private ContratoService $service) {}
+    public function __construct(
+        private ContratoService $service,
+        private RelatorioService $relatorioService
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -54,5 +58,13 @@ class ContratoController extends Controller
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
+    }
+
+    public function gerarPdf(Contrato $contrato)
+    {
+        $strCaminhoPdf = $this->relatorioService->gerarEArmazenarPdfContrato($contrato);
+        $contrato->update(['caminho_contrato_pdf' => $strCaminhoPdf]);
+
+        return $this->relatorioService->pdfContrato($contrato);
     }
 }
