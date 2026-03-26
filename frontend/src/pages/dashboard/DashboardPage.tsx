@@ -17,11 +17,14 @@ import { dashboardService } from '../../services/dashboardService'
 import type { Alerta } from '../../types'
 import { formatarMesReferencia, formatarMoedaBrl } from '../../utils/format'
 import { useAuthStore } from '../../stores/authStore'
+import StatCard from '../../components/shared/StatCard'
+import StatusBadge, { type StatusBadgeVariante } from '../../components/shared/StatusBadge'
 
-const prioridadeCores: Record<string, string> = {
-  ALTA: 'bg-red-100 text-red-800',
-  MEDIA: 'bg-amber-100 text-amber-800',
-  BAIXA: 'bg-brand-primary-muted text-brand-primary',
+function mapPrioridadeParaBadge(strPrioridade: string): StatusBadgeVariante {
+  if (strPrioridade === 'ALTA') return 'danger'
+  if (strPrioridade === 'MEDIA') return 'warning'
+  if (strPrioridade === 'BAIXA') return 'info'
+  return 'neutral'
 }
 
 /** Barras do grafico (valores relativos para visual tipo referencia) */
@@ -126,71 +129,46 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          {/* KPIs — 4 cards como referencia */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm text-gray-500 font-medium">Total de veiculos</p>
-                  <p className="text-3xl lg:text-4xl font-bold text-brand-primary mt-1 tabular-nums">
-                    {resumo?.veiculos_total?.toLocaleString('pt-BR') ?? '0'}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-brand-secondary-muted">
-                  <Car size={22} className="text-brand-secondary" />
-                </div>
+            <StatCard
+              strTitulo="Total de veiculos"
+              strValor={resumo?.veiculos_total?.toLocaleString('pt-BR') ?? '0'}
+              objIcone={Car}
+              varianteIcone="primario"
+            >
+              <div className="inline-flex items-center gap-1 text-xs font-semibold text-brand-secondary bg-brand-secondary-muted/90 px-2.5 py-1 rounded-full w-fit">
+                <TrendingUp size={14} strokeWidth={2.5} /> Frota cadastrada
               </div>
-              <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand-secondary bg-brand-secondary-muted/80 px-2 py-1 rounded-full w-fit">
-                <TrendingUp size={14} /> Frota cadastrada
-              </div>
-            </div>
+            </StatCard>
 
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm text-gray-500 font-medium">Alertas ativos</p>
-                  <p className="text-3xl lg:text-4xl font-bold text-brand-primary mt-1 tabular-nums">
-                    {resumo?.alertas_ativos?.toLocaleString('pt-BR') ?? '0'}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-red-50">
-                  <AlertTriangle size={22} className="text-red-600" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-400 mt-3">Requer atencao quando maior que zero</p>
-            </div>
+            <StatCard
+              strTitulo="Alertas ativos"
+              strValor={resumo?.alertas_ativos?.toLocaleString('pt-BR') ?? '0'}
+              objIcone={AlertTriangle}
+              varianteIcone="alerta"
+            >
+              <p className="text-xs text-gray-400">Requer atencao quando maior que zero</p>
+            </StatCard>
 
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm text-gray-500 font-medium">Contratos ativos</p>
-                  <p className="text-3xl lg:text-4xl font-bold text-brand-primary mt-1 tabular-nums">
-                    {resumo?.contratos_ativos?.toLocaleString('pt-BR') ?? '0'}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-blue-50">
-                  <Clock size={22} className="text-blue-600" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-400 mt-3">Locacoes em vigor</p>
-            </div>
+            <StatCard
+              strTitulo="Contratos ativos"
+              strValor={resumo?.contratos_ativos?.toLocaleString('pt-BR') ?? '0'}
+              objIcone={Clock}
+              varianteIcone="info"
+            >
+              <p className="text-xs text-gray-400">Locacoes em vigor</p>
+            </StatCard>
 
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm text-gray-500 font-medium">Condutores ativos</p>
-                  <p className="text-3xl lg:text-4xl font-bold text-brand-primary mt-1 tabular-nums">
-                    {resumo?.condutores_ativos?.toLocaleString('pt-BR') ?? '0'}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-emerald-50">
-                  <Users size={22} className="text-emerald-600" />
-                </div>
+            <StatCard
+              strTitulo="Condutores ativos"
+              strValor={resumo?.condutores_ativos?.toLocaleString('pt-BR') ?? '0'}
+              objIcone={Users}
+              varianteIcone="sucesso"
+            >
+              <div className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full w-fit">
+                <Gauge size={14} strokeWidth={2} /> Operacao
               </div>
-              <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full w-fit">
-                <Gauge size={14} /> Operacao
-              </div>
-            </div>
+            </StatCard>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -310,11 +288,10 @@ export default function DashboardPage() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm text-gray-800 leading-snug">{a.mensagem}</p>
-                        <span
-                          className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${prioridadeCores[a.prioridade] ?? 'bg-gray-100 text-gray-600'}`}
-                        >
-                          {a.prioridade}
-                        </span>
+                        <StatusBadge
+                          strTexto={a.prioridade}
+                          variante={mapPrioridadeParaBadge(a.prioridade)}
+                        />
                       </div>
                       <p className="text-[11px] text-gray-400 mt-2">
                         {new Date(a.created_at).toLocaleString('pt-BR')}

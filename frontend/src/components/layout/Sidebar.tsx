@@ -61,9 +61,9 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   }, [bolMobile, bolAberto, onFechar])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
       isActive
-        ? 'bg-white text-brand-primary shadow-sm border border-sidebar-border/80'
+        ? 'bg-white text-brand-secondary shadow-sm border border-sidebar-border/80'
         : 'text-gray-600 hover:bg-white/70 hover:text-brand-primary'
     }`
 
@@ -113,9 +113,6 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
     <div className="p-4 border-b border-sidebar-border shrink-0">
       <div className="min-w-0">
         <BrandLogo variant="sidebar" className="object-left max-h-16" />
-        <p className="mt-2 text-[10px] font-semibold tracking-[0.2em] text-brand-primary/80 uppercase">
-          Intelligent Fleet
-        </p>
       </div>
     </div>
   )
@@ -141,9 +138,6 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
           <div className="p-4 border-b border-sidebar-border flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
               <BrandLogo variant="sidebar" className="object-left max-h-14" />
-              <p className="mt-1 text-[10px] font-semibold tracking-[0.2em] text-brand-primary/80 uppercase">
-                Intelligent Fleet
-              </p>
             </div>
             <button
               onClick={onFechar}

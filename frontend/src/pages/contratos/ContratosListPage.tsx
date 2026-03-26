@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { Plus, FileText, RefreshCw } from 'lucide-react'
+import Modal from '../../components/shared/Modal'
 import { contratoService } from '../../services/contratoService'
 import { relatorioService } from '../../services/relatorioService'
 import type { Contrato } from '../../types'
@@ -16,8 +17,14 @@ const statusColors: Record<string, string> = {
 }
 
 export default function ContratosListPage() {
+  const queryClient = useQueryClient()
   const [numBaixando, setNumBaixando] = useState<number | null>(null)
   const [numGerando, setNumGerando] = useState<number | null>(null)
+  const [objContratoEncerrar, setObjContratoEncerrar] = useState<Contrato | null>(null)
+  const [formEncerrar, setFormEncerrar] = useState({
+    km_final: '',
+    motivo_encerramento: '',
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['contratos'],
@@ -56,6 +63,30 @@ export default function ContratosListPage() {
     } finally {
       setNumGerando(null)
     }
+  }
+
+  const encerrarMutation = useMutation({
+    mutationFn: async () => {
+      if (!objContratoEncerrar) return
+
+      return contratoService.encerrar(objContratoEncerrar.id, {
+        km_final: formEncerrar.km_final ? Number(formEncerrar.km_final) : undefined,
+        motivo_encerramento: formEncerrar.motivo_encerramento || undefined,
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contratos'] })
+      setObjContratoEncerrar(null)
+      setFormEncerrar({ km_final: '', motivo_encerramento: '' })
+    },
+    onError: () => {
+      alert('Erro ao encerrar contrato.')
+    },
+  })
+
+  const abrirModalEncerrar = (objContrato: Contrato) => {
+    setObjContratoEncerrar(objContrato)
+    setFormEncerrar({ km_final: '', motivo_encerramento: '' })
   }
 
   const arrColumns: Column<Contrato>[] = [
@@ -144,10 +175,54 @@ export default function ContratosListPage() {
                 <RefreshCw size={16} />
                 {numGerando === c.id ? 'Gerando...' : 'Gerar'}
               </button>
+              {c.status === 'ATIVO' && (
+                <button
+                  onClick={() => abrirModalEncerrar(c)}
+                  className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm"
+                  title="Encerrar contrato"
+                >
+                  Encerrar
+                </button>
+              )}
             </div>
           )}
         />
       </div>
+
+      <Modal
+        aberto={!!objContratoEncerrar}
+        aoFechar={() => setObjContratoEncerrar(null)}
+        titulo="Encerrar contrato"
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600">
+            Contrato: <span className="font-semibold">{objContratoEncerrar?.numero_contrato}</span>
+          </p>
+          <input
+            type="number"
+            min={0}
+            className="w-full border rounded-lg px-3 py-2"
+            placeholder="KM final"
+            value={formEncerrar.km_final}
+            onChange={(e) => setFormEncerrar((f) => ({ ...f, km_final: e.target.value }))}
+          />
+          <textarea
+            className="w-full border rounded-lg px-3 py-2"
+            placeholder="Motivo de encerramento"
+            rows={3}
+            value={formEncerrar.motivo_encerramento}
+            onChange={(e) => setFormEncerrar((f) => ({ ...f, motivo_encerramento: e.target.value }))}
+          />
+          <button
+            type="button"
+            onClick={() => encerrarMutation.mutate()}
+            disabled={encerrarMutation.isPending}
+            className="w-full py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+          >
+            {encerrarMutation.isPending ? 'Encerrando...' : 'Confirmar encerramento'}
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

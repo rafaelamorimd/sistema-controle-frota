@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 @theme {
+  /* Identidade GEFTHER (referencia: navy + verde floresta, superficie fria) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-brand-primary: #1a365d;
   --color-brand-primary-hover: #142f52;
   --color-brand-primary-muted: #e8eef5;
   --color-brand-primary-border: #c5d4e8;
-  --color-brand-secondary: #34a853;
-  --color-brand-secondary-hover: #2d9247;
-  --color-brand-secondary-muted: #e8f5ec;
-  --color-surface: #f4f6f9;
-  --color-surface-muted: #eef1f6;
-  /* Shell (referencia UI: sidebar clara) */
+  --color-brand-secondary: #2d6a4f;
+  --color-brand-secondary-hover: #245a42;
+  --color-brand-secondary-muted: #e6f4ea;
+  --color-surface: #f0f4f8;
+  --color-surface-muted: #e8eef5;
   --color-sidebar-surface: #e8edf4;
   --color-sidebar-border: #d4dce8;
 }
 
 @layer base {
   body {
-    @apply bg-surface text-gray-900 antialiased;
+    @apply bg-surface text-gray-900 antialiased font-sans;
   }
 }

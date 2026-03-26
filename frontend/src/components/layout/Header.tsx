@@ -72,18 +72,20 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
         >
           <Settings size={20} />
         </Link>
-        <div className="hidden sm:flex items-center gap-3 pl-2 sm:pl-3 ml-1 border-l border-gray-200">
-          <div className="text-right min-w-0 max-w-[140px] md:max-w-[200px]">
-            <p className="text-sm font-semibold text-brand-primary truncate">{user?.name ?? 'Usuario'}</p>
-            <p className="text-[11px] text-gray-500 uppercase tracking-wide truncate">
-              {user?.perfil ? mapPerfilCargo[user.perfil] ?? user.perfil : ''}
-            </p>
-          </div>
-          <div
-            className="w-10 h-10 rounded-full bg-brand-primary text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-inner"
-            aria-hidden
-          >
-            {user?.name ? iniciais(user.name) : '?'}
+        <div className="hidden sm:flex items-center pl-2 sm:pl-3 ml-1 border-l border-gray-200/90">
+          <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-surface/80 px-3 py-2 shadow-sm">
+            <div className="text-right min-w-0 max-w-[140px] md:max-w-[200px]">
+              <p className="text-sm font-semibold text-brand-primary truncate">{user?.name ?? 'Usuario'}</p>
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide truncate">
+                {user?.perfil ? mapPerfilCargo[user.perfil] ?? user.perfil : ''}
+              </p>
+            </div>
+            <div
+              className="w-10 h-10 rounded-xl bg-brand-primary text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-inner"
+              aria-hidden
+            >
+              {user?.name ? iniciais(user.name) : '?'}
+            </div>
           </div>
         </div>
         <button
