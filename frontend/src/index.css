@@ -10,6 +10,9 @@
   --color-brand-secondary-muted: #e8f5ec;
   --color-surface: #f4f6f9;
   --color-surface-muted: #eef1f6;
+  /* Shell (referencia UI: sidebar clara) */
+  --color-sidebar-surface: #e8edf4;
+  --color-sidebar-border: #d4dce8;
 }
 
 @layer base {

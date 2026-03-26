@@ -1,8 +1,21 @@
-import { LogOut, Bell, Menu } from 'lucide-react'
+import { Bell, LogOut, Menu, Settings } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import BrandLogo from '../shared/BrandLogo'
 import { useAuthStore } from '../../stores/authStore'
 import { authService } from '../../services/authService'
+
+const mapPerfilCargo: Record<string, string> = {
+  ADMIN: 'Gerente de frota',
+  OPERADOR: 'Operador',
+  VISUALIZADOR: 'Visualizador',
+}
+
+function iniciais(strNome: string): string {
+  const partes = strNome.trim().split(/\s+/)
+  if (partes.length === 0) return '?'
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase()
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+}
 
 interface HeaderProps {
   onAbrirMenu: () => void
@@ -13,45 +26,75 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
   const navigate = useNavigate()
 
   const handleLogout = async () => {
-    try { await authService.logout() } catch {}
+    try {
+      await authService.logout()
+    } catch {
+      /* ignore */
+    }
     logout()
     navigate('/login')
   }
 
   return (
-    <header className="h-16 bg-white border-b border-brand-primary-border/40 flex items-center justify-between px-3 sm:px-6">
-      <div className="flex items-center gap-2 min-w-0">
+    <header className="min-h-16 bg-white border-b border-brand-primary-border/50 flex items-center justify-between px-3 sm:px-6 py-3 gap-4">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         <button
           type="button"
           onClick={onAbrirMenu}
-          className="lg:hidden p-2 text-gray-600 hover:text-brand-primary hover:bg-brand-primary-muted rounded-lg shrink-0"
+          className="lg:hidden p-2 text-gray-600 hover:text-brand-primary hover:bg-brand-primary-muted rounded-xl shrink-0"
           aria-label="Abrir menu"
         >
           <Menu size={24} />
         </button>
         <Link
           to="/"
-          className="flex items-center shrink-0 rounded-md px-1 py-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-brand-secondary focus-visible:outline-offset-2"
+          className="lg:hidden flex items-center shrink-0 rounded-lg px-1 py-0.5 hover:opacity-90"
           aria-label="GEFTHER - Inicio"
         >
           <BrandLogo variant="header" />
         </Link>
+        <div className="hidden lg:block min-w-0" aria-hidden />
       </div>
-      <div className="flex items-center gap-2 sm:gap-4">
-        <button className="relative p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-primary-muted">
+
+      <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+        <button
+          type="button"
+          className="relative p-2.5 text-gray-500 hover:text-brand-primary rounded-xl hover:bg-surface-muted transition-colors"
+          aria-label="Notificacoes"
+        >
           <Bell size={20} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
         </button>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-sm text-gray-700 hidden sm:inline">{user?.name}</span>
-          <button
-            onClick={handleLogout}
-            className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-brand-primary-muted"
-            title="Sair"
+        <Link
+          to="/configuracoes"
+          className="p-2.5 text-gray-500 hover:text-brand-primary rounded-xl hover:bg-surface-muted transition-colors"
+          aria-label="Configuracoes"
+        >
+          <Settings size={20} />
+        </Link>
+        <div className="hidden sm:flex items-center gap-3 pl-2 sm:pl-3 ml-1 border-l border-gray-200">
+          <div className="text-right min-w-0 max-w-[140px] md:max-w-[200px]">
+            <p className="text-sm font-semibold text-brand-primary truncate">{user?.name ?? 'Usuario'}</p>
+            <p className="text-[11px] text-gray-500 uppercase tracking-wide truncate">
+              {user?.perfil ? mapPerfilCargo[user.perfil] ?? user.perfil : ''}
+            </p>
+          </div>
+          <div
+            className="w-10 h-10 rounded-full bg-brand-primary text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-inner"
+            aria-hidden
           >
-            <LogOut size={20} />
-          </button>
+            {user?.name ? iniciais(user.name) : '?'}
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="sm:hidden p-2.5 text-gray-500 hover:text-red-600 rounded-xl hover:bg-red-50"
+          title="Sair"
+          aria-label="Sair"
+        >
+          <LogOut size={20} />
+        </button>
       </div>
     </header>
   )
