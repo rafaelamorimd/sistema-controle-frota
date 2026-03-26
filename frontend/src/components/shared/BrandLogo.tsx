@@ -24,7 +24,7 @@ export default function BrandLogo({ variant = 'login', className = '' }: BrandLo
 
   if (variant === 'header') {
     return (
-      <span className="inline-flex items-center justify-center rounded-md bg-black px-1.5 py-1 ring-1 ring-white/10">
+      <span className="inline-flex items-center justify-center rounded-md px-1.5 py-1 ring-1">
         {objImg}
       </span>
     )
@@ -32,7 +32,7 @@ export default function BrandLogo({ variant = 'login', className = '' }: BrandLo
 
   if (variant === 'sidebar') {
     return (
-      <div className="rounded-lg bg-black p-2 ring-1 ring-white/10 shadow-inner">
+      <div className="rounded-lg p-2 ring-1 shadow-inner">
         {objImg}
       </div>
     )
@@ -40,7 +40,7 @@ export default function BrandLogo({ variant = 'login', className = '' }: BrandLo
 
   return (
     <div className="flex justify-center w-full">
-      <div className="rounded-xl bg-black px-5 py-4 ring-1 ring-white/10 shadow-lg w-full max-w-[280px]">
+      <div className="rounded-x  px-5 py-4 ring-1 w-full max-w-[280px]">
         {objImg}
       </div>
     </div>
