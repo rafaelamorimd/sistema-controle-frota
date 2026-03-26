@@ -101,17 +101,18 @@ export default function ManutencoesPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-600">
-            <tr>
-              <th className="px-4 py-3">Veiculo</th>
-              <th className="px-4 py-3">Tipo</th>
-              <th className="px-4 py-3">Entrada</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Custo</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-sm">
+            <thead className="bg-gray-50 text-left text-gray-600">
+              <tr>
+                <th className="px-4 py-3">Veiculo</th>
+                <th className="px-4 py-3">Tipo</th>
+                <th className="px-4 py-3">Entrada</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Custo</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
           <tbody>
             {isLoading ? (
               <tr>
@@ -153,6 +154,7 @@ export default function ManutencoesPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal

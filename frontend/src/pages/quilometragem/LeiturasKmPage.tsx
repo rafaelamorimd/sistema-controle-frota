@@ -33,7 +33,7 @@ export default function LeiturasKmPage() {
 
   const { data: veiculosData } = useQuery({
     queryKey: ['veiculos', 'select'],
-    queryFn: () => veiculoService.listar({ per_page: 500 }),
+    queryFn: () => veiculoService.listar({ por_pagina: 500 }),
   })
 
   const { data, isLoading } = useQuery({
@@ -44,12 +44,12 @@ export default function LeiturasKmPage() {
 
   const { data: contratosData } = useQuery({
     queryKey: ['contratos', 'select'],
-    queryFn: () => contratoService.listar({ per_page: 500 }),
+    queryFn: () => contratoService.listar({ por_pagina: 500 }),
   })
 
   const { data: condutoresData } = useQuery({
     queryKey: ['condutores', 'select'],
-    queryFn: () => condutorService.listar({ per_page: 500 }),
+    queryFn: () => condutorService.listar({ por_pagina: 500 }),
   })
 
   const salvarMutation = useMutation({

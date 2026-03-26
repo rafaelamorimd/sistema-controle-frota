@@ -126,17 +126,18 @@ export default function PecasPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-600">
-            <tr>
-              <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">Codigo</th>
-              <th className="px-4 py-3">Estoque</th>
-              <th className="px-4 py-3">Min.</th>
-              <th className="px-4 py-3">Custo medio</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-sm">
+            <thead className="bg-gray-50 text-left text-gray-600">
+              <tr>
+                <th className="px-4 py-3">Nome</th>
+                <th className="px-4 py-3">Codigo</th>
+                <th className="px-4 py-3">Estoque</th>
+                <th className="px-4 py-3">Min.</th>
+                <th className="px-4 py-3">Custo medio</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
           <tbody>
             {isLoading ? (
               <tr>
@@ -175,6 +176,7 @@ export default function PecasPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Modal aberto={modalPeca} aoFechar={() => setModalPeca(false)} titulo={editando ? 'Editar peca' : 'Nova peca'}>
