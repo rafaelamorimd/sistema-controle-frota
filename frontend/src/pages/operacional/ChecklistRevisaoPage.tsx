@@ -57,7 +57,7 @@ export default function ChecklistRevisaoPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ClipboardList className="text-blue-600" size={28} />
+            <ClipboardList className="text-brand-secondary" size={28} />
             Checklist de revisao
           </h1>
         </div>
@@ -65,7 +65,7 @@ export default function ChecklistRevisaoPage() {
           type="button"
           disabled={!veiculoId}
           onClick={() => setModalAberto(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
         >
           <Plus size={18} /> Novo registro
         </button>
@@ -148,7 +148,7 @@ export default function ChecklistRevisaoPage() {
           <button
             type="button"
             onClick={() => criarMutation.mutate()}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg"
+            className="w-full py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
           >
             Salvar
           </button>

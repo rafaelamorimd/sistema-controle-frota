@@ -44,7 +44,7 @@ interface SidebarProps {
 export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps) {
   useEffect(() => {
     if (!bolMobile) return
-    
+
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && bolAberto) onFechar()
     }
@@ -52,32 +52,41 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
     return () => document.removeEventListener('keydown', handleEsc)
   }, [bolMobile, bolAberto, onFechar])
 
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+      isActive
+        ? 'bg-brand-secondary text-white shadow-sm'
+        : 'text-white/85 hover:bg-white/10 hover:text-white'
+    }`
+
   if (bolMobile) {
     return (
       <>
         {bolAberto && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={onFechar}
             aria-hidden="true"
           />
         )}
         <aside
-          className={`fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col z-50 transform transition-transform duration-300 lg:hidden ${
+          className={`fixed inset-y-0 left-0 w-64 bg-brand-primary text-white flex flex-col z-50 transform transition-transform duration-300 lg:hidden border-r border-white/10 ${
             bolAberto ? 'translate-x-0' : '-translate-x-full'
           }`}
           role="dialog"
           aria-modal="true"
           aria-label="Menu de navegacao"
         >
-          <div className="p-6 border-b border-gray-700 flex items-center justify-between">
+          <div className="p-6 border-b border-white/10 flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold tracking-wide">Gefther</h1>
-              <p className="text-xs text-gray-400 mt-1">Gestao de Frota</p>
+              <h1 className="text-xl font-bold tracking-wide text-white">GEFTHER</h1>
+              <p className="text-xs text-brand-secondary mt-1 font-light">
+                Gestao Inteligente de Frotas
+              </p>
             </div>
             <button
               onClick={onFechar}
-              className="p-1 hover:bg-gray-800 rounded"
+              className="p-1 hover:bg-white/10 rounded"
               aria-label="Fechar menu"
             >
               <X size={20} />
@@ -90,13 +99,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
                 to={item.to}
                 end={item.to === '/'}
                 onClick={onFechar}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                  }`
-                }
+                className={linkClass}
               >
                 <item.icon size={20} />
                 {item.label}
@@ -109,25 +112,16 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   }
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col">
-      <div className="p-6 border-b border-gray-700">
-        <h1 className="text-xl font-bold tracking-wide">Gefther</h1>
-        <p className="text-xs text-gray-400 mt-1">Gestao de Frota</p>
+    <aside className="w-64 bg-brand-primary text-white flex flex-col border-r border-white/10">
+      <div className="p-6 border-b border-white/10">
+        <h1 className="text-xl font-bold tracking-wide text-white">GEFTHER</h1>
+        <p className="text-xs text-brand-secondary mt-1 font-light">
+          Gestao Inteligente de Frotas
+        </p>
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {menuItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-              }`
-            }
-          >
+          <NavLink key={item.to} to={item.to} end={item.to === '/'} className={linkClass}>
             <item.icon size={20} />
             {item.label}
           </NavLink>

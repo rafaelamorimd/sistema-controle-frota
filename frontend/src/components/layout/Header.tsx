@@ -18,17 +18,17 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6">
+    <header className="h-16 bg-white border-b border-brand-primary-border/40 flex items-center justify-between px-3 sm:px-6">
       <button
         onClick={onAbrirMenu}
-        className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+        className="lg:hidden p-2 text-gray-600 hover:text-brand-primary hover:bg-brand-primary-muted rounded-lg"
         aria-label="Abrir menu"
       >
         <Menu size={24} />
       </button>
       <div className="hidden lg:block" />
       <div className="flex items-center gap-2 sm:gap-4">
-        <button className="relative p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100">
+        <button className="relative p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-primary-muted">
           <Bell size={20} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
         </button>
@@ -36,7 +36,7 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
           <span className="text-sm text-gray-700 hidden sm:inline">{user?.name}</span>
           <button
             onClick={handleLogout}
-            className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-brand-primary-muted"
             title="Sair"
           >
             <LogOut size={20} />

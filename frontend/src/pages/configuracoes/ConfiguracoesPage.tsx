@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save } from 'lucide-react';
-import { configuracaoService, ConfiguracaoLocador } from '../../services/configuracaoService';
+import { configuracaoService } from '../../services/configuracaoService';
+import type { ConfiguracaoLocador } from '../../services/configuracaoService';
 
 export default function ConfiguracoesPage() {
   const [bolCarregando, setBolCarregando] = useState(true);
@@ -54,7 +55,7 @@ export default function ConfiguracoesPage() {
   if (bolCarregando) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-secondary"></div>
       </div>
     );
   }
@@ -140,7 +141,7 @@ export default function ConfiguracoesPage() {
             <button
               type="submit"
               disabled={bolSalvando}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              className="bg-brand-secondary text-white px-6 py-2 rounded hover:bg-brand-secondary-hover disabled:opacity-50 flex items-center gap-2"
             >
               <Save size={18} />
               {bolSalvando ? 'Salvando...' : 'Salvar Configurações'}

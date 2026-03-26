@@ -6,7 +6,7 @@ import type { Veiculo } from '../../types'
 
 const statusColors: Record<string, string> = {
   DISPONIVEL: 'bg-green-100 text-green-700',
-  ALUGADO: 'bg-blue-100 text-blue-700',
+  ALUGADO: 'bg-brand-primary-muted text-brand-primary',
   MANUTENCAO: 'bg-yellow-100 text-yellow-700',
   INATIVO: 'bg-gray-100 text-gray-500',
 }
@@ -31,7 +31,7 @@ export default function VeiculosListPage() {
         <h2 className="text-2xl font-bold text-gray-900">Veiculos</h2>
         <Link
           to="/veiculos/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium"
         >
           <Plus size={18} /> Novo Veiculo
         </Link>
@@ -68,7 +68,7 @@ export default function VeiculosListPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link to={`/veiculos/${v.id}/editar`} className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50">
+                      <Link to={`/veiculos/${v.id}/editar`} className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted">
                         <Pencil size={16} />
                       </Link>
                       <button

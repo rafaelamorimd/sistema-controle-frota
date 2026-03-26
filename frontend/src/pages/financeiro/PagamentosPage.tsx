@@ -162,7 +162,7 @@ export default function PagamentosPage() {
                       <button
                         type="button"
                         onClick={() => abrirRegistrar(p)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-brand-primary bg-brand-primary-muted rounded-lg hover:bg-brand-primary-border/50"
                       >
                         <Receipt size={16} /> Registrar
                       </button>
@@ -248,7 +248,7 @@ export default function PagamentosPage() {
             <button
               type="submit"
               disabled={registrarMutation.isPending}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60"
+              className="px-4 py-2 text-sm bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-60"
             >
               {registrarMutation.isPending ? 'Enviando...' : 'Registrar'}
             </button>

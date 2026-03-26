@@ -13,7 +13,7 @@ export default function Layout() {
   }, [bolDesktop])
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-surface">
       <Sidebar 
         bolMobile={!bolDesktop}
         bolAberto={bolMenuAberto}

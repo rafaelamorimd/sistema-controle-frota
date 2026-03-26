@@ -70,7 +70,7 @@ export default function ManutencoesPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Wrench className="text-blue-600" size={28} />
+            <Wrench className="text-brand-secondary" size={28} />
             Manutencoes
           </h1>
           <p className="text-gray-500 text-sm">Ordens de servico e revisoes</p>
@@ -78,7 +78,7 @@ export default function ManutencoesPage() {
         <button
           type="button"
           onClick={() => setModalAberto(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
         >
           <Plus size={18} /> Nova
         </button>
@@ -214,7 +214,7 @@ export default function ManutencoesPage() {
             type="button"
             disabled={criarMutation.isPending || !form.veiculo_id}
             onClick={() => criarMutation.mutate()}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+            className="w-full py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
           >
             Salvar
           </button>

@@ -97,14 +97,14 @@ export default function MultasPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Gavel className="text-blue-600" size={28} />
+            <Gavel className="text-brand-secondary" size={28} />
             Multas
           </h1>
         </div>
         <button
           type="button"
           onClick={abrirNovo}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
         >
           <Plus size={18} /> Nova
         </button>
@@ -148,7 +148,7 @@ export default function MultasPage() {
                         Pagar
                       </button>
                     )}
-                    <button type="button" className="text-blue-600 text-sm" onClick={() => abrirEditar(m)}>
+                    <button type="button" className="text-brand-secondary text-sm hover:text-brand-secondary-hover" onClick={() => abrirEditar(m)}>
                       Editar
                     </button>
                   </td>
@@ -214,7 +214,7 @@ export default function MultasPage() {
             type="button"
             disabled={salvarMutation.isPending || !form.veiculo_id}
             onClick={() => salvarMutation.mutate()}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg"
+            className="w-full py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
           >
             Salvar
           </button>

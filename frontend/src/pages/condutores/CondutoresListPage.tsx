@@ -29,7 +29,7 @@ export default function CondutoresListPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Condutores</h2>
         <Link to="/condutores/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+          className="flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium">
           <Plus size={18} /> Novo Condutor
         </Link>
       </div>
@@ -63,7 +63,7 @@ export default function CondutoresListPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link to={`/condutores/${c.id}/editar`} className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50">
+                      <Link to={`/condutores/${c.id}/editar`} className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted">
                         <Pencil size={16} />
                       </Link>
                       <button onClick={() => { if (confirm('Excluir este condutor?')) deleteMutation.mutate(c.id) }}

@@ -109,7 +109,7 @@ export default function DespesasPage() {
         <button
           type="button"
           onClick={abrirNovo}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium"
         >
           <Plus size={18} /> Nova despesa
         </button>
@@ -187,7 +187,7 @@ export default function DespesasPage() {
                         <button
                           type="button"
                           onClick={() => abrirEditar(d)}
-                          className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50"
+                          className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
                         >
                           <Pencil size={16} />
                         </button>
@@ -294,7 +294,7 @@ export default function DespesasPage() {
             <button
               type="submit"
               disabled={salvarMutation.isPending}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60"
+              className="px-4 py-2 text-sm bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-60"
             >
               {salvarMutation.isPending ? 'Salvando...' : 'Salvar'}
             </button>

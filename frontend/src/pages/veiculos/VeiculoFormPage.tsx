@@ -74,17 +74,17 @@ export default function VeiculoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Placa *</label>
             <input value={form.placa} onChange={(e) => set('placa', e.target.value.toUpperCase())}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" maxLength={8} required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" maxLength={8} required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
             <input value={form.modelo} onChange={(e) => set('modelo', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Ano *</label>
             <input type="number" value={form.ano} onChange={(e) => set('ano', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
         </div>
 
@@ -92,17 +92,17 @@ export default function VeiculoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Renavam *</label>
             <input value={form.renavam} onChange={(e) => set('renavam', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" maxLength={11} required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" maxLength={11} required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Cor *</label>
             <input value={form.cor} onChange={(e) => set('cor', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Combustivel *</label>
             <select value={form.combustivel} onChange={(e) => set('combustivel', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none">
               <option value="FLEX">Flex</option>
               <option value="GASOLINA">Gasolina</option>
               <option value="GNV">GNV</option>
@@ -115,24 +115,24 @@ export default function VeiculoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">KM Atual *</label>
             <input type="number" value={form.km_atual} onChange={(e) => set('km_atual', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">KM Ultima Troca de Oleo *</label>
             <input type="number" value={form.km_ultima_troca_oleo} onChange={(e) => set('km_ultima_troca_oleo', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={form.kit_gas} onChange={(e) => set('kit_gas', e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              className="w-4 h-4 rounded border-gray-300 text-brand-secondary focus:ring-brand-secondary" />
             <span className="text-sm text-gray-700">Possui Kit Gas (GNV)</span>
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={form.rastreador_ativo} onChange={(e) => set('rastreador_ativo', e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              className="w-4 h-4 rounded border-gray-300 text-brand-secondary focus:ring-brand-secondary" />
             <span className="text-sm text-gray-700">Rastreador Ativo</span>
           </label>
         </div>
@@ -141,19 +141,19 @@ export default function VeiculoFormPage() {
           <div className="max-w-xs">
             <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento GNV *</label>
             <input type="date" value={form.vencimento_gnv} onChange={(e) => set('vencimento_gnv', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
         )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
           <textarea value={form.observacoes} onChange={(e) => set('observacoes', e.target.value)} rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
           <button type="submit" disabled={mutation.isPending}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            className="px-6 py-2 bg-brand-secondary text-white rounded-lg font-medium hover:bg-brand-secondary-hover disabled:opacity-50 transition-colors">
             {mutation.isPending ? 'Salvando...' : 'Salvar'}
           </button>
           <button type="button" onClick={() => navigate('/veiculos')}

@@ -27,11 +27,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-brand-primary via-brand-primary-hover to-[#0f2440] px-4">
+      <div className="absolute inset-0 opacity-[0.07] bg-size-[24px_24px] bg-[linear-gradient(45deg,#1a365d_12.5%,transparent_12.5%,transparent_50%,#1a365d_50%,#1a365d_62.5%,transparent_62.5%,transparent_100%)]" />
+      <div className="relative bg-white p-8 rounded-2xl shadow-xl border border-brand-primary-border/50 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Gefther</h1>
-          <p className="text-gray-500 mt-2">Gestao de Frota</p>
+          <h1 className="text-3xl font-bold tracking-wide text-brand-primary">GEFTHER</h1>
+          <p className="text-brand-secondary mt-2 text-sm font-light">Gestao Inteligente de Frotas</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
@@ -43,7 +44,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary focus:border-transparent outline-none"
               placeholder="admin@gefther.com.br"
               required
             />
@@ -54,7 +55,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary focus:border-transparent outline-none"
               placeholder="********"
               required
             />
@@ -62,7 +63,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-full py-3 bg-brand-secondary text-white rounded-lg font-medium hover:bg-brand-secondary-hover disabled:opacity-50 transition-colors"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

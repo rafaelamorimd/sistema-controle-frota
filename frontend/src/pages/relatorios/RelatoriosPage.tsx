@@ -32,7 +32,7 @@ export default function RelatoriosPage() {
 
       <section className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
         <h2 className="font-semibold flex items-center gap-2">
-          <FileText size={20} className="text-blue-600" />
+          <FileText size={20} className="text-brand-secondary" />
           Contrato (PDF)
         </h2>
         <select
@@ -51,7 +51,7 @@ export default function RelatoriosPage() {
           type="button"
           disabled={!contratoId}
           onClick={() => contratoId && relatorioService.downloadPdfContrato(Number(contratoId))}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+          className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
         >
           Baixar PDF
         </button>
@@ -59,7 +59,7 @@ export default function RelatoriosPage() {
 
       <section className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
         <h2 className="font-semibold flex items-center gap-2">
-          <FileText size={20} className="text-blue-600" />
+          <FileText size={20} className="text-brand-secondary" />
           Financeiro (PDF)
         </h2>
         <input
@@ -85,7 +85,7 @@ export default function RelatoriosPage() {
           onClick={() =>
             relatorioService.downloadPdfFinanceiro(mes, veiculoFiltro ? Number(veiculoFiltro) : undefined)
           }
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
         >
           Baixar PDF
         </button>

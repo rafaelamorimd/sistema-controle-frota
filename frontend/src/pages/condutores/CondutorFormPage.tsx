@@ -60,12 +60,12 @@ export default function CondutorFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo *</label>
             <input value={form.nome} onChange={(e) => set('nome', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">CPF *</label>
             <input value={form.cpf} onChange={(e) => set('cpf', e.target.value.replace(/\D/g, ''))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" maxLength={11} required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" maxLength={11} required />
           </div>
         </div>
 
@@ -73,31 +73,31 @@ export default function CondutorFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
             <input value={form.telefone} onChange={(e) => set('telefone', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
             <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Endereco *</label>
           <textarea value={form.endereco} onChange={(e) => set('endereco', e.target.value)} rows={2}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Numero CNH *</label>
             <input value={form.numero_cnh} onChange={(e) => set('numero_cnh', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
             <select value={form.categoria_cnh} onChange={(e) => set('categoria_cnh', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none">
               <option value="A">A</option><option value="B">B</option><option value="AB">AB</option>
               <option value="C">C</option><option value="D">D</option><option value="E">E</option>
             </select>
@@ -105,19 +105,19 @@ export default function CondutorFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento CNH *</label>
             <input type="date" value={form.vencimento_cnh} onChange={(e) => set('vencimento_cnh', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Observacoes</label>
           <textarea value={form.observacoes} onChange={(e) => set('observacoes', e.target.value)} rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
           <button type="submit" disabled={mutation.isPending}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            className="px-6 py-2 bg-brand-secondary text-white rounded-lg font-medium hover:bg-brand-secondary-hover disabled:opacity-50 transition-colors">
             {mutation.isPending ? 'Salvando...' : 'Salvar'}
           </button>
           <button type="button" onClick={() => navigate('/condutores')}

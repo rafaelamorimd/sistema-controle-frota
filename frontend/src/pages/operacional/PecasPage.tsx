@@ -112,14 +112,14 @@ export default function PecasPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Package className="text-blue-600" size={28} />
+            <Package className="text-brand-secondary" size={28} />
             Pecas e estoque
           </h1>
         </div>
         <button
           type="button"
           onClick={abrirNovo}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
         >
           <Plus size={18} /> Nova peca
         </button>
@@ -159,7 +159,7 @@ export default function PecasPage() {
                     <button
                       type="button"
                       onClick={() => setModalMov(p)}
-                      className="text-blue-600 text-sm"
+                      className="text-brand-secondary text-sm hover:text-brand-secondary-hover"
                     >
                       Movimentar
                     </button>
@@ -222,7 +222,7 @@ export default function PecasPage() {
           <button
             type="button"
             onClick={() => salvarMutation.mutate()}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg"
+            className="w-full py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
           >
             Salvar
           </button>
@@ -264,7 +264,7 @@ export default function PecasPage() {
             <button
               type="button"
               onClick={() => movMutation.mutate()}
-              className="w-full py-2 bg-blue-600 text-white rounded-lg"
+              className="w-full py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
             >
               Registrar
             </button>

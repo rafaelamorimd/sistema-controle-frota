@@ -65,7 +65,7 @@ export default function ContratoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Condutor *</label>
             <select value={form.condutor_id} onChange={(e) => set('condutor_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required>
               <option value="">Selecione...</option>
               {condutores.map((c) => <option key={c.id} value={c.id}>{c.nome} - {c.cpf}</option>)}
             </select>
@@ -73,7 +73,7 @@ export default function ContratoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Veiculo *</label>
             <select value={form.veiculo_id} onChange={(e) => set('veiculo_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required>
               <option value="">Selecione...</option>
               {veiculos.map((v) => <option key={v.id} value={v.id}>{v.modelo} - {v.placa}</option>)}
             </select>
@@ -84,17 +84,17 @@ export default function ContratoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicio *</label>
             <input type="date" value={form.data_inicio} onChange={(e) => set('data_inicio', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Valor Semanal (R$) *</label>
             <input type="number" step="0.01" value={form.valor_semanal} onChange={(e) => set('valor_semanal', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Dia Pagamento *</label>
             <select value={form.dia_pagamento} onChange={(e) => set('dia_pagamento', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none">
               <option value={1}>Segunda</option><option value={2}>Terca</option>
               <option value={3}>Quarta</option><option value={4}>Quinta</option>
               <option value={5}>Sexta</option><option value={6}>Sabado</option>
@@ -107,24 +107,24 @@ export default function ContratoFormPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">KM Inicial *</label>
             <input type="number" value={form.km_inicial} onChange={(e) => set('km_inicial', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Caucao (R$)</label>
             <input type="number" step="0.01" value={form.caucao} onChange={(e) => set('caucao', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Clausulas Adicionais</label>
           <textarea value={form.clausulas_adicionais} onChange={(e) => set('clausulas_adicionais', e.target.value)} rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" />
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
           <button type="submit" disabled={mutation.isPending}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            className="px-6 py-2 bg-brand-secondary text-white rounded-lg font-medium hover:bg-brand-secondary-hover disabled:opacity-50 transition-colors">
             {mutation.isPending ? 'Criando...' : 'Criar Contrato'}
           </button>
           <button type="button" onClick={() => navigate('/contratos')}

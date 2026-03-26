@@ -61,7 +61,7 @@ export default function ContratosListPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Contratos</h2>
         <Link to="/contratos/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+          className="flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium">
           <Plus size={18} /> Novo Contrato
         </Link>
       </div>
@@ -100,7 +100,7 @@ export default function ContratosListPage() {
                       <button
                         onClick={() => handleBaixarPdf(c.id)}
                         disabled={numBaixando === c.id}
-                        className="text-blue-600 hover:text-blue-800 disabled:opacity-50 flex items-center gap-1 text-sm"
+                        className="text-brand-secondary hover:text-brand-secondary-hover disabled:opacity-50 flex items-center gap-1 text-sm"
                         title="Baixar PDF"
                       >
                         <FileText size={16} />

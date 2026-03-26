@@ -30,7 +30,7 @@ export default function RastreadorPage() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Radio className="text-blue-600" size={28} />
+          <Radio className="text-brand-secondary" size={28} />
           Rastreador
         </h1>
         <p className="text-gray-500 text-sm">Eventos e sincronizacao (stub/API)</p>
@@ -53,7 +53,7 @@ export default function RastreadorPage() {
           type="button"
           disabled={!veiculoId || syncMutation.isPending}
           onClick={() => syncMutation.mutate()}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
         >
           <RefreshCw size={18} className={syncMutation.isPending ? 'animate-spin' : ''} />
           Sincronizar
