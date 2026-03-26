@@ -3,6 +3,12 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const strApiProxyTarget = process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:8000'
+const numHmrClientPort = process.env.VITE_HMR_CLIENT_PORT
+  ? Number(process.env.VITE_HMR_CLIENT_PORT)
+  : undefined
+const bolChokidarPolling = process.env.CHOKIDAR_USEPOLLING === 'true'
+
 export default defineConfig({
   plugins: [
     react(),
@@ -33,10 +39,17 @@ export default defineConfig({
     }),
   ],
   server: {
+    host: true,
     port: 5173,
+    strictPort: true,
+    watch: bolChokidarPolling ? { usePolling: true, interval: 800 } : undefined,
+    hmr:
+      numHmrClientPort != null && !Number.isNaN(numHmrClientPort)
+        ? { clientPort: numHmrClientPort }
+        : undefined,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: strApiProxyTarget,
         changeOrigin: true,
       },
     },

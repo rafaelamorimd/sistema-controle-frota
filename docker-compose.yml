@@ -34,14 +34,13 @@ services:
     networks:
       - gefther
 
+  # Portas do frontend: override local (Vite 5173) ou docker-compose.prod.yml (Nginx 80)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: gefther_frontend
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-3000}:80"
     depends_on:
       - backend
     networks:
@@ -82,6 +81,7 @@ services:
 volumes:
   pgdata:
   redisdata:
+  frontend_node_modules:
 
 networks:
   gefther:
