@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+import BrandLogo from '../shared/BrandLogo'
 import {
   Banknote,
   Car,
@@ -77,12 +78,9 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
           aria-modal="true"
           aria-label="Menu de navegacao"
         >
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold tracking-wide text-white">GEFTHER</h1>
-              <p className="text-xs text-brand-secondary mt-1 font-light">
-                Gestao Inteligente de Frotas
-              </p>
+          <div className="p-4 border-b border-white/10 flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <BrandLogo variant="sidebar" className="object-left" />
             </div>
             <button
               onClick={onFechar}
@@ -113,11 +111,8 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
 
   return (
     <aside className="w-64 bg-brand-primary text-white flex flex-col border-r border-white/10">
-      <div className="p-6 border-b border-white/10">
-        <h1 className="text-xl font-bold tracking-wide text-white">GEFTHER</h1>
-        <p className="text-xs text-brand-secondary mt-1 font-light">
-          Gestao Inteligente de Frotas
-        </p>
+      <div className="p-4 border-b border-white/10">
+        <BrandLogo variant="sidebar" className="object-left" />
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {menuItems.map((item) => (
