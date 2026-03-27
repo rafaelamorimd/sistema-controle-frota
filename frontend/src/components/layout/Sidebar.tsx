@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
+import type { LucideIcon } from 'lucide-react'
 import BrandLogo from '../shared/BrandLogo'
 import {
   Banknote,
@@ -7,6 +8,7 @@ import {
   ClipboardList,
   FileBarChart,
   FileText,
+  FolderTree,
   Gauge,
   Gavel,
   Headphones,
@@ -23,21 +25,31 @@ import {
 import { useAuthStore } from '../../stores/authStore'
 import { authService } from '../../services/authService'
 
-const menuItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Visão geral' },
-  { to: '/veiculos', icon: Car, label: 'Veículos' },
-  { to: '/condutores', icon: Users, label: 'Condutores' },
-  { to: '/contratos', icon: FileText, label: 'Contratos' },
-  { to: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos' },
-  { to: '/financeiro/despesas', icon: Receipt, label: 'Despesas' },
-  { to: '/quilometragem/leituras', icon: Gauge, label: 'Quilometragem' },
-  { to: '/operacional/manutencoes', icon: Wrench, label: 'Manutenções' },
-  { to: '/operacional/pecas', icon: Package, label: 'Peças' },
-  { to: '/operacional/multas', icon: Gavel, label: 'Multas' },
-  { to: '/operacional/checklist', icon: ClipboardList, label: 'Checklist' },
-  { to: '/rastreador', icon: Radio, label: 'Rastreador' },
-  { to: '/relatorios', icon: FileBarChart, label: 'Relatórios' },
-  { to: '/configuracoes', icon: Settings, label: 'Configurações' },
+type MenuLink = { kind: 'link'; to: string; icon: LucideIcon; label: string }
+type MenuGrupo = { kind: 'grupo'; strTitulo: string; arrFilhos: MenuLink[] }
+
+const arrMenuEntradas: (MenuLink | MenuGrupo)[] = [
+  { kind: 'link', to: '/', icon: LayoutDashboard, label: 'Visão geral' },
+  { kind: 'link', to: '/veiculos', icon: Car, label: 'Veículos' },
+  { kind: 'link', to: '/condutores', icon: Users, label: 'Condutores' },
+  { kind: 'link', to: '/contratos', icon: FileText, label: 'Contratos' },
+  { kind: 'link', to: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos' },
+  { kind: 'link', to: '/financeiro/despesas', icon: Receipt, label: 'Despesas' },
+  { kind: 'link', to: '/quilometragem/leituras', icon: Gauge, label: 'Quilometragem' },
+  { kind: 'link', to: '/operacional/manutencoes', icon: Wrench, label: 'Manutenções' },
+  { kind: 'link', to: '/operacional/pecas', icon: Package, label: 'Peças' },
+  { kind: 'link', to: '/operacional/multas', icon: Gavel, label: 'Multas' },
+  {
+    kind: 'grupo',
+    strTitulo: 'Revisão',
+    arrFilhos: [
+      { kind: 'link', to: '/revisao/checklist', icon: ClipboardList, label: 'Checklist' },
+      { kind: 'link', to: '/revisao/categorias', icon: FolderTree, label: 'Categorias' },
+    ],
+  },
+  { kind: 'link', to: '/rastreador', icon: Radio, label: 'Rastreador' },
+  { kind: 'link', to: '/relatorios', icon: FileBarChart, label: 'Relatórios' },
+  { kind: 'link', to: '/configuracoes', icon: Settings, label: 'Configurações' },
 ]
 
 interface SidebarProps {
@@ -48,6 +60,7 @@ interface SidebarProps {
 
 export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { logout } = useAuthStore()
 
   useEffect(() => {
@@ -117,6 +130,61 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
     </div>
   )
 
+  const fnRenderNav = (onNavigate?: () => void) => (
+    <>
+      {arrMenuEntradas.map((entrada) => {
+        if (entrada.kind === 'link') {
+          return (
+            <NavLink
+              key={entrada.to}
+              to={entrada.to}
+              end={entrada.to === '/'}
+              onClick={onNavigate}
+              className={linkClass}
+            >
+              {({ isActive }) => (
+                <>
+                  <entrada.icon size={20} className={iconClass(isActive)} />
+                  {entrada.label}
+                </>
+              )}
+            </NavLink>
+          )
+        }
+        const bolGrupoAtivo = entrada.arrFilhos.some((f) => location.pathname.startsWith(f.to))
+        return (
+          <div key={entrada.strTitulo} className="pt-2 pb-0.5">
+            <div
+              className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide ${
+                bolGrupoAtivo ? 'text-brand-secondary' : 'text-gray-400'
+              }`}
+            >
+              {entrada.strTitulo}
+            </div>
+            <div className="space-y-0.5 pl-2 ml-3 border-l border-gray-200/90">
+              {entrada.arrFilhos.map((filho) => (
+                <NavLink
+                  key={filho.to}
+                  to={filho.to}
+                  end={false}
+                  onClick={onNavigate}
+                  className={linkClass}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <filho.icon size={20} className={iconClass(isActive)} />
+                      {filho.label}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </>
+  )
+
   if (bolMobile) {
     return (
       <>
@@ -147,24 +215,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
               <X size={22} />
             </button>
           </div>
-          <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-            {menuItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                onClick={onFechar}
-                className={linkClass}
-              >
-                {({ isActive }) => (
-                  <>
-                    <item.icon size={20} className={iconClass(isActive)} />
-                    {item.label}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
+          <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">{fnRenderNav(onFechar)}</nav>
           {conteudoRodape}
         </aside>
       </>
@@ -174,18 +225,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   return (
     <aside className="w-64 bg-sidebar-surface text-gray-900 flex flex-col border-r border-sidebar-border shrink-0">
       {conteudoTopo}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-        {menuItems.map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.to === '/'} className={linkClass}>
-            {({ isActive }) => (
-              <>
-                <item.icon size={20} className={iconClass(isActive)} />
-                {item.label}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">{fnRenderNav()}</nav>
       {conteudoRodape}
     </aside>
   )

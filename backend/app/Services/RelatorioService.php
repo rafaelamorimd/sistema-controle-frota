@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\ChecklistRevisao;
 use App\Models\Contrato;
 use App\Models\Despesa;
 use App\Models\Pagamento;
+use App\Models\RevisaoCategoria;
 use App\Models\Veiculo;
 use App\Enums\StatusDespesa;
 use App\Enums\StatusPagamento;
@@ -97,6 +99,87 @@ class RelatorioService
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download('resumo-financeiro-'.$dthInicio->format('Y-m').'.pdf');
+    }
+
+    public function pdfChecklistRevisao(ChecklistRevisao $checklist): Response
+    {
+        $checklist->load('veiculo');
+        $arrValores = is_array($checklist->itens_verificados) ? $checklist->itens_verificados : [];
+        $arrRestantes = $arrValores;
+
+        $arrLinhas = [];
+        $arrCategorias = RevisaoCategoria::query()
+            ->with(['itensChecklist' => fn ($q) => $q->orderBy('ordem')])
+            ->orderBy('ordem')
+            ->orderBy('nome')
+            ->get();
+
+        foreach ($arrCategorias as $objCat) {
+            foreach ($objCat->itensChecklist as $objItem) {
+                if (! array_key_exists($objItem->chave, $arrRestantes)) {
+                    continue;
+                }
+                $mixV = $arrRestantes[$objItem->chave];
+                unset($arrRestantes[$objItem->chave]);
+                $arrLinhas[] = [
+                    'strCategoria' => $objCat->nome,
+                    'strLabel' => $objItem->label,
+                    'strChave' => $objItem->chave,
+                    'strStatus' => $this->strStatusChecklistParaPdf($mixV),
+                    'strObs' => $this->strObsChecklistParaPdf($mixV),
+                ];
+            }
+        }
+
+        foreach ($arrRestantes as $strChave => $mixV) {
+            $arrLinhas[] = [
+                'strCategoria' => 'Outros',
+                'strLabel' => $strChave,
+                'strChave' => $strChave,
+                'strStatus' => $this->strStatusChecklistParaPdf($mixV),
+                'strObs' => $this->strObsChecklistParaPdf($mixV),
+            ];
+        }
+
+        $pdf = Pdf::loadView('relatorios.pdf.checklist_revisao', [
+            'objChecklist' => $checklist,
+            'arrLinhas' => $arrLinhas,
+        ])->setPaper('a4');
+
+        $strNome = 'checklist-revisao-'.$checklist->id.'-'.$checklist->data_revisao->format('Y-m-d').'.pdf';
+
+        return $pdf->download($strNome);
+    }
+
+    private function strStatusChecklistParaPdf(mixed $mixV): string
+    {
+        if (is_string($mixV)) {
+            return match (strtolower($mixV)) {
+                'ok' => 'OK',
+                'verificar' => 'Verificar',
+                'trocar' => 'Trocar / defeito',
+                default => $mixV,
+            };
+        }
+        if (is_array($mixV) && isset($mixV['status'])) {
+            return match ($mixV['status']) {
+                'ok' => 'OK',
+                'verificar' => 'Verificar',
+                'trocar' => 'Trocar / defeito',
+                default => (string) $mixV['status'],
+            };
+        }
+
+        return '—';
+    }
+
+    private function strObsChecklistParaPdf(mixed $mixV): string
+    {
+        if (is_array($mixV) && ! empty($mixV['obs']) && is_string($mixV['obs'])) {
+            return $mixV['obs'];
+        }
+
+        return '';
     }
 
     public function csvVeiculos(): StreamedResponse

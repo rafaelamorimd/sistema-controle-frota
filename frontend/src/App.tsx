@@ -16,7 +16,8 @@ import LeiturasKmPage from './pages/quilometragem/LeiturasKmPage'
 import ManutencoesPage from './pages/operacional/ManutencoesPage'
 import PecasPage from './pages/operacional/PecasPage'
 import MultasPage from './pages/operacional/MultasPage'
-import ChecklistRevisaoPage from './pages/operacional/ChecklistRevisaoPage'
+import ChecklistRevisaoPage from './pages/revisao/ChecklistRevisaoPage'
+import RevisaoCategoriasPage from './pages/revisao/RevisaoCategoriasPage'
 import RastreadorPage from './pages/rastreador/RastreadorPage'
 import RelatoriosPage from './pages/relatorios/RelatoriosPage'
 import ConfiguracoesPage from './pages/configuracoes/ConfiguracoesPage'
@@ -62,7 +63,9 @@ export default function App() {
         <Route path="operacional/manutencoes" element={<ManutencoesPage />} />
         <Route path="operacional/pecas" element={<PecasPage />} />
         <Route path="operacional/multas" element={<MultasPage />} />
-        <Route path="operacional/checklist" element={<ChecklistRevisaoPage />} />
+        <Route path="revisao/checklist" element={<ChecklistRevisaoPage />} />
+        <Route path="revisao/categorias" element={<RevisaoCategoriasPage />} />
+        <Route path="operacional/checklist" element={<Navigate to="/revisao/checklist" replace />} />
         <Route path="rastreador" element={<RastreadorPage />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />

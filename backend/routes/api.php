@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\PagamentoController;
 use App\Http\Controllers\Api\PecaController;
 use App\Http\Controllers\Api\RastreadorController;
 use App\Http\Controllers\Api\RelatorioController;
+use App\Http\Controllers\Api\RevisaoCategoriaController;
+use App\Http\Controllers\Api\RevisaoChecklistItemController;
 use App\Http\Controllers\Api\VeiculoController;
 use App\Http\Controllers\Api\VistoriaController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('alertas/{alerta}/resolver', [AlertaController::class, 'resolver']);
 
     Route::get('relatorios/contrato/{contrato}/pdf', [RelatorioController::class, 'pdfContrato']);
+    Route::get('relatorios/checklist-revisao/{checklist_revisao}/pdf', [RelatorioController::class, 'pdfChecklistRevisao']);
     Route::get('relatorios/financeiro/pdf', [RelatorioController::class, 'pdfFinanceiro']);
     Route::get('relatorios/veiculos/csv', [RelatorioController::class, 'csvVeiculos']);
     Route::get('relatorios/veiculos/excel', [RelatorioController::class, 'excelVeiculos']);
@@ -90,6 +93,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('checklist-revisoes', [ChecklistRevisaoController::class, 'store']);
     Route::put('checklist-revisoes/{checklist_revisao}', [ChecklistRevisaoController::class, 'update']);
     Route::delete('checklist-revisoes/{checklist_revisao}', [ChecklistRevisaoController::class, 'destroy']);
+
+    Route::get('revisao/categorias', [RevisaoCategoriaController::class, 'index']);
+    Route::post('revisao/categorias', [RevisaoCategoriaController::class, 'store']);
+    Route::put('revisao/categorias/{revisao_categoria}', [RevisaoCategoriaController::class, 'update']);
+    Route::delete('revisao/categorias/{revisao_categoria}', [RevisaoCategoriaController::class, 'destroy']);
+    Route::post('revisao/categorias/{revisao_categoria}/itens', [RevisaoChecklistItemController::class, 'store']);
+    Route::put('revisao/itens/{revisao_checklist_item}', [RevisaoChecklistItemController::class, 'update']);
+    Route::delete('revisao/itens/{revisao_checklist_item}', [RevisaoChecklistItemController::class, 'destroy']);
 
     Route::get('veiculos/{veiculo}/multas', [MultaController::class, 'indexPorVeiculo']);
     Route::patch('multas/{multa}/pagar', [MultaController::class, 'marcarPaga']);

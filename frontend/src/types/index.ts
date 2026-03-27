@@ -312,6 +312,26 @@ export interface ChecklistRevisao {
   updated_at: string
 }
 
+export interface RevisaoChecklistItem {
+  id: number
+  revisao_categoria_id: number
+  chave: string
+  label: string
+  ordem: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface RevisaoCategoria {
+  id: number
+  slug: string
+  nome: string
+  ordem: number
+  itens_checklist: RevisaoChecklistItem[]
+  created_at?: string
+  updated_at?: string
+}
+
 export interface RastreadorEvento {
   id: number
   veiculo_id: number

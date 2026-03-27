@@ -4,6 +4,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
+        // API com Bearer token: nao usar SPA stateful (CSRF). Remove o middleware mesmo se alguem reativar statefulApi().
+        $middleware->api(remove: [
+            EnsureFrontendRequestsAreStateful::class,
+        ]);
         $middleware->throttleApi();
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })

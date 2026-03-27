@@ -1,17 +1,59 @@
+# Dependencies (geradas no build)
 vendor/
 node_modules/
+
+# Git
 .git/
 .gitignore
+.gitattributes
+
+# Environment
 .env
-.env.backup
+.env.*
+!.env.example
+
+# Storage (criado em runtime)
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
 bootstrap/cache/*
+
+# Tests
 tests/
 phpunit.xml
+.phpunit*
+pest.xml
+
+# Docs
 *.md
+README*
+CHANGELOG*
+LICENSE*
+
+# Docker
 docker-compose*
+Dockerfile*
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+.fleet/
+*.code-workspace
+
+# Linters/Formatters
 .editorconfig
 .styleci.yml
+.php-cs-fixer*
+phpcs.xml
+phpstan.neon
+pint.json
+
+# Temp files
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

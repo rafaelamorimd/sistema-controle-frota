@@ -1,6 +1,37 @@
 import { create } from 'zustand'
 import type { User } from '../types'
 
+function fnCarregarUsuarioDoStorage(): User | null {
+  const strRaw = localStorage.getItem('user')
+  if (strRaw == null || strRaw === '' || strRaw === 'undefined') {
+    if (strRaw === 'undefined') {
+      localStorage.removeItem('user')
+    }
+    return null
+  }
+  try {
+    const obj = JSON.parse(strRaw) as unknown
+    if (obj && typeof obj === 'object') {
+      return obj as User
+    }
+    return null
+  } catch {
+    localStorage.removeItem('user')
+    return null
+  }
+}
+
+function fnCarregarTokenDoStorage(): string | null {
+  const strRaw = localStorage.getItem('token')
+  if (strRaw == null || strRaw === '' || strRaw === 'undefined') {
+    if (strRaw === 'undefined') {
+      localStorage.removeItem('token')
+    }
+    return null
+  }
+  return strRaw
+}
+
 interface AuthState {
   user: User | null
   token: string | null
@@ -12,9 +43,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
-  token: localStorage.getItem('token'),
-  loading: !!localStorage.getItem('token'),
+  user: fnCarregarUsuarioDoStorage(),
+  token: fnCarregarTokenDoStorage(),
+  loading: !!fnCarregarTokenDoStorage(),
   setAuth: (user, token) => {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('token', token)

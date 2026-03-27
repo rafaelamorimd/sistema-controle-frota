@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminSeeder::class,
+            RevisaoCategoriasSeeder::class,
         ]);
 
         if (! app()->environment('production')) {

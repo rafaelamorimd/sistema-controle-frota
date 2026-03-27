@@ -38,4 +38,9 @@ export const relatorioService = {
 
   downloadCsvVeiculos: () =>
     api.get('/relatorios/veiculos/csv', { responseType: 'blob' }).then((r) => baixarBlob(r, 'veiculos.csv')),
+
+  downloadPdfChecklistRevisao: (checklistId: number) =>
+    api
+      .get(`/relatorios/checklist-revisao/${checklistId}/pdf`, { responseType: 'blob' })
+      .then((r) => baixarBlob(r, `checklist-revisao-${checklistId}.pdf`)),
 }

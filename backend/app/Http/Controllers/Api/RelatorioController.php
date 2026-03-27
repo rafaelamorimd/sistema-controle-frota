@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChecklistRevisao;
 use App\Models\Contrato;
 use App\Services\RelatorioService;
 use Illuminate\Http\Request;
@@ -14,6 +15,11 @@ class RelatorioController extends Controller
     public function pdfContrato(Contrato $contrato)
     {
         return $this->service->pdfContrato($contrato);
+    }
+
+    public function pdfChecklistRevisao(ChecklistRevisao $checklist_revisao)
+    {
+        return $this->service->pdfChecklistRevisao($checklist_revisao);
     }
 
     public function pdfFinanceiro(Request $request)

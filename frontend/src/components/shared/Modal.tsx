@@ -5,9 +5,16 @@ type ModalProps = {
   aberto: boolean
   aoFechar: () => void
   children: React.ReactNode
+  strMaxWidthClass?: string
 }
 
-export default function Modal({ titulo, aberto, aoFechar, children }: ModalProps) {
+export default function Modal({
+  titulo,
+  aberto,
+  aoFechar,
+  children,
+  strMaxWidthClass = 'max-w-lg',
+}: ModalProps) {
   if (!aberto) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -17,7 +24,9 @@ export default function Modal({ titulo, aberto, aoFechar, children }: ModalProps
         aria-label="Fechar"
         onClick={aoFechar}
       />
-      <div className="relative bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div
+        className={`relative bg-white rounded-xl shadow-lg border border-gray-200 w-full ${strMaxWidthClass} max-h-[90vh] overflow-y-auto`}
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900">{titulo}</h3>
           <button
