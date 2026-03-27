@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ClipboardList, FileDown, Pencil, Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ClipboardList, FileDown, ImagePlus, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
@@ -9,7 +9,7 @@ import { checklistRevisaoService } from '../../services/checklistRevisaoService'
 import { relatorioService } from '../../services/relatorioService'
 import { revisaoCategoriaService } from '../../services/revisaoCategoriaService'
 import { veiculoService } from '../../services/veiculoService'
-import type { ChecklistRevisao, RevisaoCategoria } from '../../types'
+import type { ChecklistRevisao, ChecklistRevisaoFoto, RevisaoCategoria } from '../../types'
 import {
   fnInicializarEstadoItens,
   fnMapearJsonParaEstado,
@@ -17,7 +17,7 @@ import {
   fnResumoChecklistHumano,
   type StatusInspecaoItem,
 } from '../../utils/checklistRevisao'
-import { formatarDataHoraBr } from '../../utils/format'
+import { fnResolverUrlPublica, formatarDataHoraBr } from '../../utils/format'
 
 const arrOpcoesStatus: {
   strValor: StatusInspecaoItem
@@ -62,6 +62,21 @@ export default function ChecklistRevisaoPage() {
     Record<string, { strStatus: StatusInspecaoItem; strObs: string }>
   >({})
   const [numBaixandoPdf, setNumBaixandoPdf] = useState<number | null>(null)
+  const [arrArquivosPendentes, setArrArquivosPendentes] = useState<File[]>([])
+  const [bolUploadFotoEmAndamento, setBolUploadFotoEmAndamento] = useState(false)
+  const [numFotoRemovendoId, setNumFotoRemovendoId] = useState<number | null>(null)
+  const refInputFotos = useRef<HTMLInputElement>(null)
+
+  const arrUrlsPreviewPendentes = useMemo(
+    () => arrArquivosPendentes.map((f) => URL.createObjectURL(f)),
+    [arrArquivosPendentes],
+  )
+
+  useEffect(() => {
+    return () => {
+      arrUrlsPreviewPendentes.forEach((strUrl) => URL.revokeObjectURL(strUrl))
+    }
+  }, [arrUrlsPreviewPendentes])
 
   const { data: arrCategorias = [], isLoading: bolCarregandoCategorias } = useQuery({
     queryKey: ['revisao-categorias'],
@@ -100,27 +115,40 @@ export default function ChecklistRevisaoPage() {
   }, [modalAberto, objChecklistEditando, arrCategorias, bolCarregandoCategorias])
 
   const salvarMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const numKm = Number(form.km_revisao)
       if (Number.isNaN(numKm) || numKm < 0) {
         throw new Error('Informe um km de revisão válido.')
       }
       const objItens = fnMontarItensVerificadosJson(objEstadoItens, arrCategorias)
+      const arrPend = arrArquivosPendentes
       if (objChecklistEditando) {
-        return checklistRevisaoService.atualizar(objChecklistEditando.id, {
+        const data = await checklistRevisaoService.atualizar(objChecklistEditando.id, {
           data_revisao: form.data_revisao,
           km_revisao: numKm,
           itens_verificados: objItens,
         })
+        return { data, arrPendUpload: [] as File[] }
       }
-      return checklistRevisaoService.criar({
+      const data = await checklistRevisaoService.criar({
         veiculo_id: Number(veiculoId),
         data_revisao: form.data_revisao,
         km_revisao: numKm,
         itens_verificados: objItens,
       })
+      return { data, arrPendUpload: arrPend }
     },
-    onSuccess: () => {
+    onSuccess: async (payload) => {
+      if (payload.arrPendUpload.length > 0) {
+        try {
+          for (const arquivo of payload.arrPendUpload) {
+            await checklistRevisaoService.adicionarFoto(payload.data.id, arquivo)
+          }
+        } catch {
+          alert('Checklist salvo, mas alguma foto não foi enviada.')
+        }
+      }
+      setArrArquivosPendentes([])
       queryClient.invalidateQueries({ queryKey: ['checklist-revisoes'] })
       setModalAberto(false)
       setObjChecklistEditando(null)
@@ -160,6 +188,68 @@ export default function ChecklistRevisaoPage() {
   const fnFecharModal = () => {
     setModalAberto(false)
     setObjChecklistEditando(null)
+    setArrArquivosPendentes([])
+  }
+
+  const numTotalFotos =
+    (objChecklistEditando?.fotos?.length ?? 0) + arrArquivosPendentes.length
+  const bolLimiteFotos = numTotalFotos >= 20
+
+  const fnEscolherFotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files?.length) return
+    e.target.value = ''
+    const numMax = 20
+    const numAtual = (objChecklistEditando?.fotos?.length ?? 0) + arrArquivosPendentes.length
+    const arrNovos = Array.from(files).slice(0, Math.max(0, numMax - numAtual))
+    if (arrNovos.length === 0) {
+      alert('Limite de 20 fotos por checklist.')
+      return
+    }
+    if (arrNovos.length < files.length) {
+      alert(`Apenas as primeiras ${arrNovos.length} foto(s) foram incluídas (máximo 20 por checklist).`)
+    }
+    if (!objChecklistEditando) {
+      setArrArquivosPendentes((prev) => [...prev, ...arrNovos])
+      return
+    }
+    setBolUploadFotoEmAndamento(true)
+    try {
+      for (const arquivo of arrNovos) {
+        const nova: ChecklistRevisaoFoto = await checklistRevisaoService.adicionarFoto(
+          objChecklistEditando.id,
+          arquivo,
+        )
+        setObjChecklistEditando((prev) =>
+          prev ? { ...prev, fotos: [...(prev.fotos ?? []), nova] } : null,
+        )
+      }
+      queryClient.invalidateQueries({ queryKey: ['checklist-revisoes'] })
+    } catch {
+      alert('Erro ao enviar foto.')
+    } finally {
+      setBolUploadFotoEmAndamento(false)
+    }
+  }
+
+  const fnRemoverFotoSalva = async (numFotoId: number) => {
+    if (!objChecklistEditando) return
+    setNumFotoRemovendoId(numFotoId)
+    try {
+      await checklistRevisaoService.removerFoto(objChecklistEditando.id, numFotoId)
+      setObjChecklistEditando((prev) =>
+        prev ? { ...prev, fotos: (prev.fotos ?? []).filter((f) => f.id !== numFotoId) } : null,
+      )
+      queryClient.invalidateQueries({ queryKey: ['checklist-revisoes'] })
+    } catch {
+      alert('Erro ao remover foto.')
+    } finally {
+      setNumFotoRemovendoId(null)
+    }
+  }
+
+  const fnRemoverPendente = (numIndice: number) => {
+    setArrArquivosPendentes((prev) => prev.filter((_, i) => i !== numIndice))
   }
 
   const fnBaixarPdf = async (id: number) => {
@@ -343,6 +433,92 @@ export default function ChecklistRevisaoPage() {
                     onChange={(e) => setForm((f) => ({ ...f, km_revisao: e.target.value }))}
                   />
                 </div>
+              </div>
+
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-sm font-medium text-gray-800 mb-1 flex items-center gap-2">
+                  <ImagePlus size={18} className="text-brand-secondary shrink-0" />
+                  Fotos (opcional)
+                </p>
+                <p className="text-xs text-gray-500 mb-3">
+                  {objChecklistEditando
+                    ? 'JPG, PNG ou WebP até 10 MB por arquivo. Máximo 20 fotos por checklist.'
+                    : 'Após salvar o checklist, as fotos serão enviadas automaticamente. Você também pode escolher arquivos agora e enviá-los ao salvar.'}
+                </p>
+                <input
+                  ref={refInputFotos}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={fnEscolherFotos}
+                  disabled={bolUploadFotoEmAndamento}
+                />
+                <button
+                  type="button"
+                  disabled={bolUploadFotoEmAndamento || bolSemItensCadastro || bolLimiteFotos}
+                  onClick={() => refInputFotos.current?.click()}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {bolUploadFotoEmAndamento ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <ImagePlus size={16} />
+                  )}
+                  Adicionar fotos
+                </button>
+                {(objChecklistEditando?.fotos?.length ?? 0) > 0 || arrArquivosPendentes.length > 0 ? (
+                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {(objChecklistEditando?.fotos ?? []).map((foto) => (
+                      <div
+                        key={foto.id}
+                        className="relative group rounded-lg border border-gray-200 overflow-hidden bg-gray-100 aspect-square"
+                      >
+                        <img
+                          src={fnResolverUrlPublica(foto.url)}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          disabled={numFotoRemovendoId === foto.id}
+                          onClick={() => fnRemoverFotoSalva(foto.id)}
+                          className="absolute top-1 right-1 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity disabled:opacity-100"
+                          aria-label="Remover foto"
+                        >
+                          {numFotoRemovendoId === foto.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={14} />
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                    {arrArquivosPendentes.map((_, numIndice) => (
+                      <div
+                        key={`pend-${numIndice}`}
+                        className="relative group rounded-lg border border-dashed border-brand-secondary/40 overflow-hidden bg-gray-50 aspect-square"
+                      >
+                        <img
+                          src={arrUrlsPreviewPendentes[numIndice]}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute bottom-1 left-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
+                          Pendente
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => fnRemoverPendente(numIndice)}
+                          className="absolute top-1 right-1 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity"
+                          aria-label="Remover da fila"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
 
               <div className="border-t border-gray-100 pt-1">

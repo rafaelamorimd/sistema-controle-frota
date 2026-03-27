@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChecklistRevisaoRequest;
 use App\Models\ChecklistRevisao;
+use App\Models\ChecklistRevisaoFoto;
 use App\Models\Veiculo;
 use App\Services\ChecklistRevisaoService;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,33 @@ class ChecklistRevisaoController extends Controller
     public function destroy(ChecklistRevisao $checklistRevisao): JsonResponse
     {
         $this->service->excluir($checklistRevisao);
+
+        return response()->json(null, 204);
+    }
+
+    public function storeFoto(Request $request, ChecklistRevisao $checklistRevisao): JsonResponse
+    {
+        $request->validate([
+            'foto' => 'required|file|mimes:jpg,jpeg,png,webp|max:10240',
+        ]);
+
+        try {
+            $foto = $this->service->adicionarFoto($checklistRevisao, $request->file('foto'));
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json($foto, 201);
+    }
+
+    public function destroyFoto(ChecklistRevisao $checklistRevisao, int $foto): JsonResponse
+    {
+        $objFoto = ChecklistRevisaoFoto::query()
+            ->where('checklist_revisao_id', $checklistRevisao->id)
+            ->whereKey($foto)
+            ->firstOrFail();
+
+        $this->service->removerFoto($objFoto);
 
         return response()->json(null, 204);
     }

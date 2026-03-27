@@ -1,5 +1,5 @@
-import api from './api'
-import type { ChecklistRevisao, PaginatedResponse } from '../types'
+import type { ChecklistRevisao, ChecklistRevisaoFoto, PaginatedResponse } from '../types'
+import api, { postFormData } from './api'
 
 export const checklistRevisaoService = {
   listarPorVeiculo: (veiculoId: number, params?: Record<string, unknown>) =>
@@ -16,4 +16,13 @@ export const checklistRevisaoService = {
     api.put<ChecklistRevisao>(`/checklist-revisoes/${id}`, dados).then((r) => r.data),
 
   excluir: (id: number) => api.delete(`/checklist-revisoes/${id}`),
+
+  adicionarFoto: (checklistId: number, arquivo: File) => {
+    const fd = new FormData()
+    fd.append('foto', arquivo)
+    return postFormData<ChecklistRevisaoFoto>(`/checklist-revisoes/${checklistId}/fotos`, fd).then((r) => r.data)
+  },
+
+  removerFoto: (checklistId: number, fotoId: number) =>
+    api.delete(`/checklist-revisoes/${checklistId}/fotos/${fotoId}`),
 }

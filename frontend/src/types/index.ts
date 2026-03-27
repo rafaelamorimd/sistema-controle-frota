@@ -300,6 +300,15 @@ export interface Multa {
   updated_at: string
 }
 
+export interface ChecklistRevisaoFoto {
+  id: number
+  checklist_revisao_id: number
+  caminho_arquivo: string
+  url: string
+  created_at: string
+  updated_at: string
+}
+
 export interface ChecklistRevisao {
   id: number
   veiculo_id: number
@@ -307,6 +316,7 @@ export interface ChecklistRevisao {
   data_revisao: string
   km_revisao: number
   itens_verificados: Record<string, unknown>
+  fotos?: ChecklistRevisaoFoto[]
   veiculo?: Veiculo
   created_at: string
   updated_at: string

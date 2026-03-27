@@ -1,3 +1,12 @@
+/** URL absoluta para arquivos em /storage quando a API devolve caminho relativo */
+export function fnResolverUrlPublica(strUrl: string): string {
+  if (/^https?:\/\//i.test(strUrl)) return strUrl
+  const strBase = import.meta.env.VITE_API_URL
+  if (!strBase) return strUrl
+  const strNormalizado = strUrl.startsWith('/') ? strUrl : `/${strUrl}`
+  return `${strBase.replace(/\/$/, '')}${strNormalizado}`
+}
+
 /** Data/hora em pt-BR (fuso America/Sao_Paulo), ex.: 27/03/2026 21:00:00 */
 export function formatarDataHoraBr(strIso: string): string {
   const d = new Date(strIso)
