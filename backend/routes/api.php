@@ -90,6 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->parameters(['manutencoes' => 'manutencao']);
 
     Route::get('veiculos/{veiculo}/checklist-revisoes', [ChecklistRevisaoController::class, 'indexPorVeiculo']);
+    Route::get('checklist-revisoes/{checklist_revisao}', [ChecklistRevisaoController::class, 'show']);
     Route::post('checklist-revisoes', [ChecklistRevisaoController::class, 'store']);
     Route::post('checklist-revisoes/{checklist_revisao}/fotos', [ChecklistRevisaoController::class, 'storeFoto']);
     Route::delete('checklist-revisoes/{checklist_revisao}/fotos/{foto}', [ChecklistRevisaoController::class, 'destroyFoto']);

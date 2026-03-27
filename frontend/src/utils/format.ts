@@ -1,10 +1,19 @@
-/** URL absoluta para arquivos em /storage quando a API devolve caminho relativo */
+/**
+ * URL utilizável no <img src>. Com VITE_API_URL vazio (proxy do Vite), caminhos /storage/...
+ * devem usar o mesmo origin do front (ex.: localhost:3000/storage → proxy → backend).
+ */
 export function fnResolverUrlPublica(strUrl: string): string {
+  if (!strUrl) return strUrl
   if (/^https?:\/\//i.test(strUrl)) return strUrl
   const strBase = import.meta.env.VITE_API_URL
-  if (!strBase) return strUrl
   const strNormalizado = strUrl.startsWith('/') ? strUrl : `/${strUrl}`
-  return `${strBase.replace(/\/$/, '')}${strNormalizado}`
+  if (strBase) {
+    return `${strBase.replace(/\/$/, '')}${strNormalizado}`
+  }
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}${strNormalizado}`
+  }
+  return strNormalizado
 }
 
 /** Data/hora em pt-BR (fuso America/Sao_Paulo), ex.: 27/03/2026 21:00:00 */

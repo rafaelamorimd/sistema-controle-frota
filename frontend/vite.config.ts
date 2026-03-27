@@ -52,6 +52,11 @@ export default defineConfig({
         target: strApiProxyTarget,
         changeOrigin: true,
       },
+      // Arquivos em storage/app/public (fotos do checklist, etc.) — mesmo host do Vite em dev
+      '/storage': {
+        target: strApiProxyTarget,
+        changeOrigin: true,
+      },
     },
   },
 })

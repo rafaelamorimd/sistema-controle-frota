@@ -1,5 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ClipboardList, FileDown, ImagePlus, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import {
+  ClipboardList,
+  FileDown,
+  ImagePlus,
+  Loader2,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Modal from '../../components/shared/Modal'
@@ -65,6 +74,8 @@ export default function ChecklistRevisaoPage() {
   const [arrArquivosPendentes, setArrArquivosPendentes] = useState<File[]>([])
   const [bolUploadFotoEmAndamento, setBolUploadFotoEmAndamento] = useState(false)
   const [numFotoRemovendoId, setNumFotoRemovendoId] = useState<number | null>(null)
+  const [strUrlFotoAmpliada, setStrUrlFotoAmpliada] = useState<string | null>(null)
+  const [bolCarregandoChecklistDetalhe, setBolCarregandoChecklistDetalhe] = useState(false)
   const refInputFotos = useRef<HTMLInputElement>(null)
 
   const arrUrlsPreviewPendentes = useMemo(
@@ -77,6 +88,15 @@ export default function ChecklistRevisaoPage() {
       arrUrlsPreviewPendentes.forEach((strUrl) => URL.revokeObjectURL(strUrl))
     }
   }, [arrUrlsPreviewPendentes])
+
+  useEffect(() => {
+    if (!strUrlFotoAmpliada) return
+    const fnTecla = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setStrUrlFotoAmpliada(null)
+    }
+    document.addEventListener('keydown', fnTecla)
+    return () => document.removeEventListener('keydown', fnTecla)
+  }, [strUrlFotoAmpliada])
 
   const { data: arrCategorias = [], isLoading: bolCarregandoCategorias } = useQuery({
     queryKey: ['revisao-categorias'],
@@ -180,15 +200,26 @@ export default function ChecklistRevisaoPage() {
     setModalAberto(true)
   }
 
-  const fnAbrirEditar = (c: ChecklistRevisao) => {
+  const fnAbrirEditar = async (c: ChecklistRevisao) => {
     setObjChecklistEditando(c)
     setModalAberto(true)
+    setBolCarregandoChecklistDetalhe(true)
+    try {
+      const completo = await checklistRevisaoService.obter(c.id)
+      setObjChecklistEditando(completo)
+    } catch {
+      /* mantém dados da lista */
+    } finally {
+      setBolCarregandoChecklistDetalhe(false)
+    }
   }
 
   const fnFecharModal = () => {
     setModalAberto(false)
     setObjChecklistEditando(null)
     setArrArquivosPendentes([])
+    setStrUrlFotoAmpliada(null)
+    setBolCarregandoChecklistDetalhe(false)
   }
 
   const numTotalFotos =
@@ -442,9 +473,15 @@ export default function ChecklistRevisaoPage() {
                 </p>
                 <p className="text-xs text-gray-500 mb-3">
                   {objChecklistEditando
-                    ? 'JPG, PNG ou WebP até 10 MB por arquivo. Máximo 20 fotos por checklist.'
+                    ? 'JPG, PNG ou WebP até 10 MB por arquivo. Máximo 20 fotos. Clique na miniatura para ampliar.'
                     : 'Após salvar o checklist, as fotos serão enviadas automaticamente. Você também pode escolher arquivos agora e enviá-los ao salvar.'}
                 </p>
+                {bolCarregandoChecklistDetalhe && objChecklistEditando ? (
+                  <p className="text-xs text-gray-500 flex items-center gap-2 mb-2">
+                    <Loader2 size={14} className="animate-spin shrink-0" />
+                    Carregando fotos…
+                  </p>
+                ) : null}
                 <input
                   ref={refInputFotos}
                   type="file"
@@ -469,48 +506,73 @@ export default function ChecklistRevisaoPage() {
                 </button>
                 {(objChecklistEditando?.fotos?.length ?? 0) > 0 || arrArquivosPendentes.length > 0 ? (
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {(objChecklistEditando?.fotos ?? []).map((foto) => (
-                      <div
-                        key={foto.id}
-                        className="relative group rounded-lg border border-gray-200 overflow-hidden bg-gray-100 aspect-square"
-                      >
-                        <img
-                          src={fnResolverUrlPublica(foto.url)}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          disabled={numFotoRemovendoId === foto.id}
-                          onClick={() => fnRemoverFotoSalva(foto.id)}
-                          className="absolute top-1 right-1 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity disabled:opacity-100"
-                          aria-label="Remover foto"
+                    {(objChecklistEditando?.fotos ?? []).map((foto) => {
+                      const strSrc = fnResolverUrlPublica(
+                        foto.url ?? `/storage/${foto.caminho_arquivo}`,
+                      )
+                      return (
+                        <div
+                          key={foto.id}
+                          className="relative group rounded-lg border border-gray-200 overflow-hidden bg-gray-100 aspect-square"
                         >
-                          {numFotoRemovendoId === foto.id ? (
-                            <Loader2 size={14} className="animate-spin" />
-                          ) : (
-                            <Trash2 size={14} />
-                          )}
-                        </button>
-                      </div>
-                    ))}
+                          <button
+                            type="button"
+                            className="absolute inset-0 z-0 block w-full h-full p-0 border-0 cursor-zoom-in"
+                            onClick={() => setStrUrlFotoAmpliada(strSrc)}
+                            aria-label="Ampliar foto"
+                          >
+                            <img
+                              src={strSrc}
+                              alt=""
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={numFotoRemovendoId === foto.id}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              void fnRemoverFotoSalva(foto.id)
+                            }}
+                            className="absolute top-1 right-1 z-10 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity disabled:opacity-100"
+                            aria-label="Remover foto"
+                          >
+                            {numFotoRemovendoId === foto.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Trash2 size={14} />
+                            )}
+                          </button>
+                        </div>
+                      )
+                    })}
                     {arrArquivosPendentes.map((_, numIndice) => (
                       <div
                         key={`pend-${numIndice}`}
                         className="relative group rounded-lg border border-dashed border-brand-secondary/40 overflow-hidden bg-gray-50 aspect-square"
                       >
-                        <img
-                          src={arrUrlsPreviewPendentes[numIndice]}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
+                        <button
+                          type="button"
+                          className="absolute inset-0 z-0 block w-full h-full p-0 border-0 cursor-zoom-in"
+                          onClick={() => setStrUrlFotoAmpliada(arrUrlsPreviewPendentes[numIndice])}
+                          aria-label="Ampliar pré-visualização"
+                        >
+                          <img
+                            src={arrUrlsPreviewPendentes[numIndice]}
+                            alt=""
+                            className="w-full h-full object-cover pointer-events-none"
+                          />
+                        </button>
                         <span className="absolute bottom-1 left-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
                           Pendente
                         </span>
                         <button
                           type="button"
-                          onClick={() => fnRemoverPendente(numIndice)}
-                          className="absolute top-1 right-1 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            fnRemoverPendente(numIndice)
+                          }}
+                          className="absolute top-1 right-1 z-10 p-1.5 rounded-md bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/70 transition-opacity"
                           aria-label="Remover da fila"
                         >
                           <Trash2 size={14} />
@@ -612,6 +674,31 @@ export default function ChecklistRevisaoPage() {
           </div>
         </div>
       </Modal>
+
+      {strUrlFotoAmpliada ? (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Visualizar foto"
+          onClick={() => setStrUrlFotoAmpliada(null)}
+        >
+          <button
+            type="button"
+            className="absolute top-4 right-4 p-2 rounded-lg bg-white/15 text-white hover:bg-white/25 z-10"
+            onClick={() => setStrUrlFotoAmpliada(null)}
+            aria-label="Fechar"
+          >
+            <X size={24} />
+          </button>
+          <img
+            src={strUrlFotoAmpliada}
+            alt=""
+            className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

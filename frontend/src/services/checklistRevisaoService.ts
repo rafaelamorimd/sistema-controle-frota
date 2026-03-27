@@ -9,6 +9,8 @@ export const checklistRevisaoService = {
       })
       .then((r) => r.data),
 
+  obter: (id: number) => api.get<ChecklistRevisao>(`/checklist-revisoes/${id}`).then((r) => r.data),
+
   criar: (dados: Record<string, unknown>) =>
     api.post<ChecklistRevisao>('/checklist-revisoes', dados).then((r) => r.data),
 

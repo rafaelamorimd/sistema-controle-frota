@@ -20,6 +20,11 @@ class ChecklistRevisaoController extends Controller
         return response()->json($this->service->listarPorVeiculo($veiculo, $request->all()));
     }
 
+    public function show(ChecklistRevisao $checklistRevisao): JsonResponse
+    {
+        return response()->json($checklistRevisao->load(['veiculo', 'manutencao', 'fotos']));
+    }
+
     public function store(ChecklistRevisaoRequest $request): JsonResponse
     {
         $obj = $this->service->criar($request->validated());
