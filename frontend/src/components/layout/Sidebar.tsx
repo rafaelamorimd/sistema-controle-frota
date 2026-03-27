@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
 import type { LucideIcon } from 'lucide-react'
 import BrandLogo from '../shared/BrandLogo'
@@ -21,12 +21,13 @@ import {
   Users,
   Wrench,
   X,
+  ChevronDown,
 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
 import { authService } from '../../services/authService'
 
 type MenuLink = { kind: 'link'; to: string; icon: LucideIcon; label: string }
-type MenuGrupo = { kind: 'grupo'; strTitulo: string; arrFilhos: MenuLink[] }
+type MenuGrupo = { kind: 'grupo'; strTitulo: string; icon: LucideIcon; arrFilhos: MenuLink[] }
 
 const arrMenuEntradas: (MenuLink | MenuGrupo)[] = [
   { kind: 'link', to: '/', icon: LayoutDashboard, label: 'Visão geral' },
@@ -42,6 +43,7 @@ const arrMenuEntradas: (MenuLink | MenuGrupo)[] = [
   {
     kind: 'grupo',
     strTitulo: 'Revisão',
+    icon: ClipboardList,
     arrFilhos: [
       { kind: 'link', to: '/revisao/checklist', icon: ClipboardList, label: 'Checklist' },
       { kind: 'link', to: '/revisao/categorias', icon: FolderTree, label: 'Categorias' },
@@ -62,6 +64,22 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   const navigate = useNavigate()
   const location = useLocation()
   const { logout } = useAuthStore()
+  const [objGruposAbertos, setObjGruposAbertos] = useState<Record<string, boolean | undefined>>({})
+
+  useEffect(() => {
+    arrMenuEntradas.forEach((entrada) => {
+      if (entrada.kind !== 'grupo') return
+      const bolFilhoAtivo = entrada.arrFilhos.some((f) => location.pathname.startsWith(f.to))
+      if (!bolFilhoAtivo) {
+        setObjGruposAbertos((prev) => {
+          if (prev[entrada.strTitulo] === undefined) return prev
+          const next = { ...prev }
+          delete next[entrada.strTitulo]
+          return next
+        })
+      }
+    })
+  }, [location.pathname])
 
   useEffect(() => {
     if (!bolMobile) return
@@ -123,9 +141,9 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   )
 
   const conteudoTopo = (
-    <div className="p-4 border-b border-sidebar-border shrink-0">
-      <div className="min-w-0">
-        <BrandLogo variant="sidebar" className="object-left max-h-16" />
+    <div className="p-4 border-b border-sidebar-border shrink-0 flex justify-center">
+      <div className="min-w-0 flex justify-center w-full">
+        <BrandLogo variant="sidebar" className="max-h-16 mx-auto" />
       </div>
     </div>
   )
@@ -152,33 +170,63 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
           )
         }
         const bolGrupoAtivo = entrada.arrFilhos.some((f) => location.pathname.startsWith(f.to))
+        const bolAberto =
+          objGruposAbertos[entrada.strTitulo] !== undefined
+            ? Boolean(objGruposAbertos[entrada.strTitulo])
+            : bolGrupoAtivo
+        const IconPai = entrada.icon
+        const strClasseCabecalhoGrupo = bolGrupoAtivo
+          ? 'bg-white text-brand-secondary shadow-sm border border-sidebar-border/80'
+          : 'text-gray-600 hover:bg-white/70 hover:text-brand-primary'
         return (
-          <div key={entrada.strTitulo} className="pt-2 pb-0.5">
-            <div
-              className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide ${
-                bolGrupoAtivo ? 'text-brand-secondary' : 'text-gray-400'
-              }`}
+          <div key={entrada.strTitulo} className="pt-1 pb-0.5">
+            <button
+              type="button"
+              onClick={() => {
+                setObjGruposAbertos((prev) => {
+                  const bolAtual =
+                    prev[entrada.strTitulo] !== undefined
+                      ? Boolean(prev[entrada.strTitulo])
+                      : bolGrupoAtivo
+                  return { ...prev, [entrada.strTitulo]: !bolAtual }
+                })
+              }}
+              className={`flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors text-left ${strClasseCabecalhoGrupo}`}
+              aria-expanded={bolAberto}
             >
-              {entrada.strTitulo}
-            </div>
-            <div className="space-y-0.5 pl-2 ml-3 border-l border-gray-200/90">
-              {entrada.arrFilhos.map((filho) => (
-                <NavLink
-                  key={filho.to}
-                  to={filho.to}
-                  end={false}
-                  onClick={onNavigate}
-                  className={linkClass}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <filho.icon size={20} className={iconClass(isActive)} />
-                      {filho.label}
-                    </>
-                  )}
-                </NavLink>
-              ))}
-            </div>
+              <IconPai
+                size={20}
+                className={bolGrupoAtivo ? 'text-brand-secondary shrink-0' : 'text-gray-500 shrink-0'}
+              />
+              <span className="flex-1 min-w-0">{entrada.strTitulo}</span>
+              <ChevronDown
+                size={18}
+                className={`shrink-0 text-gray-400 transition-transform duration-200 ${
+                  bolAberto ? 'rotate-0' : '-rotate-90'
+                }`}
+                aria-hidden
+              />
+            </button>
+            {bolAberto ? (
+              <div className="mt-1 space-y-0.5 pl-2 ml-3 border-l border-gray-200/90">
+                {entrada.arrFilhos.map((filho) => (
+                  <NavLink
+                    key={filho.to}
+                    to={filho.to}
+                    end={false}
+                    onClick={onNavigate}
+                    className={linkClass}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <filho.icon size={20} className={iconClass(isActive)} />
+                        {filho.label}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            ) : null}
           </div>
         )
       })}
@@ -203,13 +251,12 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
           aria-modal="true"
           aria-label="Menu de navegacao"
         >
-          <div className="p-4 border-b border-sidebar-border flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <BrandLogo variant="sidebar" className="object-left max-h-14" />
-            </div>
+          <div className="relative p-4 border-b border-sidebar-border flex items-center justify-center min-h-18">
+            <BrandLogo variant="sidebar" className="max-h-14 mx-auto" />
             <button
+              type="button"
               onClick={onFechar}
-              className="p-2 hover:bg-white/80 rounded-lg text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/80 rounded-lg text-gray-600"
               aria-label="Fechar menu"
             >
               <X size={22} />

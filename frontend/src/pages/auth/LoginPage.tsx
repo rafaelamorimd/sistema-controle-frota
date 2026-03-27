@@ -57,9 +57,6 @@ export default function LoginPage() {
               <div className="px-7 sm:px-8 pt-8 pb-6">
                 <div className="text-center mb-6">
                   <BrandLogo variant="login" />
-                  <p className="mt-3 text-[10px] font-semibold tracking-[0.24em] text-brand-secondary uppercase">
-                    Intelligent Fleet
-                  </p>
                 </div>
 
                 <div className="text-center mb-6">

@@ -17,6 +17,7 @@ import {
   fnResumoChecklistHumano,
   type StatusInspecaoItem,
 } from '../../utils/checklistRevisao'
+import { formatarDataHoraBr } from '../../utils/format'
 
 const arrOpcoesStatus: {
   strValor: StatusInspecaoItem
@@ -176,7 +177,9 @@ export default function ChecklistRevisaoPage() {
     {
       strLabel: 'Data',
       strKey: 'data',
-      render: (c) => <span className="text-gray-700">{c.data_revisao}</span>,
+      render: (c) => (
+        <span className="text-gray-700 whitespace-nowrap">{formatarDataHoraBr(c.data_revisao)}</span>
+      ),
     },
     {
       strLabel: 'Km',
@@ -286,7 +289,9 @@ export default function ChecklistRevisaoPage() {
             strEmptyMessage="Nenhum checklist encontrado."
             fnRenderCardHeader={(c) => (
               <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900">{c.data_revisao}</span>
+                <span className="font-medium text-gray-900 whitespace-nowrap">
+                  {formatarDataHoraBr(c.data_revisao)}
+                </span>
                 <span className="text-sm text-brand-primary font-mono">{c.km_revisao} km</span>
               </div>
             )}
