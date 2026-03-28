@@ -1,12 +1,8 @@
 import { useState } from 'react'
+import logoUrl from '../../assets/logo01.png'
 
-function fnUrlAssetPublico(strNomeArquivo: string): string {
-  const strBase = import.meta.env.BASE_URL ?? '/'
-  return strBase.endsWith('/') ? `${strBase}${strNomeArquivo}` : `${strBase}/${strNomeArquivo}`
-}
-
-const strLogoPng = fnUrlAssetPublico('logo01.png')
-const strLogoSvgFallback = fnUrlAssetPublico('logo-gefther.svg')
+const strBase = import.meta.env.BASE_URL ?? '/'
+const strLogoSvgFallback = strBase.endsWith('/') ? `${strBase}logo-gefther.svg` : `${strBase}/logo-gefther.svg`
 
 type BrandLogoProps = {
   variant?: 'login' | 'sidebar' | 'header'
@@ -23,7 +19,7 @@ export default function BrandLogo({ variant = 'login', className = '' }: BrandLo
         ? 'max-h-24 w-auto max-w-full'
         : 'h-9 w-auto max-h-9'
 
-  const strSrc = bolUsarSvg ? strLogoSvgFallback : strLogoPng
+  const strSrc = bolUsarSvg ? strLogoSvgFallback : logoUrl
 
   return (
     <img
