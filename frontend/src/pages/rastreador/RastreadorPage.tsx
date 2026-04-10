@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { MapPin, Radio, RefreshCw, Route } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import MapaFrota from '../../components/rastreador/MapaFrota'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
 import type { Column } from '../../components/shared/ResponsiveTable'
@@ -23,7 +23,7 @@ export default function RastreadorPage() {
   const queryClient = useQueryClient()
   const [strAba, setStrAba] = useState<AbaTipo>('mapa')
   const [veiculoId, setVeiculoId] = useState('')
-  const [strBuscaPlaca, setStrBuscaPlaca] = useState('')
+  const [strVeiculoMapaId, setStrVeiculoMapaId] = useState('')
   const [strIdVeiculoFiltro, setStrIdVeiculoFiltro] = useState('')
   const [strIgnicaoFiltro, setStrIgnicaoFiltro] = useState<'' | '0' | '1'>('')
   const [strPlacaFoco, setStrPlacaFoco] = useState<string | null>(null)
@@ -33,7 +33,6 @@ export default function RastreadorPage() {
   const [bolPeriodoAlertaAtivo, setBolPeriodoAlertaAtivo] = useState(false)
 
   const [strVeiculoLocalHist, setStrVeiculoLocalHist] = useState('')
-  const [strIdHistoricoFt, setStrIdHistoricoFt] = useState('')
   const [strInicioHist, setStrInicioHist] = useState('')
   const [strFimHist, setStrFimHist] = useState('')
 
@@ -57,6 +56,8 @@ export default function RastreadorPage() {
     enabled: strAba === 'historico' || strAba === 'mapa',
   })
 
+  const veiculosFt = veiculosFtQuery.data ?? []
+
   const alertasQuery = useQuery({
     queryKey: ['rastreador-alertas-gps', bolPeriodoAlertaAtivo, strInicioAlerta, strFimAlerta],
     queryFn: async () => {
@@ -76,12 +77,29 @@ export default function RastreadorPage() {
     [arrVeiculosLista, strVeiculoLocalHist],
   )
 
-  const strIdHistoricoEfetivo =
-    (objVeiculoHist?.veiculo_id_externo && String(objVeiculoHist.veiculo_id_externo)) || strIdHistoricoFt
+  /** ID no provedor: cadastro (veiculo_id_externo) ou match automatico de placa na lista Fulltrack */
+  const strIdHistoricoEfetivo = useMemo((): string => {
+    if (!objVeiculoHist) return ''
+    const strExt = objVeiculoHist.veiculo_id_externo?.trim()
+    if (strExt) return strExt
+    const strPlacaN = fnNormalizarPlaca(objVeiculoHist.placa)
+    const objFt = veiculosFt.find((v) => fnNormalizarPlaca(v.ras_vei_placa) === strPlacaN)
+    return objFt ? String(objFt.ras_vei_id) : ''
+  }, [objVeiculoHist, veiculosFt])
 
-  useEffect(() => {
-    setStrIdHistoricoFt('')
-  }, [strVeiculoLocalHist])
+  const bolAguardandoListaProvedorHist = Boolean(
+    strVeiculoLocalHist &&
+      objVeiculoHist &&
+      !objVeiculoHist.veiculo_id_externo?.trim() &&
+      veiculosFtQuery.isLoading,
+  )
+
+  const bolHistoricoSemProvedor = Boolean(
+    strVeiculoLocalHist &&
+      objVeiculoHist &&
+      !veiculosFtQuery.isLoading &&
+      !strIdHistoricoEfetivo,
+  )
 
   const historicoQuery = useQuery({
     queryKey: ['rastreador-historico', strIdHistoricoEfetivo, strInicioHist, strFimHist],
@@ -112,12 +130,15 @@ export default function RastreadorPage() {
     if (strIdVeiculoFiltro) {
       arr = arr.filter((p) => p.ras_vei_id === strIdVeiculoFiltro)
     }
-    if (strBuscaPlaca.trim()) {
-      const strN = fnNormalizarPlaca(strBuscaPlaca)
-      arr = arr.filter((p) => fnNormalizarPlaca(p.ras_vei_placa).includes(strN))
+    if (strVeiculoMapaId) {
+      const objV = arrVeiculosLista.find((v) => String(v.id) === strVeiculoMapaId)
+      if (objV) {
+        const strN = fnNormalizarPlaca(objV.placa)
+        arr = arr.filter((p) => fnNormalizarPlaca(p.ras_vei_placa) === strN)
+      }
     }
     return arr
-  }, [posicoesQuery.data, strIdVeiculoFiltro, strBuscaPlaca])
+  }, [posicoesQuery.data, strIdVeiculoFiltro, strVeiculoMapaId, arrVeiculosLista])
 
   const arrTrajetoHistorico = useMemo((): [number, number][] => {
     const arr = historicoQuery.data ?? []
@@ -133,7 +154,6 @@ export default function RastreadorPage() {
   }, [historicoQuery.data])
 
   const veiculos = arrVeiculosLista
-  const veiculosFt = veiculosFtQuery.data ?? []
 
   const arrColumnsEventos: Column<RastreadorEvento>[] = [
     {
@@ -191,7 +211,14 @@ export default function RastreadorPage() {
           type="button"
           className="text-brand-secondary text-sm font-medium hover:underline"
           onClick={() => {
-            setStrPlacaFoco(a.veiculo_placa)
+            const strP = a.veiculo_placa
+            setStrPlacaFoco(strP)
+            if (strP) {
+              const objV = arrVeiculosLista.find(
+                (v) => fnNormalizarPlaca(v.placa) === fnNormalizarPlaca(strP),
+              )
+              if (objV) setStrVeiculoMapaId(String(objV.id))
+            }
             setStrAba('mapa')
           }}
         >
@@ -268,15 +295,24 @@ export default function RastreadorPage() {
                 <option value="0">Desligada</option>
               </select>
             </div>
-            <div className="flex-1 min-w-[180px]">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Busca placa</label>
-              <input
-                type="text"
-                value={strBuscaPlaca}
-                onChange={(e) => setStrBuscaPlaca(e.target.value)}
-                placeholder="Ex: ABC1D23"
+            <div className="flex-1 min-w-[220px]">
+              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo (cadastro)</label>
+              <select
+                value={strVeiculoMapaId}
+                onChange={(e) => {
+                  setStrVeiculoMapaId(e.target.value)
+                  const objSel = arrVeiculosLista.find((v) => String(v.id) === e.target.value)
+                  setStrPlacaFoco(objSel ? objSel.placa : null)
+                }}
                 className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm"
-              />
+              >
+                <option value="">Todos</option>
+                {arrVeiculosLista.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.placa} — {v.modelo}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -306,7 +342,13 @@ export default function RastreadorPage() {
                   <li key={`${p.ras_vei_id}-${p.ras_eve_data_gps}`}>
                     <button
                       type="button"
-                      onClick={() => setStrPlacaFoco(p.ras_vei_placa)}
+                      onClick={() => {
+                        setStrPlacaFoco(p.ras_vei_placa)
+                        const objV = arrVeiculosLista.find(
+                          (v) => fnNormalizarPlaca(v.placa) === fnNormalizarPlaca(p.ras_vei_placa),
+                        )
+                        setStrVeiculoMapaId(objV ? String(objV.id) : '')
+                      }}
                       className="w-full text-left text-sm p-2 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
                     >
                       <span className="font-medium text-gray-900">{p.ras_vei_placa}</span>
@@ -364,40 +406,20 @@ export default function RastreadorPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo (cadastro)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo</label>
               <select
                 value={strVeiculoLocalHist}
                 onChange={(e) => setStrVeiculoLocalHist(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 min-w-[220px] text-sm"
+                className="border border-gray-300 rounded-lg px-3 py-2 min-w-[260px] text-sm"
               >
                 <option value="">Selecione</option>
                 {veiculos.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.placa}
-                    {v.veiculo_id_externo ? '' : ' (sem ID externo)'}
+                    {v.placa} — {v.modelo}
                   </option>
                 ))}
               </select>
             </div>
-            {(!strVeiculoLocalHist || !objVeiculoHist?.veiculo_id_externo) && (
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
-                  {strVeiculoLocalHist ? 'ID no provedor (sem vinculo no cadastro)' : 'Ou ID direto no provedor'}
-                </label>
-                <select
-                  value={strIdHistoricoFt}
-                  onChange={(e) => setStrIdHistoricoFt(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 min-w-[220px] text-sm"
-                >
-                  <option value="">Selecione</option>
-                  {veiculosFt.map((v) => (
-                    <option key={v.ras_vei_id} value={String(v.ras_vei_id)}>
-                      {v.ras_vei_placa}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Inicio</label>
               <input
@@ -421,12 +443,27 @@ export default function RastreadorPage() {
               onClick={() => {
                 void historicoQuery.refetch()
               }}
-              disabled={!strIdHistoricoEfetivo || !strInicioHist || !strFimHist}
+              disabled={
+                bolAguardandoListaProvedorHist ||
+                bolHistoricoSemProvedor ||
+                !strIdHistoricoEfetivo ||
+                !strInicioHist ||
+                !strFimHist
+              }
               className="px-4 py-2 bg-brand-secondary text-white rounded-lg text-sm font-medium disabled:opacity-50"
             >
               Carregar trajeto
             </button>
           </div>
+          {bolAguardandoListaProvedorHist && (
+            <p className="text-sm text-gray-600">Carregando lista do provedor para cruzar pela placa...</p>
+          )}
+          {bolHistoricoSemProvedor && (
+            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              Nao foi possivel localizar este veiculo no provedor pela placa. Cadastre o ID em Veiculos (campo ID
+              no sistema de rastreamento) ou rode a sincronizacao de vinculos no servidor.
+            </p>
+          )}
           {historicoQuery.isFetching && <p className="text-sm text-gray-500">Carregando...</p>}
           {historicoQuery.data && historicoQuery.data.length > 0 && (
             <MapaFrota
