@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { rastreadorService } from '../../services/rastreadorService'
 import { veiculoService } from '../../services/veiculoService'
 
 export default function VeiculoFormPage() {
@@ -13,7 +14,7 @@ export default function VeiculoFormPage() {
     placa: '', modelo: '', ano: new Date().getFullYear(), renavam: '',
     chassi: '', cor: '', combustivel: 'FLEX', kit_gas: false,
     vencimento_gnv: '', km_atual: 0, km_ultima_troca_oleo: 0,
-    numero_rastreador: '', rastreador_ativo: false, valor_rastreador: '53',
+    numero_rastreador: '', veiculo_id_externo: '', rastreador_ativo: false, valor_rastreador: '53',
     vencimento_ipva: '', vencimento_seguro: '', observacoes: '',
   })
   const [error, setError] = useState('')
@@ -22,6 +23,12 @@ export default function VeiculoFormPage() {
     queryKey: ['veiculo', id],
     queryFn: () => veiculoService.buscar(Number(id)),
     enabled: isEditing,
+  })
+
+  const { data: arrVeiculosExternos = [] } = useQuery({
+    queryKey: ['rastreador-veiculos-ft', 'form'],
+    queryFn: () => rastreadorService.veiculosFulltrack(),
+    retry: false,
   })
 
   useEffect(() => {
@@ -33,6 +40,7 @@ export default function VeiculoFormPage() {
         kit_gas: veiculo.kit_gas, vencimento_gnv: veiculo.vencimento_gnv || '',
         km_atual: veiculo.km_atual, km_ultima_troca_oleo: veiculo.km_ultima_troca_oleo,
         numero_rastreador: veiculo.numero_rastreador || '',
+        veiculo_id_externo: veiculo.veiculo_id_externo || '',
         rastreador_ativo: veiculo.rastreador_ativo,
         valor_rastreador: veiculo.valor_rastreador,
         vencimento_ipva: veiculo.vencimento_ipva || '',
@@ -43,8 +51,13 @@ export default function VeiculoFormPage() {
   }, [veiculo])
 
   const mutation = useMutation({
-    mutationFn: (data: typeof form) =>
-      isEditing ? veiculoService.atualizar(Number(id), data) : veiculoService.criar(data),
+    mutationFn: (data: typeof form) => {
+      const objPayload = {
+        ...data,
+        veiculo_id_externo: data.veiculo_id_externo.trim() === '' ? null : data.veiculo_id_externo.trim(),
+      }
+      return isEditing ? veiculoService.atualizar(Number(id), objPayload) : veiculoService.criar(objPayload)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['veiculos'] })
       navigate('/veiculos')
@@ -121,6 +134,46 @@ export default function VeiculoFormPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">KM última troca de óleo *</label>
             <input type="number" value={form.km_ultima_troca_oleo} onChange={(e) => set('km_ultima_troca_oleo', Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
+          </div>
+        </div>
+
+        <div className="border border-gray-200 rounded-lg p-4 space-y-4 bg-gray-50/50">
+          <p className="text-sm font-semibold text-gray-800">Rastreador</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Numero rastreador</label>
+              <input
+                value={form.numero_rastreador}
+                onChange={(e) => set('numero_rastreador', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none"
+                maxLength={50}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Valor mensal (R$)</label>
+              <input
+                type="text"
+                value={form.valor_rastreador}
+                onChange={(e) => set('valor_rastreador', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ID no sistema de rastreamento</label>
+            <p className="text-xs text-gray-500 mb-1">Opcional: vincula ao veiculo retornado pelo provedor configurado no servidor.</p>
+            <select
+              value={form.veiculo_id_externo}
+              onChange={(e) => set('veiculo_id_externo', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none"
+            >
+              <option value="">Nao vinculado</option>
+              {arrVeiculosExternos.map((v) => (
+                <option key={v.ras_vei_id} value={String(v.ras_vei_id)}>
+                  {v.ras_vei_placa} — {v.ras_vei_veiculo}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

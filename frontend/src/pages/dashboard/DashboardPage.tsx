@@ -13,6 +13,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import MapaFrota from '../../components/rastreador/MapaFrota'
 import { dashboardService } from '../../services/dashboardService'
 import type { Alerta } from '../../types'
 import { formatarMesReferencia, formatarMoedaBrl } from '../../utils/format'
@@ -234,6 +235,46 @@ export default function DashboardPage() {
                   </p>
                   <GraficoAtividadeBarra arrValores={arrBarras} />
                 </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                  <h3 className="text-lg font-semibold text-brand-primary">Rastreamento GPS</h3>
+                  <Link
+                    to="/rastreador"
+                    className="text-sm font-semibold text-brand-secondary hover:text-brand-secondary-hover"
+                  >
+                    Ver detalhes
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                  <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+                    <p className="text-xs text-gray-500">Com sinal / frota</p>
+                    <p className="text-xl font-bold text-brand-primary tabular-nums">
+                      {resumo?.rastreador_total_gps?.toLocaleString('pt-BR') ?? '0'}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-3">
+                    <p className="text-xs text-gray-500">Ignicao ligada</p>
+                    <p className="text-xl font-bold text-brand-primary tabular-nums">
+                      {resumo?.rastreador_ignicao_ligada?.toLocaleString('pt-BR') ?? '0'}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <p className="text-xs text-gray-500">Alertas GPS abertos</p>
+                    <p className="text-xl font-bold text-brand-primary tabular-nums">
+                      {resumo?.rastreador_alertas_gps?.toLocaleString('pt-BR') ?? '0'}
+                    </p>
+                  </div>
+                </div>
+                {resumo?.rastreador_posicoes && resumo.rastreador_posicoes.length > 0 ? (
+                  <MapaFrota arrPosicoes={resumo.rastreador_posicoes} numAltura={200} bolMiniMapa />
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Configure <code className="text-xs bg-gray-100 px-1 rounded">RASTREADOR_DRIVER=fulltrack</code> e
+                    credenciais Fulltrack no backend para exibir o mapa.
+                  </p>
+                )}
               </div>
 
               {renda && (

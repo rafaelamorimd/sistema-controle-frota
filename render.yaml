@@ -117,6 +117,16 @@ services:
       - key: MAIL_MAILER
         value: log
 
+      # Fulltrack (definir no painel: FULLTRACK_API_KEY, FULLTRACK_SECRET_KEY; use fulltrack para mapa ao vivo)
+      - key: RASTREADOR_DRIVER
+        value: stub
+      - key: FULLTRACK_BASE_URL
+        value: https://ws.fulltrack2.com
+      - key: FULLTRACK_API_KEY
+        sync: false
+      - key: FULLTRACK_SECRET_KEY
+        sync: false
+
   # ===========================================================
   # FRONTEND - React + Vite (Static Site - SEMPRE GRATIS)
   # ===========================================================

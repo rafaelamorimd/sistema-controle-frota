@@ -6,8 +6,8 @@ use App\Enums\StatusContrato;
 use App\Enums\StatusVeiculo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Veiculo extends Model
 {
@@ -16,7 +16,7 @@ class Veiculo extends Model
     protected $fillable = [
         'placa', 'modelo', 'ano', 'renavam', 'chassi', 'cor',
         'combustivel', 'kit_gas', 'vencimento_gnv', 'km_atual',
-        'km_ultima_troca_oleo', 'status', 'numero_rastreador',
+        'km_ultima_troca_oleo', 'status', 'numero_rastreador', 'veiculo_id_externo',
         'rastreador_ativo', 'valor_rastreador', 'vencimento_ipva',
         'vencimento_seguro', 'observacoes',
     ];

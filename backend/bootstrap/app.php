@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,12 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureFrontendRequestsAreStateful::class,
         ]);
         $middleware->throttleApi();
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->append(SecurityHeaders::class);
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('gefther:gerar-pagamentos-semanais')->weeklyOn(1, '08:00');
         $schedule->command('gefther:lancar-despesa-rastreador')->monthlyOn(1, '06:00');
         $schedule->command('gefther:gerar-alertas')->dailyAt('07:00');
+        $schedule->command('gefther:sincronizar-rastreador-externo')->dailyAt('03:15');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

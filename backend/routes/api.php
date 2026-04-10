@@ -111,6 +111,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('veiculos/{veiculo}/rastreador/eventos', [RastreadorController::class, 'eventos']);
     Route::post('veiculos/{veiculo}/rastreador/sincronizar', [RastreadorController::class, 'sincronizar']);
+    Route::post('veiculos/{veiculo}/rastreador/vinculo-externo', [RastreadorController::class, 'vinculoExterno']);
+
+    Route::prefix('rastreador')->group(function () {
+        Route::get('veiculos', [RastreadorController::class, 'veiculosFulltrack']);
+        Route::get('posicoes', [RastreadorController::class, 'posicoes']);
+        Route::get('posicoes/{strIdVeiculo}/historico', [RastreadorController::class, 'historicoPosicoes']);
+        Route::get('posicoes/{strIdVeiculo}', [RastreadorController::class, 'posicaoVeiculo']);
+        Route::get('alertas-gps/periodo', [RastreadorController::class, 'alertasGpsPeriodo']);
+        Route::get('alertas-gps', [RastreadorController::class, 'alertasGps']);
+        Route::get('resumo', [RastreadorController::class, 'resumoDashboard']);
+    });
 
     Route::get('{entidadeTipo}/{entidadeId}/anotacoes', [AnotacaoController::class, 'index'])
         ->whereIn('entidadeTipo', ['veiculos', 'condutores', 'contratos']);

@@ -21,6 +21,7 @@ export interface Veiculo {
   km_ultima_troca_oleo: number
   status: 'DISPONIVEL' | 'ALUGADO' | 'MANUTENCAO' | 'INATIVO'
   numero_rastreador: string | null
+  veiculo_id_externo: string | null
   rastreador_ativo: boolean
   valor_rastreador: string
   vencimento_ipva: string | null
@@ -197,12 +198,34 @@ export interface Despesa {
   updated_at: string
 }
 
+export interface FulltrackPosicao {
+  ras_vei_id: string
+  ras_vei_placa: string
+  ras_vei_veiculo: string
+  ras_eve_latitude: string
+  ras_eve_longitude: string
+  ras_eve_velocidade: string
+  ras_eve_ignicao: string
+  ras_eve_data_gps: string
+  ras_eve_voltagem: string
+  ras_eve_satelites: string
+  veiculo_id: number | null
+  veiculo_modelo?: string | null
+  veiculo_status?: string | null
+  contrato_ativo?: boolean
+}
+
 export interface DashboardResumo {
   veiculos_total: number
   veiculos_alugados: number
   condutores_ativos: number
   contratos_ativos: number
   alertas_ativos: number
+  rastreador_total_gps?: number
+  rastreador_ignicao_ligada?: number
+  rastreador_ignicao_desligada?: number
+  rastreador_alertas_gps?: number
+  rastreador_posicoes?: FulltrackPosicao[]
 }
 
 export interface DashboardRendaPorVeiculo {
@@ -351,4 +374,39 @@ export interface RastreadorEvento {
   detalhes: string | null
   created_at: string
   updated_at: string
+}
+
+export interface FulltrackVeiculo {
+  ras_vei_id: string
+  ras_vei_placa: string
+  ras_vei_veiculo: string
+  ras_vei_modelo?: string
+  ras_vei_ano?: string
+  ras_vei_equipamento?: string
+  observation?: string
+  veiculo_id: number | null
+  veiculo_status?: string | null
+  veiculo_modelo?: string | null
+  contrato_ativo?: boolean
+}
+
+export interface FulltrackAlerta {
+  _id: string
+  ras_eal_descricao: string
+  ras_eal_data_alerta: string
+  ras_eal_id_alerta_tipo: string
+  ras_eal_latitude: string
+  ras_eal_longitude: string
+  ras_eal_id_veiculo: string
+  veiculo_id: number | null
+  veiculo_placa: string | null
+  contrato_ativo?: boolean
+}
+
+export interface RastreadorResumoGps {
+  posicoes: FulltrackPosicao[]
+  rastreador_total_gps: number
+  rastreador_ignicao_ligada: number
+  rastreador_ignicao_desligada: number
+  rastreador_alertas_gps: number
 }

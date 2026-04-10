@@ -23,7 +23,7 @@ class VeiculoRequest extends FormRequest
                 'regex:/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$|^[A-Z]{3}-?[0-9]{4}$/',
             ],
             'modelo' => 'required|string|max:100',
-            'ano' => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'ano' => 'required|integer|min:2000|max:'.(date('Y') + 1),
             'renavam' => [
                 'required', 'string', 'size:11',
                 Rule::unique('veiculos')->ignore($veiculoId),
@@ -36,6 +36,10 @@ class VeiculoRequest extends FormRequest
             'km_atual' => 'required|integer|min:0',
             'km_ultima_troca_oleo' => 'required|integer|min:0',
             'numero_rastreador' => 'nullable|string|max:50',
+            'veiculo_id_externo' => [
+                'nullable', 'string', 'max:64',
+                Rule::unique('veiculos')->ignore($veiculoId),
+            ],
             'rastreador_ativo' => 'boolean',
             'valor_rastreador' => 'numeric|min:0',
             'vencimento_ipva' => 'nullable|date',

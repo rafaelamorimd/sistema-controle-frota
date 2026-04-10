@@ -15,18 +15,39 @@ use App\Models\Pagamento;
 use App\Models\Veiculo;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DashboardService
 {
+    public function __construct(private RastreadorService $rastreadorService) {}
+
     public function resumo(): array
     {
-        return [
+        $arr = [
             'veiculos_total' => Veiculo::count(),
             'veiculos_alugados' => Veiculo::where('status', StatusVeiculo::ALUGADO)->count(),
             'condutores_ativos' => Condutor::where('status', StatusCondutor::ATIVO)->count(),
             'contratos_ativos' => Contrato::where('status', StatusContrato::ATIVO)->count(),
             'alertas_ativos' => Alerta::ativos()->count(),
         ];
+
+        try {
+            $arrFt = $this->rastreadorService->resumoParaDashboard();
+            $arr['rastreador_total_gps'] = $arrFt['rastreador_total_gps'];
+            $arr['rastreador_ignicao_ligada'] = $arrFt['rastreador_ignicao_ligada'];
+            $arr['rastreador_ignicao_desligada'] = $arrFt['rastreador_ignicao_desligada'];
+            $arr['rastreador_alertas_gps'] = $arrFt['rastreador_alertas_gps'];
+            $arr['rastreador_posicoes'] = $arrFt['posicoes'];
+        } catch (\Throwable $e) {
+            Log::warning('Dashboard resumo Fulltrack: '.$e->getMessage());
+            $arr['rastreador_total_gps'] = 0;
+            $arr['rastreador_ignicao_ligada'] = 0;
+            $arr['rastreador_ignicao_desligada'] = 0;
+            $arr['rastreador_alertas_gps'] = 0;
+            $arr['rastreador_posicoes'] = [];
+        }
+
+        return $arr;
     }
 
     public function rendaLiquida(?string $strMes = null, ?int $numVeiculoId = null): array
