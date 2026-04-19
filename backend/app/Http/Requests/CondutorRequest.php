@@ -26,7 +26,7 @@ class CondutorRequest extends FormRequest
             'email' => 'nullable|email|max:200',
             'endereco' => 'required|string',
             'numero_cnh' => 'required|string|max:20',
-            'categoria_cnh' => 'required|string|in:A,B,AB,C,D,E',
+            'categoria_cnh' => 'required|string|in:A,AB,AC,AD,AE,B,C,D,E',
             'vencimento_cnh' => 'required|date',
             'observacoes' => 'nullable|string',
         ];

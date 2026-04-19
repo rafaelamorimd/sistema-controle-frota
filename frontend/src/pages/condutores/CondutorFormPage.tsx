@@ -3,6 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { condutorService } from '../../services/condutorService'
 
+/** API Laravel envia datas como ISO8601; `<input type="date">` exige `YYYY-MM-DD`. */
+function strDataApiParaInputDate(str: string | null | undefined): string {
+  if (!str) return ''
+  return str.slice(0, 10)
+}
+
 export default function CondutorFormPage() {
   const { id } = useParams()
   const isEditing = !!id
@@ -27,7 +33,8 @@ export default function CondutorFormPage() {
         nome: condutor.nome, cpf: condutor.cpf, telefone: condutor.telefone,
         email: condutor.email || '', endereco: condutor.endereco,
         numero_cnh: condutor.numero_cnh, categoria_cnh: condutor.categoria_cnh,
-        vencimento_cnh: condutor.vencimento_cnh, observacoes: condutor.observacoes || '',
+        vencimento_cnh: strDataApiParaInputDate(condutor.vencimento_cnh),
+        observacoes: condutor.observacoes || '',
       })
     }
   }, [condutor])
@@ -44,7 +51,19 @@ export default function CondutorFormPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    mutation.mutate(form)
+    let dados = form
+    if (
+      isEditing &&
+      condutor &&
+      !dados.vencimento_cnh.trim() &&
+      condutor.vencimento_cnh
+    ) {
+      dados = {
+        ...dados,
+        vencimento_cnh: strDataApiParaInputDate(condutor.vencimento_cnh),
+      }
+    }
+    mutation.mutate(dados)
   }
 
   const set = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }))
@@ -98,8 +117,15 @@ export default function CondutorFormPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
             <select value={form.categoria_cnh} onChange={(e) => set('categoria_cnh', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none">
-              <option value="A">A</option><option value="B">B</option><option value="AB">AB</option>
-              <option value="C">C</option><option value="D">D</option><option value="E">E</option>
+              <option value="A">A</option>
+              <option value="AB">AB</option>
+              <option value="AC">AC</option>
+              <option value="AD">AD</option>
+              <option value="AE">AE</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
             </select>
           </div>
           <div>
