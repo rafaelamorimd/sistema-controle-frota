@@ -7,6 +7,7 @@ use App\Enums\TipoManutencao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Manutencao extends Model
 {
@@ -14,7 +15,7 @@ class Manutencao extends Model
 
     protected $fillable = [
         'veiculo_id', 'tipo', 'descricao', 'data_entrada', 'data_saida',
-        'km_entrada', 'custo_total', 'local', 'status', 'observacoes',
+        'km_entrada', 'custo_total', 'valor_mao_obra', 'servicos_externos', 'local', 'status', 'observacoes',
     ];
 
     protected function casts(): array
@@ -25,6 +26,8 @@ class Manutencao extends Model
             'data_entrada' => 'date',
             'data_saida' => 'date',
             'custo_total' => 'decimal:2',
+            'valor_mao_obra' => 'decimal:2',
+            'servicos_externos' => 'array',
         ];
     }
 
@@ -41,5 +44,10 @@ class Manutencao extends Model
     public function checklistsRevisao(): HasMany
     {
         return $this->hasMany(ChecklistRevisao::class);
+    }
+
+    public function despesaGerada(): HasOne
+    {
+        return $this->hasOne(Despesa::class);
     }
 }

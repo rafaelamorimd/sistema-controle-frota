@@ -31,6 +31,8 @@ export default function ManutencoesOrdensPage() {
     data_entrada: string
     km_entrada: string
     custo_total: string
+    valor_mao_obra: string
+    arrServicosExternos: { strDescricao: string; strValor: string }[]
     local: string
   }>({
     veiculo_id: '',
@@ -39,6 +41,8 @@ export default function ManutencoesOrdensPage() {
     data_entrada: new Date().toISOString().slice(0, 10),
     km_entrada: '',
     custo_total: '',
+    valor_mao_obra: '',
+    arrServicosExternos: [],
     local: '',
   })
 
@@ -57,16 +61,25 @@ export default function ManutencoesOrdensPage() {
   })
 
   const criarMutation = useMutation({
-    mutationFn: () =>
-      manutencaoService.criar({
+    mutationFn: () => {
+      const arrExt = form.arrServicosExternos
+        .filter((row) => row.strDescricao.trim() && row.strValor.trim())
+        .map((row) => ({
+          descricao: row.strDescricao.trim(),
+          valor: Number(row.strValor.replace(',', '.')),
+        }))
+      return manutencaoService.criar({
         veiculo_id: Number(form.veiculo_id),
         tipo: form.tipo,
         descricao: form.descricao,
         data_entrada: form.data_entrada,
         km_entrada: Number(form.km_entrada),
         custo_total: form.custo_total ? Number(form.custo_total) : 0,
+        valor_mao_obra: form.valor_mao_obra ? Number(form.valor_mao_obra.replace(',', '.')) : 0,
+        servicos_externos: arrExt.length ? arrExt : undefined,
         local: form.local || null,
-      }),
+      })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['manutencoes'] })
       setModalAberto(false)
@@ -75,7 +88,11 @@ export default function ManutencoesOrdensPage() {
 
   const concluirMutation = useMutation({
     mutationFn: (m: Manutencao) => manutencaoService.concluir(m.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['manutencoes'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['manutencoes'] })
+      queryClient.invalidateQueries({ queryKey: ['despesas'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
   })
 
   const lista = data?.data ?? []
@@ -231,11 +248,66 @@ export default function ManutencoesOrdensPage() {
             type="number"
             step="0.01"
             min="0"
-            placeholder="Custo (R$)"
+            placeholder="Custo total manual (R$, opcional se usar itens depois)"
             value={form.custo_total}
             onChange={(e) => setForm((f) => ({ ...f, custo_total: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2"
           />
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Mão de obra (R$)"
+            value={form.valor_mao_obra}
+            onChange={(e) => setForm((f) => ({ ...f, valor_mao_obra: e.target.value }))}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+          <div className="space-y-2">
+            <p className="text-xs text-gray-600">Serviços externos (opcional)</p>
+            {form.arrServicosExternos.map((row, numI) => (
+              <div key={numI} className="flex gap-2">
+                <input
+                  placeholder="Descrição"
+                  value={row.strDescricao}
+                  onChange={(e) =>
+                    setForm((f) => {
+                      const arr = [...f.arrServicosExternos]
+                      arr[numI] = { ...arr[numI], strDescricao: e.target.value }
+                      return { ...f, arrServicosExternos: arr }
+                    })
+                  }
+                  className="flex-1 border rounded-lg px-2 py-1.5 text-sm"
+                />
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="R$"
+                  value={row.strValor}
+                  onChange={(e) =>
+                    setForm((f) => {
+                      const arr = [...f.arrServicosExternos]
+                      arr[numI] = { ...arr[numI], strValor: e.target.value }
+                      return { ...f, arrServicosExternos: arr }
+                    })
+                  }
+                  className="w-28 border rounded-lg px-2 py-1.5 text-sm"
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="text-sm text-brand-secondary font-medium"
+              onClick={() =>
+                setForm((f) => ({
+                  ...f,
+                  arrServicosExternos: [...f.arrServicosExternos, { strDescricao: '', strValor: '' }],
+                }))
+              }
+            >
+              + Adicionar serviço externo
+            </button>
+          </div>
           <input
             placeholder="Local (opcional)"
             value={form.local}

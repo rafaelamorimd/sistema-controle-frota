@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Despesa extends Model
 {
     protected $fillable = [
-        'veiculo_id', 'descricao', 'categoria', 'valor', 'data_vencimento',
+        'veiculo_id', 'manutencao_id', 'descricao', 'categoria', 'valor', 'data_vencimento',
         'data_pagamento', 'status', 'caminho_comprovante', 'observacoes',
     ];
 
@@ -26,5 +26,10 @@ class Despesa extends Model
     public function veiculo(): BelongsTo
     {
         return $this->belongsTo(Veiculo::class);
+    }
+
+    public function manutencao(): BelongsTo
+    {
+        return $this->belongsTo(Manutencao::class);
     }
 }

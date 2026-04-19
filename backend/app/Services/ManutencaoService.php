@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\StatusDespesa;
 use App\Enums\StatusManutencao;
 use App\Enums\TipoMovimentacaoPeca;
+use App\Models\Despesa;
 use App\Models\Manutencao;
 use App\Models\ManutencaoItem;
+use App\Models\Peca;
 use App\Models\Veiculo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -18,13 +21,13 @@ class ManutencaoService
     {
         $query = Manutencao::with(['veiculo', 'itens.peca']);
 
-        if (!empty($filtros['veiculo_id'])) {
+        if (! empty($filtros['veiculo_id'])) {
             $query->where('veiculo_id', $filtros['veiculo_id']);
         }
-        if (!empty($filtros['status'])) {
+        if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
         }
-        if (!empty($filtros['tipo'])) {
+        if (! empty($filtros['tipo'])) {
             $query->where('tipo', $filtros['tipo']);
         }
 
@@ -59,8 +62,11 @@ class ManutencaoService
                 $this->adicionarItemInterno($manutencao, $item);
             }
 
-            // Se houver itens, custo vem da soma dos itens. Sem itens, preserva custo informado manualmente.
-            if (!empty($arrItens)) {
+            $bolTemCustoComposto = ! empty($arrItens)
+                || ((float) ($dados['valor_mao_obra'] ?? 0)) > 0.0001
+                || ! empty($dados['servicos_externos']);
+
+            if ($bolTemCustoComposto) {
                 $this->recalcularCustoTotal($manutencao->fresh());
             }
 
@@ -72,6 +78,10 @@ class ManutencaoService
     {
         unset($dados['itens']);
         $manutencao->update($dados);
+
+        if (array_key_exists('valor_mao_obra', $dados) || array_key_exists('servicos_externos', $dados)) {
+            $this->recalcularCustoTotal($manutencao->fresh());
+        }
 
         return $manutencao->fresh(['veiculo', 'itens.peca']);
     }
@@ -92,7 +102,7 @@ class ManutencaoService
 
         return DB::transaction(function () use ($manutencao, $dadosItem) {
             $item = $this->adicionarItemInterno($manutencao, $dadosItem);
-            $this->recalcularCustoTotal($manutencao);
+            $this->recalcularCustoTotal($manutencao->fresh());
 
             return $item->load('peca');
         });
@@ -109,7 +119,7 @@ class ManutencaoService
 
         return DB::transaction(function () use ($manutencao, $item, $dados) {
             $item->update($dados);
-            $this->recalcularCustoTotal($manutencao);
+            $this->recalcularCustoTotal($manutencao->fresh());
 
             return $item->fresh('peca');
         });
@@ -126,18 +136,42 @@ class ManutencaoService
 
         DB::transaction(function () use ($manutencao, $item) {
             $item->delete();
-            $this->recalcularCustoTotal($manutencao);
+            $this->recalcularCustoTotal($manutencao->fresh());
         });
     }
 
     public function concluir(Manutencao $manutencao, ?string $dtaSaida = null): Manutencao
     {
-        $manutencao->update([
-            'status' => StatusManutencao::CONCLUIDA,
-            'data_saida' => $dtaSaida ?? now()->toDateString(),
-        ]);
+        return DB::transaction(function () use ($manutencao, $dtaSaida) {
+            $this->recalcularCustoTotal($manutencao->fresh());
+            $manutencao->refresh();
 
-        return $manutencao->fresh(['veiculo', 'itens.peca']);
+            $strSaida = $dtaSaida ?? now()->toDateString();
+
+            $manutencao->update([
+                'status' => StatusManutencao::CONCLUIDA,
+                'data_saida' => $strSaida,
+            ]);
+
+            $manutencao->refresh();
+
+            if ((float) $manutencao->custo_total > 0) {
+                Despesa::query()->updateOrCreate(
+                    ['manutencao_id' => $manutencao->id],
+                    [
+                        'veiculo_id' => $manutencao->veiculo_id,
+                        'descricao' => 'Manutencao #'.$manutencao->id.' — '.mb_substr($manutencao->descricao, 0, 200),
+                        'categoria' => 'MANUTENCAO',
+                        'valor' => $manutencao->custo_total,
+                        'data_vencimento' => $strSaida,
+                        'data_pagamento' => $strSaida,
+                        'status' => StatusDespesa::PAGO,
+                    ]
+                );
+            }
+
+            return $manutencao->fresh(['veiculo', 'itens.peca']);
+        });
     }
 
     private function adicionarItemInterno(Manutencao $manutencao, array $dadosItem): ManutencaoItem
@@ -155,8 +189,8 @@ class ManutencaoService
             'custo_total' => $numCustoTot,
         ]);
 
-        if (!empty($dadosItem['peca_id']) && !empty($dadosItem['baixar_estoque']) && $dadosItem['baixar_estoque']) {
-            $peca = \App\Models\Peca::findOrFail($dadosItem['peca_id']);
+        if (! empty($dadosItem['peca_id']) && ! empty($dadosItem['baixar_estoque']) && $dadosItem['baixar_estoque']) {
+            $peca = Peca::findOrFail($dadosItem['peca_id']);
             $this->pecaService->registrarMovimentacao(
                 $peca,
                 TipoMovimentacaoPeca::SAIDA,
@@ -173,7 +207,19 @@ class ManutencaoService
 
     private function recalcularCustoTotal(Manutencao $manutencao): void
     {
-        $numTotal = (float) $manutencao->itens()->sum('custo_total');
+        $numItens = (float) $manutencao->itens()->sum('custo_total');
+        $numMao = (float) ($manutencao->valor_mao_obra ?? 0);
+        $numExt = 0.0;
+        $arrExt = $manutencao->servicos_externos;
+        if (is_array($arrExt)) {
+            foreach ($arrExt as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $numExt += (float) ($row['valor'] ?? 0);
+            }
+        }
+        $numTotal = round($numItens + $numMao + $numExt, 2);
         $manutencao->update(['custo_total' => $numTotal]);
     }
 }
