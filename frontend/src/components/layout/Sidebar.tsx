@@ -97,10 +97,10 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   }, [bolMobile, bolAberto, onFechar])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold tracking-tight transition-[color,background-color,box-shadow,border-color] duration-200 ${
       isActive
-        ? 'bg-white text-brand-secondary shadow-sm border border-sidebar-border/80'
-        : 'text-gray-600 hover:bg-white/70 hover:text-brand-primary'
+        ? 'bg-white text-brand-secondary shadow-[0_1px_0_0_rgb(26_54_93/0.05)] border border-sidebar-border/90'
+        : 'text-gray-600 hover:bg-white/75 hover:text-brand-primary'
     }`
 
   const iconClass = (isActive: boolean) => (isActive ? 'text-brand-secondary' : 'text-gray-500')
@@ -275,7 +275,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
   }
 
   return (
-    <aside className="w-64 bg-sidebar-surface text-gray-900 flex flex-col border-r border-sidebar-border shrink-0">
+    <aside className="w-64 bg-sidebar-surface text-gray-900 flex flex-col border-r border-sidebar-border shrink-0 shadow-[4px_0_24px_-12px_rgb(26_54_93/0.15)]">
       {conteudoTopo}
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">{fnRenderNav()}</nav>
       {conteudoRodape}

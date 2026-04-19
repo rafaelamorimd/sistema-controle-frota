@@ -103,7 +103,9 @@ export default function DashboardPage() {
     <div className="space-y-6 lg:space-y-8 max-w-[1600px] mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-brand-primary tracking-tight">Dashboard</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-primary tracking-tight">
+            Dashboard
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
             {strSaudacao}
             {user?.name ? `, ${user.name.split(' ')[0]}` : ''} — visao geral da sua frota em tempo real.
@@ -111,7 +113,7 @@ export default function DashboardPage() {
         </div>
         <Link
           to="/relatorios"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 shadow-sm hover:bg-surface-muted transition-colors shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200/90 bg-white text-sm font-semibold text-gray-700 shadow-[0_1px_2px_rgb(26_54_93/0.06)] hover:bg-surface-muted hover:border-brand-primary-border/80 transition-colors shrink-0"
         >
           <Download size={18} className="text-brand-secondary" />
           Exportar visao
@@ -206,7 +208,9 @@ export default function DashboardPage() {
             <div className="xl:col-span-2 space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                  <h2 className="text-lg font-semibold text-brand-primary">Distribuicao da frota</h2>
+                  <h2 className="font-display text-lg font-semibold text-brand-primary tracking-tight">
+                    Distribuicao da frota
+                  </h2>
                   <div className="flex rounded-xl bg-gray-100 p-1 self-start sm:self-auto">
                     <button
                       type="button"
@@ -268,7 +272,9 @@ export default function DashboardPage() {
 
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <h3 className="text-lg font-semibold text-brand-primary">Rastreamento GPS</h3>
+                  <h3 className="font-display text-lg font-semibold text-brand-primary tracking-tight">
+                    Rastreamento GPS
+                  </h3>
                   <Link
                     to="/rastreador"
                     className="text-sm font-semibold text-brand-secondary hover:text-brand-secondary-hover"
@@ -308,7 +314,9 @@ export default function DashboardPage() {
 
               {renda && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
-                  <h3 className="text-lg font-semibold text-brand-primary mb-1">Renda liquida mensal</h3>
+                  <h3 className="font-display text-lg font-semibold text-brand-primary mb-1 tracking-tight">
+                    Renda liquida mensal
+                  </h3>
                   <p className="text-sm text-gray-500 mb-4">
                     Referencia: {formatarMesReferencia(renda.mes_referencia)}
                   </p>
@@ -339,7 +347,9 @@ export default function DashboardPage() {
             {/* Lista tipo maintenance / alertas */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col min-h-[320px]">
               <div className="flex items-center justify-between gap-2 mb-4">
-                <h2 className="text-lg font-semibold text-brand-primary">Alertas recentes</h2>
+                <h2 className="font-display text-lg font-semibold text-brand-primary tracking-tight">
+                  Alertas recentes
+                </h2>
                 <Link
                   to="/relatorios"
                   className="text-xs font-semibold text-brand-secondary hover:text-brand-secondary-hover uppercase tracking-wide"
@@ -383,7 +393,7 @@ export default function DashboardPage() {
           {/* Banner inferior — referência */}
           <div className="rounded-2xl bg-brand-primary text-white p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 shadow-lg">
             <div className="max-w-2xl">
-              <h3 className="text-xl lg:text-2xl font-bold">Excelência operacional</h3>
+              <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight">Excelência operacional</h3>
               <p className="text-white/85 text-sm mt-2 leading-relaxed">
                 Acompanhe indicadores, alertas e contratos em um só lugar. Gere relatórios para sua equipe e
                 mantenha a frota sempre em conformidade.

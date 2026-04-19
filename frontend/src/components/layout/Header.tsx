@@ -36,7 +36,7 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
   }
 
   return (
-    <header className="min-h-16 bg-white border-b border-brand-primary-border/50 flex items-center justify-between px-3 sm:px-6 py-3 gap-4">
+    <header className="min-h-16 bg-white/90 backdrop-blur-md border-b border-brand-primary-border/60 flex items-center justify-between px-3 sm:px-6 py-3 gap-4 shadow-[0_1px_0_0_rgb(26_54_93/0.06)]">
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <button
           type="button"

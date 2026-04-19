@@ -53,15 +53,17 @@ export default function LoginPage() {
       <div className="relative min-h-screen w-full max-w-[1280px] mx-auto grid grid-cols-1 xl:grid-cols-[1fr_280px] items-center gap-6 px-4 sm:px-6 lg:px-10 py-8">
         <div className="w-full flex justify-center">
           <div className="w-full max-w-[430px]">
-            <div className="bg-white rounded-2xl shadow-2xl border border-white/60 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-[0_25px_50px_-12px_rgb(16_47_82/0.35),0_0_0_1px_rgb(255_255_255/0.5)] border border-white/60 overflow-hidden">
               <div className="px-7 sm:px-8 pt-8 pb-6">
                 <div className="text-center mb-6">
                   <BrandLogo variant="login" />
                 </div>
 
                 <div className="text-center mb-6">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-brand-primary">Bem-vindo de volta</h1>
-                  <p className="text-sm text-gray-500 mt-1">Acesse sua central de comando</p>
+                  <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-primary">
+                    Bem-vindo de volta
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1.5 font-medium">Acesse sua central de comando</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -163,7 +165,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 rounded-lg bg-brand-secondary-muted text-brand-secondary flex items-center justify-center mb-4">
               <ShieldCheck size={20} />
             </div>
-            <h3 className="text-2xl font-bold tracking-tight">Visão total da frota</h3>
+            <h3 className="font-display text-2xl font-bold tracking-tight">Visão total da frota</h3>
             <p className="text-sm text-white/80 mt-3 leading-relaxed">
               Monitore desempenho, custos e manutenção preventiva em uma única interface inteligente.
             </p>

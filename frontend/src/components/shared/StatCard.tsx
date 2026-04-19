@@ -28,7 +28,7 @@ export default function StatCard({
   const { strWrap, strIcon } = mapIcone[varianteIcone]
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
+    <div className="bg-white rounded-2xl border border-gray-100/90 shadow-[0_1px_2px_rgb(26_54_93/0.04),0_8px_24px_-8px_rgb(26_54_93/0.08)] p-5 lg:p-6 flex flex-col justify-between min-h-[120px]">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-sm text-gray-500 font-medium">{strTitulo}</p>

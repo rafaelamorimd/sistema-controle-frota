@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  /* Identidade GEFTHER (referencia: navy + verde floresta, superficie fria) */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Tipografia: Outfit (UI) + Syne (títulos) — identidade GEFTHER */
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+
   --color-brand-primary: #1a365d;
   --color-brand-primary-hover: #142f52;
   --color-brand-primary-muted: #e8eef5;
@@ -10,8 +12,8 @@
   --color-brand-secondary: #2d6a4f;
   --color-brand-secondary-hover: #245a42;
   --color-brand-secondary-muted: #e6f4ea;
-  --color-surface: #f0f4f8;
-  --color-surface-muted: #e8eef5;
+  --color-surface: #eef2f7;
+  --color-surface-muted: #e4ebf3;
   --color-sidebar-surface: #e8edf4;
   --color-sidebar-border: #d4dce8;
 }
@@ -20,4 +22,47 @@
   body {
     @apply bg-surface text-gray-900 antialiased font-sans;
   }
+
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(45 106 79 / 0.35);
+  }
+}
+
+/* Entrada suave do conteúdo ao trocar de rota */
+@keyframes gef-main-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gef-animate-main-enter {
+  animation: gef-main-enter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Área principal: profundidade + grão muito sutil */
+.gef-main-canvas {
+  position: relative;
+  isolation: isolate;
+}
+
+.gef-main-canvas::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+.gef-main-canvas > * {
+  position: relative;
+  z-index: 1;
 }
