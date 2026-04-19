@@ -37,18 +37,23 @@ const arrMenuEntradas: (MenuLink | MenuGrupo)[] = [
   { kind: 'link', to: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos' },
   { kind: 'link', to: '/financeiro/despesas', icon: Receipt, label: 'Despesas' },
   { kind: 'link', to: '/quilometragem/leituras', icon: Gauge, label: 'Quilometragem' },
-  { kind: 'link', to: '/operacional/manutencoes', icon: Wrench, label: 'Manutenções' },
-  { kind: 'link', to: '/operacional/pecas', icon: Package, label: 'Peças' },
-  { kind: 'link', to: '/operacional/multas', icon: Gavel, label: 'Multas' },
   {
     kind: 'grupo',
-    strTitulo: 'Revisão',
-    icon: ClipboardList,
+    strTitulo: 'Manutenções',
+    icon: Wrench,
     arrFilhos: [
-      { kind: 'link', to: '/revisao/checklist', icon: ClipboardList, label: 'Checklist' },
-      { kind: 'link', to: '/revisao/categorias', icon: FolderTree, label: 'Categorias' },
+      { kind: 'link', to: '/operacional/manutencoes', icon: Wrench, label: 'Ordens de serviço' },
+      { kind: 'link', to: '/operacional/manutencoes/checklist', icon: ClipboardList, label: 'Checklist' },
+      {
+        kind: 'link',
+        to: '/operacional/manutencoes/categorias',
+        icon: FolderTree,
+        label: 'Categorias do checklist',
+      },
     ],
   },
+  { kind: 'link', to: '/operacional/pecas', icon: Package, label: 'Peças' },
+  { kind: 'link', to: '/operacional/multas', icon: Gavel, label: 'Multas' },
   { kind: 'link', to: '/rastreador', icon: Radio, label: 'Rastreador' },
   { kind: 'link', to: '/relatorios', icon: FileBarChart, label: 'Relatórios' },
   { kind: 'link', to: '/configuracoes', icon: Settings, label: 'Configurações' },
@@ -213,7 +218,7 @@ export default function Sidebar({ bolMobile, bolAberto, onFechar }: SidebarProps
                   <NavLink
                     key={filho.to}
                     to={filho.to}
-                    end={false}
+                    end={filho.to === '/operacional/manutencoes'}
                     onClick={onNavigate}
                     className={linkClass}
                   >

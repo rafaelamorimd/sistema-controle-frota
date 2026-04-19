@@ -13,7 +13,8 @@ import ContratoFormPage from './pages/contratos/ContratoFormPage'
 import PagamentosPage from './pages/financeiro/PagamentosPage'
 import DespesasPage from './pages/financeiro/DespesasPage'
 import LeiturasKmPage from './pages/quilometragem/LeiturasKmPage'
-import ManutencoesPage from './pages/operacional/ManutencoesPage'
+import ManutencoesLayout from './pages/operacional/manutencoes/ManutencoesLayout'
+import ManutencoesOrdensPage from './pages/operacional/manutencoes/ManutencoesOrdensPage'
 import PecasPage from './pages/operacional/PecasPage'
 import MultasPage from './pages/operacional/MultasPage'
 import ChecklistRevisaoPage from './pages/revisao/ChecklistRevisaoPage'
@@ -60,12 +61,16 @@ export default function App() {
         <Route path="financeiro/pagamentos" element={<PagamentosPage />} />
         <Route path="financeiro/despesas" element={<DespesasPage />} />
         <Route path="quilometragem/leituras" element={<LeiturasKmPage />} />
-        <Route path="operacional/manutencoes" element={<ManutencoesPage />} />
+        <Route path="operacional/manutencoes" element={<ManutencoesLayout />}>
+          <Route index element={<ManutencoesOrdensPage />} />
+          <Route path="checklist" element={<ChecklistRevisaoPage />} />
+          <Route path="categorias" element={<RevisaoCategoriasPage />} />
+        </Route>
         <Route path="operacional/pecas" element={<PecasPage />} />
         <Route path="operacional/multas" element={<MultasPage />} />
-        <Route path="revisao/checklist" element={<ChecklistRevisaoPage />} />
-        <Route path="revisao/categorias" element={<RevisaoCategoriasPage />} />
-        <Route path="operacional/checklist" element={<Navigate to="/revisao/checklist" replace />} />
+        <Route path="revisao/checklist" element={<Navigate to="/operacional/manutencoes/checklist" replace />} />
+        <Route path="revisao/categorias" element={<Navigate to="/operacional/manutencoes/categorias" replace />} />
+        <Route path="operacional/checklist" element={<Navigate to="/operacional/manutencoes/checklist" replace />} />
         <Route path="rastreador" element={<RastreadorPage />} />
         <Route path="relatorios" element={<RelatoriosPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />

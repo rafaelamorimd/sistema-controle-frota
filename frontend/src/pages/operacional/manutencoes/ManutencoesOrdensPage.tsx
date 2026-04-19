@@ -1,26 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, Plus, Wrench } from 'lucide-react'
+import { CheckCircle, Plus } from 'lucide-react'
 import { useState } from 'react'
-import Modal from '../../components/shared/Modal'
-import ResponsiveTable from '../../components/shared/ResponsiveTable'
-import type { Column } from '../../components/shared/ResponsiveTable'
-import { manutencaoService } from '../../services/manutencaoService'
-import { veiculoService } from '../../services/veiculoService'
-import type { Manutencao } from '../../types'
-import { formatarMoedaBrl } from '../../utils/format'
+import Modal from '../../../components/shared/Modal'
+import ResponsiveTable from '../../../components/shared/ResponsiveTable'
+import type { Column } from '../../../components/shared/ResponsiveTable'
+import { manutencaoService } from '../../../services/manutencaoService'
+import { veiculoService } from '../../../services/veiculoService'
+import type { Manutencao } from '../../../types'
+import { formatarMoedaBrl } from '../../../utils/format'
 
 const statusCores: Record<string, string> = {
   CONCLUIDA: 'bg-green-100 text-green-800',
   EM_ANDAMENTO: 'bg-amber-100 text-amber-800',
 }
 
-export default function ManutencoesPage() {
+const mapTipoLabel: Record<string, string> = {
+  PREVENTIVA: 'Preventiva',
+  CORRETIVA: 'Corretiva',
+  PREDITIVA: 'Preditiva',
+}
+
+export default function ManutencoesOrdensPage() {
   const queryClient = useQueryClient()
   const [veiculoFiltro, setVeiculoFiltro] = useState('')
   const [modalAberto, setModalAberto] = useState(false)
   const [form, setForm] = useState<{
     veiculo_id: string
-    tipo: 'PREVENTIVA' | 'CORRETIVA'
+    tipo: 'PREVENTIVA' | 'CORRETIVA' | 'PREDITIVA'
     descricao: string
     data_entrada: string
     km_entrada: string
@@ -84,7 +90,9 @@ export default function ManutencoesPage() {
     {
       strLabel: 'Tipo',
       strKey: 'tipo',
-      render: (m) => <span className="text-gray-700">{m.tipo}</span>,
+      render: (m) => (
+        <span className="text-gray-700">{mapTipoLabel[m.tipo] ?? m.tipo}</span>
+      ),
     },
     {
       strLabel: 'Entrada',
@@ -110,19 +118,13 @@ export default function ManutencoesPage() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Wrench className="text-brand-secondary" size={28} />
-            Manutenções
-          </h1>
-          <p className="text-gray-500 text-sm">Ordens de serviço e revisões</p>
-        </div>
+        <h2 className="text-lg font-semibold text-gray-900">Ordens de serviço</h2>
         <button
           type="button"
           onClick={() => setModalAberto(true)}
           className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover text-sm font-medium"
         >
-          <Plus size={18} /> Nova
+          <Plus size={18} /> Nova ordem
         </button>
       </div>
 
@@ -153,7 +155,9 @@ export default function ManutencoesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">{m.veiculo?.placa ?? m.veiculo_id}</p>
-                <p className="text-xs text-gray-500">{m.tipo} - {m.data_entrada}</p>
+                <p className="text-xs text-gray-500">
+                  {mapTipoLabel[m.tipo] ?? m.tipo} — {m.data_entrada}
+                </p>
               </div>
               <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusCores[m.status] ?? ''}`}>
                 {m.status}
@@ -174,11 +178,7 @@ export default function ManutencoesPage() {
         />
       </div>
 
-      <Modal
-        aberto={modalAberto}
-        aoFechar={() => setModalAberto(false)}
-        titulo="Nova manutenção"
-      >
+      <Modal aberto={modalAberto} aoFechar={() => setModalAberto(false)} titulo="Nova ordem de serviço">
         <div className="space-y-3">
           <select
             required
@@ -195,11 +195,17 @@ export default function ManutencoesPage() {
           </select>
           <select
             value={form.tipo}
-            onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value as 'PREVENTIVA' | 'CORRETIVA' }))}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                tipo: e.target.value as 'PREVENTIVA' | 'CORRETIVA' | 'PREDITIVA',
+              }))
+            }
             className="w-full border rounded-lg px-3 py-2"
           >
-            <option value="PREVENTIVA">Preventiva</option>
-            <option value="CORRETIVA">Corretiva</option>
+            <option value="PREVENTIVA">Revisão preventiva</option>
+            <option value="CORRETIVA">Manutenção corretiva</option>
+            <option value="PREDITIVA">Manutenção preditiva</option>
           </select>
           <textarea
             placeholder="Descrição"

@@ -17,7 +17,7 @@ class ManutencaoRequest extends FormRequest
 
         return [
             'veiculo_id' => ($bolAtualiza ? 'sometimes|' : '').'required|exists:veiculos,id',
-            'tipo' => ($bolAtualiza ? 'sometimes|' : '').'required|string|in:PREVENTIVA,CORRETIVA',
+            'tipo' => ($bolAtualiza ? 'sometimes|' : '').'required|string|in:PREVENTIVA,CORRETIVA,PREDITIVA',
             'descricao' => ($bolAtualiza ? 'sometimes|' : '').'required|string|max:5000',
             'data_entrada' => ($bolAtualiza ? 'sometimes|' : '').'required|date',
             'data_saida' => 'nullable|date',

@@ -358,10 +358,10 @@ export default function ChecklistRevisaoPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ClipboardList className="text-brand-secondary" size={28} />
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <ClipboardList className="text-brand-secondary" size={26} />
             Checklist de revisão
-          </h1>
+          </h2>
         </div>
         <button
           type="button"
@@ -376,7 +376,7 @@ export default function ChecklistRevisaoPage() {
       {bolSemItensCadastro && (
         <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-950">
           Não há categorias de inspeção cadastradas.{' '}
-          <Link to="/revisao/categorias" className="font-semibold underline">
+          <Link to="/operacional/manutencoes/categorias" className="font-semibold underline">
             Cadastrar categorias
           </Link>
         </div>
@@ -432,8 +432,8 @@ export default function ChecklistRevisaoPage() {
           ) : bolSemItensCadastro ? (
             <p className="text-sm text-amber-800">
               Cadastre categorias em{' '}
-              <Link to="/revisao/categorias" className="underline font-medium">
-                Revisão → Categorias
+              <Link to="/operacional/manutencoes/categorias" className="underline font-medium">
+                Manutenções → Categorias do checklist
               </Link>
               .
             </p>

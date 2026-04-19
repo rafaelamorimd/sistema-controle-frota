@@ -251,7 +251,7 @@ export interface DashboardAlertas {
 export interface Manutencao {
   id: number
   veiculo_id: number
-  tipo: 'PREVENTIVA' | 'CORRETIVA'
+  tipo: 'PREVENTIVA' | 'CORRETIVA' | 'PREDITIVA'
   descricao: string
   data_entrada: string
   data_saida: string | null

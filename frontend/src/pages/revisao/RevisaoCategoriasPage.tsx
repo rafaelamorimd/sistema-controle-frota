@@ -105,10 +105,10 @@ export default function RevisaoCategoriasPage() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <FolderTree className="text-brand-secondary" size={28} />
+        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <FolderTree className="text-brand-secondary" size={26} />
           Categorias do checklist
-        </h1>
+        </h2>
         <button
           type="button"
           onClick={abrirNovaCategoria}
