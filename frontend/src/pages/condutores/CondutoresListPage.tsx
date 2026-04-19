@@ -68,7 +68,7 @@ export default function CondutoresListPage() {
         <h2 className="text-2xl font-bold text-gray-900">Condutores</h2>
         <Link to="/condutores/novo"
           className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium">
-          <Plus size={18} /> Novo Condutor
+          <Plus size={18} /> Novo condutor
         </Link>
       </div>
 

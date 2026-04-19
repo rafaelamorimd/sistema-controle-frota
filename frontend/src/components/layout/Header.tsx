@@ -60,7 +60,7 @@ export default function Header({ onAbrirMenu }: HeaderProps) {
         <button
           type="button"
           className="relative p-2.5 text-gray-500 hover:text-brand-primary rounded-xl hover:bg-surface-muted transition-colors"
-          aria-label="Notificacoes"
+          aria-label="Notificações"
         >
           <Bell size={20} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />

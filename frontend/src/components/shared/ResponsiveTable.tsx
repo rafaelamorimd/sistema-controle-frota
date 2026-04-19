@@ -53,7 +53,7 @@ export default function ResponsiveTable<T>({
               ))}
               {fnRenderActions && (
                 <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
-                  Acoes
+                  Ações
                 </th>
               )}
             </tr>

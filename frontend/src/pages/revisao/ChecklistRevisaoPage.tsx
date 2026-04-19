@@ -408,7 +408,7 @@ export default function ChecklistRevisaoPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {!veiculoId ? (
-          <div className="p-8 text-center text-gray-500">Escolha um veiculo</div>
+          <div className="p-8 text-center text-gray-500">Escolha um veículo</div>
         ) : (
           <ResponsiveTable
             arrColumns={arrColumns}

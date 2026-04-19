@@ -194,7 +194,7 @@ export default function RastreadorPage() {
       render: (a) => <span className="text-gray-700 whitespace-nowrap">{a.ras_eal_data_alerta}</span>,
     },
     {
-      strLabel: 'Descricao',
+      strLabel: 'Descrição',
       strKey: 'desc',
       render: (a) => <span className="text-gray-800">{a.ras_eal_descricao}</span>,
     },
@@ -245,7 +245,7 @@ export default function RastreadorPage() {
           [
             ['mapa', 'Mapa', MapPin],
             ['alertas', 'Alertas GPS', Radio],
-            ['historico', 'Historico', Route],
+            ['historico', 'Histórico', Route],
             ['eventos', 'Eventos locais', RefreshCw],
           ] as const
         ).map(([strId, strLabel, Icon]) => (
@@ -269,7 +269,7 @@ export default function RastreadorPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo (Fulltrack)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Veículo (Fulltrack)</label>
               <select
                 value={strIdVeiculoFiltro}
                 onChange={(e) => setStrIdVeiculoFiltro(e.target.value)}
@@ -284,7 +284,7 @@ export default function RastreadorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Ignicao</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Ignição</label>
               <select
                 value={strIgnicaoFiltro}
                 onChange={(e) => setStrIgnicaoFiltro(e.target.value as '' | '0' | '1')}
@@ -296,7 +296,7 @@ export default function RastreadorPage() {
               </select>
             </div>
             <div className="flex-1 min-w-[220px]">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo (cadastro)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Veículo (cadastro)</label>
               <select
                 value={strVeiculoMapaId}
                 onChange={(e) => {
@@ -320,11 +320,11 @@ export default function RastreadorPage() {
             <div className="xl:col-span-2">
               {posicoesQuery.isLoading ? (
                 <div className="h-[400px] flex items-center justify-center bg-gray-50 rounded-xl border">
-                  Carregando posicoes...
+                  Carregando posições...
                 </div>
               ) : posicoesQuery.isError ? (
                 <div className="p-6 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-sm">
-                  Nao foi possivel carregar o mapa. Verifique RASTREADOR_DRIVER=fulltrack e credenciais no
+                  Não foi possível carregar o mapa. Verifique RASTREADOR_DRIVER=fulltrack e credenciais no
                   backend.
                 </div>
               ) : (
@@ -371,7 +371,7 @@ export default function RastreadorPage() {
                 checked={bolPeriodoAlertaAtivo}
                 onChange={(e) => setBolPeriodoAlertaAtivo(e.target.checked)}
               />
-              Filtrar por periodo
+              Filtrar por período
             </label>
             {bolPeriodoAlertaAtivo && (
               <>
@@ -406,7 +406,7 @@ export default function RastreadorPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Veiculo</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Veículo</label>
               <select
                 value={strVeiculoLocalHist}
                 onChange={(e) => setStrVeiculoLocalHist(e.target.value)}
@@ -421,7 +421,7 @@ export default function RastreadorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Inicio</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Início</label>
               <input
                 type="datetime-local"
                 value={strInicioHist}
@@ -460,8 +460,8 @@ export default function RastreadorPage() {
           )}
           {bolHistoricoSemProvedor && (
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              Nao foi possivel localizar este veiculo no provedor pela placa. Cadastre o ID em Veiculos (campo ID
-              no sistema de rastreamento) ou rode a sincronizacao de vinculos no servidor.
+              Não foi possível localizar este veículo no provedor pela placa. Cadastre o ID em Veículos (campo ID
+              no sistema de rastreamento) ou rode a sincronização de vínculos no servidor.
             </p>
           )}
           {historicoQuery.isFetching && <p className="text-sm text-gray-500">Carregando...</p>}
@@ -473,7 +473,7 @@ export default function RastreadorPage() {
             />
           )}
           {historicoQuery.isFetched && historicoQuery.data?.length === 0 && !historicoQuery.isFetching && (
-            <p className="text-sm text-gray-500">Nenhum ponto no periodo.</p>
+            <p className="text-sm text-gray-500">Nenhum ponto no período.</p>
           )}
         </div>
       )}
@@ -486,10 +486,10 @@ export default function RastreadorPage() {
               onChange={(e) => setVeiculoId(e.target.value)}
               className="border border-gray-300 rounded-lg px-3 py-2 min-w-[240px]"
             >
-              <option value="">Selecione o veiculo</option>
+              <option value="">Selecione o veículo</option>
               {veiculos.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.placa} — {v.numero_rastreador ?? 'sem numero'}
+                  {v.placa} — {v.numero_rastreador ?? 'sem número'}
                 </option>
               ))}
             </select>
@@ -506,7 +506,7 @@ export default function RastreadorPage() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             {!veiculoId ? (
-              <div className="p-8 text-center text-gray-500">Selecione um veiculo</div>
+              <div className="p-8 text-center text-gray-500">Selecione um veículo</div>
             ) : (
               <ResponsiveTable
                 arrColumns={arrColumnsEventos}

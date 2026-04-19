@@ -159,7 +159,7 @@ export default function DashboardPage() {
               objIcone={Clock}
               varianteIcone="info"
             >
-              <p className="text-xs text-gray-400">Locacoes em vigor</p>
+              <p className="text-xs text-gray-400">Locações em vigor</p>
             </StatCard>
 
             <StatCard
@@ -290,7 +290,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-3">
-                    <p className="text-xs text-gray-500">Ignicao ligada</p>
+                    <p className="text-xs text-gray-500">Ignição ligada</p>
                     <p className="text-xl font-bold text-brand-primary tabular-nums">
                       {resumo?.rastreador_ignicao_ligada?.toLocaleString('pt-BR') ?? '0'}
                     </p>

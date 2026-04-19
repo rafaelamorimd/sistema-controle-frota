@@ -70,7 +70,7 @@ export default function CondutorFormPage() {
 
   return (
     <div className="max-w-3xl">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{isEditing ? 'Editar Condutor' : 'Novo Condutor'}</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">{isEditing ? 'Editar condutor' : 'Novo condutor'}</h2>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
         {error && <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">{error}</div>}

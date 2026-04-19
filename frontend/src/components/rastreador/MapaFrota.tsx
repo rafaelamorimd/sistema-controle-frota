@@ -137,7 +137,7 @@ export default function MapaFrota({
                   <p className="text-xs mt-1">
                     {p.ras_eve_data_gps} &middot; {p.ras_eve_velocidade ?? '0'} km/h
                   </p>
-                  <p className="text-xs">Ignicao: {bolIgnicao ? 'ligada' : 'desligada'}</p>
+                  <p className="text-xs">Ignição: {bolIgnicao ? 'ligada' : 'desligada'}</p>
                   <p className="text-xs">Bateria: {p.ras_eve_voltagem ?? '-'} V</p>
                 </div>
               </Popup>
