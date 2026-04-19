@@ -21,12 +21,14 @@ type FormRegistrar = {
   comprovante: File | null
   valor: string
   status: 'PAGO' | 'PENDENTE' | 'ATRASADO'
+  strDataPagamento: string
 }
 
 const formRegistrarVazio: FormRegistrar = {
   comprovante: null,
   valor: '',
   status: 'PAGO',
+  strDataPagamento: '',
 }
 
 export default function PagamentosPage() {
@@ -49,6 +51,7 @@ export default function PagamentosPage() {
       pagamentoService.registrar(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pagamentos'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       setModalRegistrar(false)
       setPagamentoAlvo(null)
       setFormRegistrar(formRegistrarVazio)
@@ -59,21 +62,28 @@ export default function PagamentosPage() {
 
   function abrirRegistrar(p: Pagamento) {
     setPagamentoAlvo(p)
+    const strRef = p.data_referencia.slice(0, 10)
     setFormRegistrar({
       ...formRegistrarVazio,
       valor: p.valor,
       status: p.status === 'ATRASADO' ? 'PAGO' : p.status,
+      strDataPagamento: strRef,
     })
     setModalRegistrar(true)
   }
 
   function enviarRegistrar(e: React.FormEvent) {
     e.preventDefault()
-    if (!pagamentoAlvo || !formRegistrar.comprovante) return
+    if (!pagamentoAlvo) return
     const fd = new FormData()
-    fd.append('comprovante', formRegistrar.comprovante)
+    if (formRegistrar.comprovante) {
+      fd.append('comprovante', formRegistrar.comprovante)
+    }
     fd.append('valor', formRegistrar.valor)
     fd.append('status', formRegistrar.status)
+    if (formRegistrar.status === 'PAGO' && formRegistrar.strDataPagamento) {
+      fd.append('data_pagamento', formRegistrar.strDataPagamento)
+    }
     registrarMutation.mutate({ id: pagamentoAlvo.id, formData: fd })
   }
 
@@ -212,11 +222,10 @@ export default function PagamentosPage() {
             </p>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Comprovante *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Comprovante (opcional)</label>
             <input
               type="file"
               accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-              required
               onChange={(e) =>
                 setFormRegistrar((f) => ({ ...f, comprovante: e.target.files?.[0] ?? null }))
               }
@@ -224,6 +233,20 @@ export default function PagamentosPage() {
             />
             <p className="text-xs text-gray-500 mt-1">JPG, PNG ou PDF (max. 10 MB).</p>
           </div>
+          {formRegistrar.status === 'PAGO' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Data do pagamento</label>
+              <input
+                type="date"
+                value={formRegistrar.strDataPagamento}
+                onChange={(e) =>
+                  setFormRegistrar((f) => ({ ...f, strDataPagamento: e.target.value }))
+                }
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">Padrão: data de referência da parcela.</p>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label>
             <input

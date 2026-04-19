@@ -44,7 +44,8 @@ class PagamentoController extends Controller
             $pagamento,
             $request->file('comprovante'),
             (float) $dados['valor'],
-            StatusPagamento::from($dados['status'])
+            StatusPagamento::from($dados['status']),
+            $dados['data_pagamento'] ?? null
         );
 
         return response()->json($pagamento);

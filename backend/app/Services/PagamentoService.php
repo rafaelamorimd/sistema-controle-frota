@@ -19,22 +19,22 @@ class PagamentoService
 
         $query = Pagamento::with(['contrato', 'veiculo', 'condutor']);
 
-        if (!empty($filtros['status'])) {
+        if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
         }
-        if (!empty($filtros['veiculo_id'])) {
+        if (! empty($filtros['veiculo_id'])) {
             $query->where('veiculo_id', $filtros['veiculo_id']);
         }
-        if (!empty($filtros['condutor_id'])) {
+        if (! empty($filtros['condutor_id'])) {
             $query->where('condutor_id', $filtros['condutor_id']);
         }
-        if (!empty($filtros['contrato_id'])) {
+        if (! empty($filtros['contrato_id'])) {
             $query->where('contrato_id', $filtros['contrato_id']);
         }
-        if (!empty($filtros['data_referencia_inicio'])) {
+        if (! empty($filtros['data_referencia_inicio'])) {
             $query->whereDate('data_referencia', '>=', $filtros['data_referencia_inicio']);
         }
-        if (!empty($filtros['data_referencia_fim'])) {
+        if (! empty($filtros['data_referencia_fim'])) {
             $query->whereDate('data_referencia', '<=', $filtros['data_referencia_fim']);
         }
 
@@ -47,7 +47,7 @@ class PagamentoService
 
         $query = $contrato->pagamentos()->with(['contrato', 'veiculo', 'condutor']);
 
-        if (!empty($filtros['status'])) {
+        if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
         }
 
@@ -65,23 +65,29 @@ class PagamentoService
         return $query->orderBy('data_referencia')->paginate($filtros['por_pagina'] ?? 15);
     }
 
-    public function registrar(Pagamento $pagamento, UploadedFile $arquivoComprovante, float $numValor, StatusPagamento $statusPagamento): Pagamento
-    {
-        return DB::transaction(function () use ($pagamento, $arquivoComprovante, $numValor, $statusPagamento) {
-            if ($pagamento->caminho_comprovante) {
-                Storage::disk('public')->delete($pagamento->caminho_comprovante);
-            }
-
-            $strCaminho = $arquivoComprovante->store('comprovantes/pagamentos', 'public');
-
+    public function registrar(
+        Pagamento $pagamento,
+        ?UploadedFile $arquivoComprovante,
+        float $numValor,
+        StatusPagamento $statusPagamento,
+        ?string $strDataPagamentoReal = null
+    ): Pagamento {
+        return DB::transaction(function () use ($pagamento, $arquivoComprovante, $numValor, $statusPagamento, $strDataPagamentoReal) {
             $dados = [
                 'valor' => $numValor,
                 'status' => $statusPagamento,
-                'caminho_comprovante' => $strCaminho,
             ];
 
+            if ($arquivoComprovante !== null) {
+                if ($pagamento->caminho_comprovante) {
+                    Storage::disk('public')->delete($pagamento->caminho_comprovante);
+                }
+                $dados['caminho_comprovante'] = $arquivoComprovante->store('comprovantes/pagamentos', 'public');
+            }
+
             if ($statusPagamento === StatusPagamento::PAGO) {
-                $dados['data_pagamento'] = now()->toDateString();
+                $dados['data_pagamento'] = $strDataPagamentoReal
+                    ?? ($pagamento->data_referencia?->toDateString() ?? now()->toDateString());
             } else {
                 $dados['data_pagamento'] = null;
             }
@@ -127,7 +133,7 @@ class PagamentoService
 
         foreach ($arrContratos as $objContrato) {
             $objUltimo = $objContrato->pagamentos()->orderByDesc('data_referencia')->first();
-            if (!$objUltimo) {
+            if (! $objUltimo) {
                 continue;
             }
 
@@ -142,7 +148,7 @@ class PagamentoService
                     ->whereDate('data_referencia', $dtaProxima->toDateString())
                     ->exists();
 
-                if (!$bolExiste) {
+                if (! $bolExiste) {
                     Pagamento::create([
                         'contrato_id' => $objContrato->id,
                         'veiculo_id' => $objContrato->veiculo_id,

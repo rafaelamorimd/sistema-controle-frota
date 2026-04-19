@@ -14,9 +14,10 @@ class PagamentoRegistrarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'comprovante' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'comprovante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'valor' => 'required|numeric|min:0.01',
             'status' => 'required|string|in:PAGO,PENDENTE,ATRASADO',
+            'data_pagamento' => 'nullable|date',
         ];
     }
 }
