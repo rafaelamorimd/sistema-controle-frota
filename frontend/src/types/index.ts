@@ -169,6 +169,7 @@ export interface LeituraKm {
   veiculo_id: number
   contrato_id: number | null
   condutor_id: number | null
+  data_referencia?: string | null
   data_leitura?: string
   km: number
   km_anterior?: number
@@ -221,6 +222,10 @@ export interface DashboardResumo {
   condutores_ativos: number
   contratos_ativos: number
   alertas_ativos: number
+  pagamentos_atrasados?: number
+  receitas_mes_atual?: number
+  despesas_mes_atual?: number
+  renda_liquida_mes_atual?: number
   rastreador_total_gps?: number
   rastreador_ignicao_ligada?: number
   rastreador_ignicao_desligada?: number
@@ -257,6 +262,8 @@ export interface Manutencao {
   data_saida: string | null
   km_entrada: number
   custo_total: string
+  valor_mao_obra?: string
+  servicos_externos?: { descricao: string; valor: number }[] | null
   local: string | null
   status: 'EM_ANDAMENTO' | 'CONCLUIDA'
   observacoes: string | null
