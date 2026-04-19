@@ -15,8 +15,6 @@ class PagamentoService
 {
     public function listar(array $filtros = []): LengthAwarePaginator
     {
-        $this->marcarAtrasadosPorDataReferencia();
-
         $query = Pagamento::with(['contrato', 'veiculo', 'condutor']);
 
         if (! empty($filtros['status'])) {
@@ -43,8 +41,6 @@ class PagamentoService
 
     public function listarPorContrato(Contrato $contrato, array $filtros = []): LengthAwarePaginator
     {
-        $this->marcarAtrasadosPorDataReferencia();
-
         $query = $contrato->pagamentos()->with(['contrato', 'veiculo', 'condutor']);
 
         if (! empty($filtros['status'])) {
@@ -56,8 +52,6 @@ class PagamentoService
 
     public function listarInadimplentes(array $filtros = []): LengthAwarePaginator
     {
-        $this->marcarAtrasadosPorDataReferencia();
-
         $query = Pagamento::with(['contrato', 'veiculo', 'condutor'])
             ->where('status', '!=', StatusPagamento::PAGO)
             ->whereDate('data_referencia', '<', now()->toDateString());

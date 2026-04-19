@@ -20,6 +20,7 @@ class ContratoController extends Controller
     public function index(Request $request): JsonResponse
     {
         $contratos = $this->service->listar($request->all());
+
         return response()->json($contratos);
     }
 
@@ -27,6 +28,7 @@ class ContratoController extends Controller
     {
         try {
             $contrato = $this->service->criar($request->validated());
+
             return response()->json($contrato, 201);
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
@@ -36,13 +38,15 @@ class ContratoController extends Controller
     public function show(Contrato $contrato): JsonResponse
     {
         $contrato->load(['condutor', 'veiculo', 'vistorias']);
+
         return response()->json($contrato);
     }
 
     public function update(ContratoRequest $request, Contrato $contrato): JsonResponse
     {
-        $contrato->update($request->validated());
-        return response()->json($contrato->fresh(['condutor', 'veiculo']));
+        $contrato = $this->service->atualizar($contrato, $request->validated());
+
+        return response()->json($contrato);
     }
 
     public function encerrar(Request $request, Contrato $contrato): JsonResponse
@@ -54,6 +58,7 @@ class ContratoController extends Controller
 
         try {
             $contrato = $this->service->encerrar($contrato, $dados);
+
             return response()->json($contrato);
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 422);

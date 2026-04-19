@@ -38,3 +38,6 @@ docs/superpowers/plans/
 # OS
 .DS_Store
 Thumbs.db
+skills-lock.json
+gefther_backup.dump
+gefther_backup2.dump

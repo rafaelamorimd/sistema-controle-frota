@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\StatusContrato;
 use App\Enums\StatusVeiculo;
 use App\Models\Veiculo;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -12,13 +13,13 @@ class VeiculoService
     {
         $query = Veiculo::query();
 
-        if (!empty($filtros['status'])) {
+        if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
         }
-        if (!empty($filtros['busca'])) {
+        if (! empty($filtros['busca'])) {
             $query->where(function ($q) use ($filtros) {
                 $q->where('placa', 'ilike', "%{$filtros['busca']}%")
-                  ->orWhere('modelo', 'ilike', "%{$filtros['busca']}%");
+                    ->orWhere('modelo', 'ilike', "%{$filtros['busca']}%");
             });
         }
 
@@ -46,7 +47,7 @@ class VeiculoService
     {
         if ($novoStatus === StatusVeiculo::INATIVO) {
             $contratoAtivo = $veiculo->contratos()
-                ->where('status', 'ATIVO')
+                ->where('status', StatusContrato::ATIVO)
                 ->exists();
 
             if ($contratoAtivo) {
@@ -55,6 +56,7 @@ class VeiculoService
         }
 
         $veiculo->update(['status' => $novoStatus]);
+
         return $veiculo->fresh();
     }
 }

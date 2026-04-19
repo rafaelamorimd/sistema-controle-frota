@@ -7,6 +7,7 @@ use App\Enums\StatusVeiculo;
 use App\Models\Contrato;
 use App\Models\Veiculo;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ContratoService
@@ -20,44 +21,53 @@ class ContratoService
     {
         $query = Contrato::with(['condutor', 'veiculo']);
 
-        if (!empty($filtros['status'])) {
+        if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
         }
-        if (!empty($filtros['veiculo_id'])) {
+        if (! empty($filtros['veiculo_id'])) {
             $query->where('veiculo_id', $filtros['veiculo_id']);
         }
-        if (!empty($filtros['condutor_id'])) {
+        if (! empty($filtros['condutor_id'])) {
             $query->where('condutor_id', $filtros['condutor_id']);
         }
 
         return $query->orderByDesc('created_at')->paginate($filtros['por_pagina'] ?? 15);
     }
 
+    public function atualizar(Contrato $contrato, array $dados): Contrato
+    {
+        $contrato->update($dados);
+
+        return $contrato->fresh(['condutor', 'veiculo']);
+    }
+
     public function criar(array $dados): Contrato
     {
-        return DB::transaction(function () use ($dados) {
-            $veiculoOcupado = Contrato::where('veiculo_id', $dados['veiculo_id'])
-                ->where('status', StatusContrato::ATIVO)
-                ->exists();
+        return Cache::lock('contrato.gerar_numero', 10)->block(5, function () use ($dados) {
+            return DB::transaction(function () use ($dados) {
+                $veiculoOcupado = Contrato::where('veiculo_id', $dados['veiculo_id'])
+                    ->where('status', StatusContrato::ATIVO)
+                    ->exists();
 
-            if ($veiculoOcupado) {
-                throw new \DomainException('Este veiculo ja possui um contrato ativo.');
-            }
+                if ($veiculoOcupado) {
+                    throw new \DomainException('Este veiculo ja possui um contrato ativo.');
+                }
 
-            $ultimoNumero = Contrato::max('id') ?? 0;
-            $dados['numero_contrato'] = 'CTR-' . str_pad($ultimoNumero + 1, 6, '0', STR_PAD_LEFT);
+                $numUltimoId = Contrato::max('id') ?? 0;
+                $dados['numero_contrato'] = 'CTR-'.str_pad((string) ($numUltimoId + 1), 6, '0', STR_PAD_LEFT);
 
-            $contrato = Contrato::create($dados);
+                $contrato = Contrato::create($dados);
 
-            Veiculo::where('id', $dados['veiculo_id'])
-                ->update(['status' => StatusVeiculo::ALUGADO]);
+                Veiculo::where('id', $dados['veiculo_id'])
+                    ->update(['status' => StatusVeiculo::ALUGADO]);
 
-            $this->pagamentoService->criarPendenteInicial($contrato);
+                $this->pagamentoService->criarPendenteInicial($contrato);
 
-            $strCaminhoPdf = $this->relatorioService->gerarEArmazenarPdfContrato($contrato);
-            $contrato->update(['caminho_contrato_pdf' => $strCaminhoPdf]);
+                $strCaminhoPdf = $this->relatorioService->gerarEArmazenarPdfContrato($contrato);
+                $contrato->update(['caminho_contrato_pdf' => $strCaminhoPdf]);
 
-            return $contrato->load(['condutor', 'veiculo']);
+                return $contrato->load(['condutor', 'veiculo']);
+            });
         });
     }
 
