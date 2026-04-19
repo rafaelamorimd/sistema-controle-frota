@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Contrato;
 use App\Models\LeituraKm;
 use App\Models\Pagamento;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class CicloContratoService
@@ -13,8 +14,8 @@ class CicloContratoService
      * Dados do primeiro ciclo de 4 semanas (5 pagamentos semanais), para relatórios.
      *
      * @return array{
-     *   dth_inicio: \Carbon\Carbon,
-     *   dth_fim_ciclo: \Carbon\Carbon,
+     *   dth_inicio: Carbon,
+     *   dth_fim_ciclo: Carbon,
      *   arr_pagamentos_ciclo: Collection<int, Pagamento>,
      *   num_km_inicial: int,
      *   num_km_final: int|null,
@@ -36,11 +37,12 @@ class CicloContratoService
         $objQuintoPagamento = $arrCincoPrimeiros->get(4);
         $dtaLimite = $objQuintoPagamento->data_referencia;
         $numKmInicial = (int) $objContrato->km_inicial;
+        $strLimite = $dtaLimite->toDateString();
 
         $objLeitura = LeituraKm::query()
             ->where('contrato_id', $objContrato->id)
             ->where('veiculo_id', $objContrato->veiculo_id)
-            ->whereDate('created_at', '<=', $dtaLimite->toDateString())
+            ->whereDataEfetivaLeitura('<=', $strLimite)
             ->orderByDesc('km')
             ->first();
 

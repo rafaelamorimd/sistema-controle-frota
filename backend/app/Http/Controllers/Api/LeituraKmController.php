@@ -15,6 +15,12 @@ class LeituraKmController extends Controller
 
     public function index(Request $request, Veiculo $veiculo): JsonResponse
     {
+        $request->validate([
+            'data_inicio' => 'nullable|date',
+            'data_fim' => 'nullable|date|after_or_equal:data_inicio',
+            'por_pagina' => 'nullable|integer|min:1|max:100',
+        ]);
+
         $leituras = $this->service->listarPorVeiculo($veiculo, $request->all());
 
         return response()->json($leituras);

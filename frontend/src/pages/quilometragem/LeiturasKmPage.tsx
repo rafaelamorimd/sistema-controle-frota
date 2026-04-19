@@ -14,6 +14,7 @@ import type { Contrato, LeituraKm } from '../../types'
 type FormNovaLeitura = {
   km: string
   foto: File | null
+  strDataLeitura: string
   contrato_id: string
   condutor_id: string
   observacoes: string
@@ -22,6 +23,7 @@ type FormNovaLeitura = {
 const formVazio: FormNovaLeitura = {
   km: '',
   foto: null,
+  strDataLeitura: new Date().toISOString().slice(0, 10),
   contrato_id: '',
   condutor_id: '',
   observacoes: '',
@@ -37,6 +39,8 @@ export default function LeiturasKmPage() {
   const [veiculoId, setVeiculoId] = useState<number | null>(null)
   const [modalAberto, setModalAberto] = useState(false)
   const [form, setForm] = useState<FormNovaLeitura>(formVazio)
+  const [strDataInicioFiltro, setStrDataInicioFiltro] = useState('')
+  const [strDataFimFiltro, setStrDataFimFiltro] = useState('')
 
   const { data: veiculosData } = useQuery({
     queryKey: ['veiculos', 'select'],
@@ -44,8 +48,13 @@ export default function LeiturasKmPage() {
   })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['leituras-km', veiculoId],
-    queryFn: () => leituraKmService.listarPorVeiculo(veiculoId!),
+    queryKey: ['leituras-km', veiculoId, strDataInicioFiltro, strDataFimFiltro],
+    queryFn: () =>
+      leituraKmService.listarPorVeiculo(veiculoId!, {
+        ...(strDataInicioFiltro ? { data_inicio: strDataInicioFiltro } : {}),
+        ...(strDataFimFiltro ? { data_fim: strDataFimFiltro } : {}),
+        por_pagina: 100,
+      }),
     enabled: veiculoId != null,
   })
 
@@ -101,10 +110,11 @@ export default function LeiturasKmPage() {
 
   function enviar(e: React.FormEvent) {
     e.preventDefault()
-    if (veiculoId == null || !form.foto) return
+    if (veiculoId == null) return
     const fd = new FormData()
     fd.append('km', String(parseInt(form.km, 10)))
-    fd.append('foto', form.foto)
+    if (form.foto) fd.append('foto', form.foto)
+    fd.append('data_leitura', form.strDataLeitura)
     if (form.contrato_id) fd.append('contrato_id', form.contrato_id)
     if (form.condutor_id) fd.append('condutor_id', form.condutor_id)
     if (form.observacoes.trim()) fd.append('observacoes', form.observacoes.trim())
@@ -133,6 +143,18 @@ export default function LeiturasKmPage() {
           {new Date(dataExibicao(l)).toLocaleString('pt-BR')}
         </span>
       ),
+    },
+    {
+      strLabel: 'Ref. contrato',
+      strKey: 'ref',
+      render: (l) => (
+        <span className="text-gray-600 text-sm">
+          {l.data_referencia
+            ? new Date(l.data_referencia).toLocaleDateString('pt-BR')
+            : '\u2014'}
+        </span>
+      ),
+      bolHideMobile: true,
     },
     {
       strLabel: 'Contrato',
@@ -197,23 +219,47 @@ export default function LeiturasKmPage() {
         </button>
       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Veículo</label>
-        <select
-          value={veiculoId ?? ''}
-          onChange={(e) => {
-            const v = e.target.value ? Number(e.target.value) : null
-            setVeiculoId(v)
-          }}
-          className="w-full max-w-md border border-gray-300 rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="">Selecione um veículo...</option>
-          {veiculos.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.placa} — {v.modelo}
-            </option>
-          ))}
-        </select>
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end">
+        <div className="w-full max-w-md">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Veículo</label>
+          <select
+            value={veiculoId ?? ''}
+            onChange={(e) => {
+              const v = e.target.value ? Number(e.target.value) : null
+              setVeiculoId(v)
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">Selecione um veículo...</option>
+            {veiculos.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.placa} — {v.modelo}
+              </option>
+            ))}
+          </select>
+        </div>
+        {veiculoId != null && (
+          <div className="flex flex-wrap gap-3 items-end">
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">De</label>
+              <input
+                type="date"
+                value={strDataInicioFiltro}
+                onChange={(e) => setStrDataInicioFiltro(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Até</label>
+              <input
+                type="date"
+                value={strDataFimFiltro}
+                onChange={(e) => setStrDataFimFiltro(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -261,11 +307,19 @@ export default function LeiturasKmPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Foto do hodometro *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Data da leitura</label>
+            <input
+              type="date"
+              value={form.strDataLeitura}
+              onChange={(e) => setForm((f) => ({ ...f, strDataLeitura: e.target.value }))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Foto do hodômetro (opcional)</label>
             <input
               type="file"
               accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-              required
               onChange={(e) => setForm((f) => ({ ...f, foto: e.target.files?.[0] ?? null }))}
               className="w-full text-sm"
             />

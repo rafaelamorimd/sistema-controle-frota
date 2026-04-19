@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Enums\PrioridadeAlerta;
 use App\Enums\TipoAlerta;
 use App\Models\Alerta;
+use App\Models\Contrato;
 use App\Models\LeituraKm;
+use App\Models\Pagamento;
 use App\Models\Veiculo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,10 +21,20 @@ class LeituraKmService
     {
         $query = $veiculo->leiturasKm()->with(['contrato', 'condutor']);
 
-        return $query->orderByDesc('created_at')->paginate($filtros['por_pagina'] ?? 15);
+        if (! empty($filtros['data_inicio'])) {
+            $query->whereDataEfetivaLeitura('>=', $filtros['data_inicio']);
+        }
+        if (! empty($filtros['data_fim'])) {
+            $query->whereDataEfetivaLeitura('<=', $filtros['data_fim']);
+        }
+
+        return $query
+            ->orderByDesc('data_leitura')
+            ->orderByDesc('created_at')
+            ->paginate($filtros['por_pagina'] ?? 15);
     }
 
-    public function registrar(Veiculo $veiculo, array $dados, UploadedFile $arquivoFoto): LeituraKm
+    public function registrar(Veiculo $veiculo, array $dados, ?UploadedFile $arquivoFoto): LeituraKm
     {
         return DB::transaction(function () use ($veiculo, $dados, $arquivoFoto) {
             $numKmSolicitado = (int) $dados['km'];
@@ -36,13 +48,24 @@ class LeituraKmService
                 );
             }
 
-            $strCaminhoFoto = $arquivoFoto->store('fotos/leituras-km', 'public');
+            $strDataLeitura = $dados['data_leitura'] ?? now()->toDateString();
+            $strDataRef = $dados['data_referencia'] ?? null;
+            if ($strDataRef === null && ! empty($dados['contrato_id'])) {
+                $strDataRef = $this->resolverDataReferenciaLeitura((int) $dados['contrato_id'], $strDataLeitura);
+            }
+
+            $strCaminhoFoto = '';
+            if ($arquivoFoto !== null) {
+                $strCaminhoFoto = $arquivoFoto->store('fotos/leituras-km', 'public');
+            }
 
             $leitura = LeituraKm::create([
                 'veiculo_id' => $veiculo->id,
                 'contrato_id' => $dados['contrato_id'] ?? null,
                 'condutor_id' => $dados['condutor_id'] ?? null,
                 'km' => $numKmSolicitado,
+                'data_leitura' => $strDataLeitura,
+                'data_referencia' => $strDataRef,
                 'caminho_foto' => $strCaminhoFoto,
                 'observacoes' => $dados['observacoes'] ?? null,
             ]);
@@ -53,6 +76,23 @@ class LeituraKmService
 
             return $leitura->load(['contrato', 'condutor', 'veiculo']);
         });
+    }
+
+    private function resolverDataReferenciaLeitura(int $numContratoId, string $strDataLeitura): ?string
+    {
+        $objPagamento = Pagamento::query()
+            ->where('contrato_id', $numContratoId)
+            ->whereDate('data_referencia', '<=', $strDataLeitura)
+            ->orderByDesc('data_referencia')
+            ->first();
+
+        if ($objPagamento !== null) {
+            return $objPagamento->data_referencia->toDateString();
+        }
+
+        $objContrato = Contrato::find($numContratoId);
+
+        return $objContrato?->data_inicio?->toDateString();
     }
 
     private function criarAlertaTrocaOleoSeNecessario(Veiculo $veiculo): void

@@ -15,10 +15,12 @@ class LeituraKmRequest extends FormRequest
     {
         return [
             'km' => 'required|integer|min:0',
-            'foto' => 'required|file|mimes:jpg,jpeg,png|max:10240',
+            'foto' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
             'contrato_id' => 'nullable|exists:contratos,id',
             'condutor_id' => 'nullable|exists:condutores,id',
             'observacoes' => 'nullable|string|max:2000',
+            'data_leitura' => 'nullable|date',
+            'data_referencia' => 'nullable|date',
         ];
     }
 }
