@@ -35,7 +35,6 @@ function fnCarregarTokenDoStorage(): string | null {
 interface AuthState {
   user: User | null
   token: string | null
-  loading: boolean
   setAuth: (user: User, token: string) => void
   logout: () => void
   isAuthenticated: () => boolean
@@ -45,28 +44,26 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: fnCarregarUsuarioDoStorage(),
   token: fnCarregarTokenDoStorage(),
-  loading: !!fnCarregarTokenDoStorage(),
   setAuth: (user, token) => {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('token', token)
-    set({ user, token, loading: false })
+    set({ user, token })
   },
   logout: () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
-    set({ user: null, token: null, loading: false })
+    set({ user: null, token: null })
   },
   isAuthenticated: () => !!get().token,
   validateSession: async () => {
     const token = get().token
     if (!token) {
-      set({ loading: false })
       return
     }
     try {
       const { default: api } = await import('../services/api')
       const { data } = await api.get<User>('/auth/me')
-      set({ user: data, loading: false })
+      set({ user: data })
     } catch {
       get().logout()
     }

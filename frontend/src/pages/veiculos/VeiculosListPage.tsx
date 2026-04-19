@@ -18,6 +18,7 @@ export default function VeiculosListPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['veiculos'],
     queryFn: () => veiculoService.listar(),
+    staleTime: 60_000,
   })
 
   const deleteMutation = useMutation({

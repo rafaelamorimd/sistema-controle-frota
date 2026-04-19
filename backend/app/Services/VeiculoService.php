@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Enums\StatusVeiculo;
 use App\Models\Veiculo;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class VeiculoService
 {
-    public function listar(array $filtros = []): LengthAwarePaginator
+    public function listar(array $filtros = []): Paginator
     {
         $query = Veiculo::query();
 
@@ -22,7 +22,7 @@ class VeiculoService
             });
         }
 
-        return $query->orderBy('modelo')->paginate($filtros['por_pagina'] ?? 15);
+        return $query->orderBy('modelo')->simplePaginate($filtros['por_pagina'] ?? 15);
     }
 
     public function criar(array $dados): Veiculo

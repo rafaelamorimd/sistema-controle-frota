@@ -38,14 +38,34 @@ return [
             'report' => false,
         ],
 
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-        ],
+        /*
+        | Uploads (vistorias, condutores, checklists, etc.) usam o disco "public".
+        | Local: storage/app/public + symlink /storage.
+        | Supabase Storage: FILESYSTEM_PUBLIC_DRIVER=s3 + credenciais S3 do projeto (Dashboard → Storage → S3).
+        | URL pública dos objetos: .../storage/v1/object/public/{bucket}/... — use SUPABASE_STORAGE_PUBLIC_BASE_URL.
+        */
+        'public' => env('FILESYSTEM_PUBLIC_DRIVER', 'local') === 's3'
+            ? [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+                'bucket' => env('AWS_BUCKET'),
+                'url' => rtrim((string) env('SUPABASE_STORAGE_PUBLIC_BASE_URL', ''), '/'),
+                'endpoint' => env('AWS_ENDPOINT'),
+                'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true),
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ]
+            : [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ],
 
         's3' => [
             'driver' => 's3',

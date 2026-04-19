@@ -25,15 +25,6 @@ import ConfiguracoesPage from './pages/configuracoes/ConfiguracoesPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuth = useAuthStore((s) => s.isAuthenticated)
-  const loading = useAuthStore((s) => s.loading)
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-secondary" />
-      </div>
-    )
-  }
 
   return isAuth() ? <>{children}</> : <Navigate to="/login" />
 }

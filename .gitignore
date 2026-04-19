@@ -24,6 +24,10 @@ backend/storage/logs/*.log
 # Cursor (regras e config local; não versionar)
 .cursor/
 
+# Agentes e skills locais (Cursor / Claude)
+.agents/
+.claude/skills/
+
 # Planos gerados pelo fluxo Superpowers (sessões / especificações locais)
 docs/superpowers/plans/
 *.suo
