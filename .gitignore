@@ -20,6 +20,12 @@ backend/storage/logs/*.log
 # IDE
 .idea/
 .vscode/
+
+# Cursor (regras e config local; não versionar)
+.cursor/
+
+# Planos gerados pelo fluxo Superpowers (sessões / especificações locais)
+docs/superpowers/plans/
 *.suo
 *.ntvs*
 *.njsproj
