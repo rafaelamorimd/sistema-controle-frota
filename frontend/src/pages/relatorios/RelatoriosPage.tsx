@@ -96,15 +96,26 @@ export default function RelatoriosPage() {
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={() =>
-            relatorioService.downloadPdfFinanceiro(mes, veiculoFiltro ? Number(veiculoFiltro) : undefined)
-          }
-          className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
-        >
-          Baixar PDF
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              relatorioService.downloadPdfFinanceiro(mes, veiculoFiltro ? Number(veiculoFiltro) : undefined)
+            }
+            className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover"
+          >
+            PDF financeiro
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              relatorioService.downloadPdfFrota(mes, veiculoFiltro ? Number(veiculoFiltro) : undefined)
+            }
+            className="px-4 py-2 border border-brand-secondary text-brand-secondary rounded-lg hover:bg-brand-secondary/10 font-medium"
+          >
+            PDF frota (por veículo)
+          </button>
+        </div>
       </section>
 
       <section className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">

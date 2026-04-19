@@ -43,6 +43,22 @@ class RelatorioController extends Controller
         );
     }
 
+    public function pdfFrotaConsolidado(Request $request)
+    {
+        $request->validate([
+            'mes' => 'nullable|date_format:Y-m',
+            'veiculo_id' => 'nullable|integer|exists:veiculos,id',
+        ]);
+
+        $strMes = $request->query('mes');
+        $numVeiculoId = $request->query('veiculo_id');
+
+        return $this->service->pdfFrotaConsolidado(
+            $strMes,
+            $numVeiculoId !== null ? (int) $numVeiculoId : null
+        );
+    }
+
     public function csvVeiculos()
     {
         return $this->service->csvVeiculos();

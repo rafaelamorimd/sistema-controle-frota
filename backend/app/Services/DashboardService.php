@@ -23,12 +23,18 @@ class DashboardService
 
     public function resumo(): array
     {
+        $arrFin = $this->rendaLiquida(null, null);
+
         $arr = [
             'veiculos_total' => Veiculo::count(),
             'veiculos_alugados' => Veiculo::where('status', StatusVeiculo::ALUGADO)->count(),
             'condutores_ativos' => Condutor::where('status', StatusCondutor::ATIVO)->count(),
             'contratos_ativos' => Contrato::where('status', StatusContrato::ATIVO)->count(),
             'alertas_ativos' => Alerta::ativos()->count(),
+            'pagamentos_atrasados' => Pagamento::where('status', StatusPagamento::ATRASADO)->count(),
+            'receitas_mes_atual' => $arrFin['receitas_pagas'],
+            'despesas_mes_atual' => $arrFin['despesas_pagas'],
+            'renda_liquida_mes_atual' => $arrFin['renda_liquida'],
         ];
 
         try {

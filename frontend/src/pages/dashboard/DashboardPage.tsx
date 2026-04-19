@@ -172,6 +172,35 @@ export default function DashboardPage() {
             </StatCard>
           </div>
 
+          {resumo != null && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <StatCard
+                  strTitulo="Pagamentos atrasados"
+                  strValor={resumo.pagamentos_atrasados?.toLocaleString('pt-BR') ?? '0'}
+                  objIcone={AlertTriangle}
+                  varianteIcone="alerta"
+                >
+                  <p className="text-xs text-gray-400">Parcelas em atraso</p>
+                </StatCard>
+                <StatCard
+                  strTitulo="Receitas (mês atual)"
+                  strValor={formatarMoedaBrl(resumo.receitas_mes_atual ?? 0)}
+                  objIcone={TrendingUp}
+                  varianteIcone="sucesso"
+                >
+                  <p className="text-xs text-gray-400">Pagamentos confirmados</p>
+                </StatCard>
+                <StatCard
+                  strTitulo="Líquido (mês atual)"
+                  strValor={formatarMoedaBrl(resumo.renda_liquida_mes_atual ?? 0)}
+                  objIcone={FileText}
+                  varianteIcone="primario"
+                >
+                  <p className="text-xs text-gray-400">Receitas − despesas pagas</p>
+                </StatCard>
+              </div>
+            )}
+
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
             {/* Status da frota + grafico */}
             <div className="xl:col-span-2 space-y-4">

@@ -36,6 +36,14 @@ export const relatorioService = {
       })
       .then((r) => baixarBlob(r, 'resumo-financeiro.pdf')),
 
+  downloadPdfFrota: (mes?: string, veiculoId?: number) =>
+    api
+      .get('/relatorios/frota/pdf', {
+        responseType: 'blob',
+        params: { mes, veiculo_id: veiculoId },
+      })
+      .then((r) => baixarBlob(r, 'frota.pdf')),
+
   downloadExcelVeiculos: () =>
     api
       .get('/relatorios/veiculos/excel', { responseType: 'blob' })

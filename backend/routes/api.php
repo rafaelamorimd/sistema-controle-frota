@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('relatorios/contrato/{contrato}/desempenho/pdf', [RelatorioController::class, 'pdfDesempenhoPrimeiroCiclo']);
     Route::get('relatorios/checklist-revisao/{checklist_revisao}/pdf', [RelatorioController::class, 'pdfChecklistRevisao']);
     Route::get('relatorios/financeiro/pdf', [RelatorioController::class, 'pdfFinanceiro']);
+    Route::get('relatorios/frota/pdf', [RelatorioController::class, 'pdfFrotaConsolidado']);
     Route::get('relatorios/veiculos/csv', [RelatorioController::class, 'csvVeiculos']);
     Route::get('relatorios/veiculos/excel', [RelatorioController::class, 'excelVeiculos']);
 

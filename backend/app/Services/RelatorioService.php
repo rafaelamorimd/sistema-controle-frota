@@ -23,7 +23,8 @@ class RelatorioService
 {
     public function __construct(
         private ConfiguracaoService $configuracaoService,
-        private CicloContratoService $cicloContratoService
+        private CicloContratoService $cicloContratoService,
+        private DashboardService $dashboardService
     ) {}
 
     public function gerarEArmazenarPdfContrato(Contrato $contrato): string
@@ -102,6 +103,51 @@ class RelatorioService
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download('resumo-financeiro-'.$dthInicio->format('Y-m').'.pdf');
+    }
+
+    public function pdfFrotaConsolidado(?string $strMes, ?int $numVeiculoId): Response
+    {
+        $arrRenda = $this->dashboardService->rendaLiquida($strMes, $numVeiculoId);
+
+        $dthMes = $strMes
+            ? Carbon::createFromFormat('Y-m', $strMes)->startOfMonth()
+            : now()->startOfMonth();
+
+        $dthInicio = $dthMes->copy()->startOfMonth();
+        $dthFim = $dthMes->copy()->endOfMonth();
+
+        $arrPorVeiculo = [];
+
+        if ($numVeiculoId !== null) {
+            $objVeiculo = Veiculo::find($numVeiculoId);
+            $arrPorVeiculo[] = [
+                'strPlaca' => $objVeiculo?->placa ?? '-',
+                'numReceitas' => $arrRenda['receitas_pagas'],
+                'numDespesas' => $arrRenda['despesas_pagas'],
+                'numLiquido' => $arrRenda['renda_liquida'],
+            ];
+        } else {
+            foreach ($arrRenda['por_veiculo'] as $row) {
+                $objVeiculo = Veiculo::find($row['veiculo_id']);
+                $arrPorVeiculo[] = [
+                    'strPlaca' => $objVeiculo?->placa ?? '#'.$row['veiculo_id'],
+                    'numReceitas' => $row['receitas_pagas'],
+                    'numDespesas' => $row['despesas_pagas'],
+                    'numLiquido' => $row['renda_liquida'],
+                ];
+            }
+        }
+
+        $pdf = Pdf::loadView('relatorios.pdf.frota_mes', [
+            'dthInicio' => $dthInicio,
+            'dthFim' => $dthFim,
+            'arrPorVeiculo' => $arrPorVeiculo,
+            'numTotalReceitas' => $arrRenda['receitas_pagas'],
+            'numTotalDespesas' => $arrRenda['despesas_pagas'],
+            'numRendaLiquida' => $arrRenda['renda_liquida'],
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('frota-'.$dthInicio->format('Y-m').'.pdf');
     }
 
     public function pdfDesempenhoPrimeiroCiclo(Contrato $objContrato): Response
