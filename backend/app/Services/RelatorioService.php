@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
+use App\Enums\StatusDespesa;
+use App\Enums\StatusManutencao;
+use App\Enums\StatusPagamento;
 use App\Models\ChecklistRevisao;
 use App\Models\Contrato;
 use App\Models\Despesa;
+use App\Models\Manutencao;
 use App\Models\Pagamento;
 use App\Models\RevisaoCategoria;
 use App\Models\Veiculo;
-use App\Enums\StatusDespesa;
-use App\Enums\StatusPagamento;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
@@ -20,7 +22,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class RelatorioService
 {
     public function __construct(
-        private ConfiguracaoService $configuracaoService
+        private ConfiguracaoService $configuracaoService,
+        private CicloContratoService $cicloContratoService
     ) {}
 
     public function gerarEArmazenarPdfContrato(Contrato $contrato): string
@@ -33,9 +36,9 @@ class RelatorioService
             'arrLocador' => $arrLocador,
         ])->setPaper('a4');
 
-        $strNomeArquivo = $contrato->numero_contrato . '.pdf';
-        $strCaminho = 'contratos/' . $strNomeArquivo;
-        
+        $strNomeArquivo = $contrato->numero_contrato.'.pdf';
+        $strCaminho = 'contratos/'.$strNomeArquivo;
+
         \Storage::disk('public')->put($strCaminho, $pdf->output());
 
         return $strCaminho;
@@ -99,6 +102,73 @@ class RelatorioService
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download('resumo-financeiro-'.$dthInicio->format('Y-m').'.pdf');
+    }
+
+    public function pdfDesempenhoPrimeiroCiclo(Contrato $objContrato): Response
+    {
+        $objContrato->load(['condutor', 'veiculo']);
+
+        $arrResumo = $this->cicloContratoService->obterResumoPrimeiroCicloQuatroSemanas($objContrato);
+
+        $arrDespesas = collect();
+        $arrManutencoes = collect();
+        $numTotalReceitasCiclo = 0.0;
+        $numTotalDespesas = 0.0;
+        $numTotalManutencoes = 0.0;
+
+        if ($arrResumo !== null) {
+            $dthInicio = $arrResumo['dth_inicio'];
+            $dthFim = $arrResumo['dth_fim_ciclo'];
+            $strInicio = $dthInicio->toDateString();
+            $strFim = $dthFim->toDateString();
+
+            $numTotalReceitasCiclo = (float) $arrResumo['arr_pagamentos_ciclo']->sum('valor');
+
+            $arrDespesas = Despesa::query()
+                ->with('veiculo')
+                ->where('veiculo_id', $objContrato->veiculo_id)
+                ->where('status', StatusDespesa::PAGO)
+                ->whereNotNull('data_pagamento')
+                ->whereBetween('data_pagamento', [$strInicio, $strFim])
+                ->orderBy('data_pagamento')
+                ->get();
+
+            $numTotalDespesas = (float) $arrDespesas->sum('valor');
+
+            $arrManutencoes = Manutencao::query()
+                ->where('veiculo_id', $objContrato->veiculo_id)
+                ->where('status', StatusManutencao::CONCLUIDA)
+                ->where(function ($q) use ($strInicio, $strFim) {
+                    $q->whereBetween('data_entrada', [$strInicio, $strFim])
+                        ->orWhereBetween('data_saida', [$strInicio, $strFim]);
+                })
+                ->with('itens.peca')
+                ->orderBy('data_entrada')
+                ->get();
+
+            $numTotalManutencoes = (float) $arrManutencoes->sum(fn (Manutencao $m) => (float) $m->custo_total);
+        }
+
+        $numResultadoLiquido = $numTotalReceitasCiclo - $numTotalDespesas - $numTotalManutencoes;
+        $numPctMargem = $numTotalReceitasCiclo > 0.01
+            ? round(($numResultadoLiquido / $numTotalReceitasCiclo) * 100, 1)
+            : null;
+
+        $pdf = Pdf::loadView('relatorios.pdf.desempenho_veiculo', [
+            'objContrato' => $objContrato,
+            'arrResumo' => $arrResumo,
+            'arrDespesas' => $arrDespesas,
+            'arrManutencoes' => $arrManutencoes,
+            'numTotalReceitasCiclo' => $numTotalReceitasCiclo,
+            'numTotalDespesas' => $numTotalDespesas,
+            'numTotalManutencoes' => $numTotalManutencoes,
+            'numResultadoLiquido' => $numResultadoLiquido,
+            'numPctMargem' => $numPctMargem,
+        ])->setPaper('a4');
+
+        $strNome = 'desempenho-'.$objContrato->numero_contrato.'.pdf';
+
+        return $pdf->download($strNome);
     }
 
     public function pdfChecklistRevisao(ChecklistRevisao $checklist): Response
@@ -234,7 +304,7 @@ class RelatorioService
         $strNome = 'veiculos-'.now()->format('Y-m-d').'.xlsx';
 
         return response()->streamDownload(function () use ($arrLinhas) {
-            $objPlanilha = new Spreadsheet();
+            $objPlanilha = new Spreadsheet;
             $objPlanilha->getActiveSheet()->fromArray($arrLinhas, null, 'A1');
             $objWriter = new Xlsx($objPlanilha);
             $objWriter->save('php://output');

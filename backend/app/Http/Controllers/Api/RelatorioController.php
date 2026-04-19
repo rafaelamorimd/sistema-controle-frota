@@ -17,6 +17,11 @@ class RelatorioController extends Controller
         return $this->service->pdfContrato($contrato);
     }
 
+    public function pdfDesempenhoPrimeiroCiclo(Contrato $contrato)
+    {
+        return $this->service->pdfDesempenhoPrimeiroCiclo($contrato);
+    }
+
     public function pdfChecklistRevisao(ChecklistRevisao $checklist_revisao)
     {
         return $this->service->pdfChecklistRevisao($checklist_revisao);

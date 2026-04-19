@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('alertas/{alerta}/resolver', [AlertaController::class, 'resolver']);
 
     Route::get('relatorios/contrato/{contrato}/pdf', [RelatorioController::class, 'pdfContrato']);
+    Route::get('relatorios/contrato/{contrato}/desempenho/pdf', [RelatorioController::class, 'pdfDesempenhoPrimeiroCiclo']);
     Route::get('relatorios/checklist-revisao/{checklist_revisao}/pdf', [RelatorioController::class, 'pdfChecklistRevisao']);
     Route::get('relatorios/financeiro/pdf', [RelatorioController::class, 'pdfFinanceiro']);
     Route::get('relatorios/veiculos/csv', [RelatorioController::class, 'csvVeiculos']);

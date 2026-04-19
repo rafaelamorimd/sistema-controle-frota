@@ -23,6 +23,11 @@ export const relatorioService = {
       .get(`/relatorios/contrato/${contratoId}/pdf`, { responseType: 'blob' })
       .then((r) => baixarBlob(r, `contrato-${contratoId}.pdf`)),
 
+  downloadPdfDesempenhoPrimeiroCiclo: (contratoId: number) =>
+    api
+      .get(`/relatorios/contrato/${contratoId}/desempenho/pdf`, { responseType: 'blob' })
+      .then((r) => baixarBlob(r, `desempenho-${contratoId}.pdf`)),
+
   downloadPdfFinanceiro: (mes?: string, veiculoId?: number) =>
     api
       .get('/relatorios/financeiro/pdf', {

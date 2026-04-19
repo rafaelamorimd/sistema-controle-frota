@@ -4,19 +4,24 @@ namespace App\Services;
 
 use App\Models\Contrato;
 use App\Models\LeituraKm;
+use App\Models\Pagamento;
+use Illuminate\Support\Collection;
 
 class CicloContratoService
 {
     /**
-     * KM rodado nas primeiras quatro semanas completas da locação (ciclo fechado no 5º pagamento semanal).
+     * Dados do primeiro ciclo de 4 semanas (5 pagamentos semanais), para relatórios.
      *
-     * Regra: ordena pagamentos por `data_referencia`; o 5º registro (índice 4) corresponde ao fim das 4 semanas
-     * após o 1º pagamento (fechamento do contrato). O KM final considerado é o maior hodômetro registrado em
-     * leitura do contrato com `created_at` até o fim do dia da data de referência do 5º pagamento.
-     *
-     * Retorna null se houver menos de 5 pagamentos ou nenhuma leitura aplicável.
+     * @return array{
+     *   dth_inicio: \Carbon\Carbon,
+     *   dth_fim_ciclo: \Carbon\Carbon,
+     *   arr_pagamentos_ciclo: Collection<int, Pagamento>,
+     *   num_km_inicial: int,
+     *   num_km_final: int|null,
+     *   num_km_rodado: int|null
+     * }|null
      */
-    public function calcularKmRodadoPrimeiroCicloQuatroSemanas(Contrato $objContrato): ?int
+    public function obterResumoPrimeiroCicloQuatroSemanas(Contrato $objContrato): ?array
     {
         $arrPagamentos = $objContrato->pagamentos()
             ->orderBy('data_referencia')
@@ -27,7 +32,8 @@ class CicloContratoService
             return null;
         }
 
-        $objQuintoPagamento = $arrPagamentos->get(4);
+        $arrCincoPrimeiros = $arrPagamentos->take(5);
+        $objQuintoPagamento = $arrCincoPrimeiros->get(4);
         $dtaLimite = $objQuintoPagamento->data_referencia;
         $numKmInicial = (int) $objContrato->km_inicial;
 
@@ -38,10 +44,31 @@ class CicloContratoService
             ->orderByDesc('km')
             ->first();
 
-        if ($objLeitura === null) {
+        $numKmFinal = $objLeitura?->km;
+        $numKmRodado = $objLeitura === null ? null : max(0, $objLeitura->km - $numKmInicial);
+
+        return [
+            'dth_inicio' => $objContrato->data_inicio->copy()->startOfDay(),
+            'dth_fim_ciclo' => $dtaLimite->copy()->startOfDay(),
+            'arr_pagamentos_ciclo' => $arrCincoPrimeiros,
+            'num_km_inicial' => $numKmInicial,
+            'num_km_final' => $numKmFinal,
+            'num_km_rodado' => $numKmRodado,
+        ];
+    }
+
+    /**
+     * KM rodado nas primeiras quatro semanas completas da locação (ciclo fechado no 5º pagamento semanal).
+     *
+     * Retorna null se houver menos de 5 pagamentos ou nenhuma leitura aplicável.
+     */
+    public function calcularKmRodadoPrimeiroCicloQuatroSemanas(Contrato $objContrato): ?int
+    {
+        $arrResumo = $this->obterResumoPrimeiroCicloQuatroSemanas($objContrato);
+        if ($arrResumo === null) {
             return null;
         }
 
-        return max(0, $objLeitura->km - $numKmInicial);
+        return $arrResumo['num_km_rodado'];
     }
 }

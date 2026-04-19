@@ -47,14 +47,30 @@ export default function RelatoriosPage() {
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          disabled={!contratoId}
-          onClick={() => contratoId && relatorioService.downloadPdfContrato(Number(contratoId))}
-          className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
-        >
-          Baixar PDF
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={!contratoId}
+            onClick={() => contratoId && relatorioService.downloadPdfContrato(Number(contratoId))}
+            className="px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-50"
+          >
+            PDF contrato
+          </button>
+          <button
+            type="button"
+            disabled={!contratoId}
+            onClick={() =>
+              contratoId && relatorioService.downloadPdfDesempenhoPrimeiroCiclo(Number(contratoId))
+            }
+            className="px-4 py-2 border border-brand-secondary text-brand-secondary rounded-lg hover:bg-brand-secondary/10 disabled:opacity-50 font-medium"
+          >
+            PDF desempenho (1º ciclo)
+          </button>
+        </div>
+        <p className="text-xs text-gray-500">
+          O desempenho consolida o 1º ciclo de 4 semanas (até o 5º pagamento), KM rodado, despesas pagas e
+          manutenções concluídas no período.
+        </p>
       </section>
 
       <section className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
