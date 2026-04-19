@@ -49,6 +49,7 @@ export default function App() {
         <Route path="condutores/:id/editar" element={<CondutorFormPage />} />
         <Route path="contratos" element={<ContratosListPage />} />
         <Route path="contratos/novo" element={<ContratoFormPage />} />
+        <Route path="contratos/:id/editar" element={<ContratoFormPage />} />
         <Route path="financeiro/pagamentos" element={<PagamentosPage />} />
         <Route path="financeiro/despesas" element={<DespesasPage />} />
         <Route path="quilometragem/leituras" element={<LeiturasKmPage />} />

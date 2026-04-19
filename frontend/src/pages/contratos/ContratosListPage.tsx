@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Ban, FileText, Loader2, Plus, RefreshCw } from 'lucide-react'
+import { Ban, FileText, Loader2, Pencil, Plus, RefreshCw } from 'lucide-react'
 import Modal from '../../components/shared/Modal'
 import { contratoService } from '../../services/contratoService'
 import { relatorioService } from '../../services/relatorioService'
@@ -133,7 +133,7 @@ export default function ContratosListPage() {
         <h2 className="text-2xl font-bold text-gray-900">Contratos</h2>
         <Link to="/contratos/novo"
           className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover transition-colors text-sm font-medium">
-          <Plus size={18} /> Novo Contrato
+          <Plus size={18} /> Novo contrato
         </Link>
       </div>
 
@@ -157,6 +157,14 @@ export default function ContratosListPage() {
           )}
           fnRenderActions={(c) => (
             <div className="flex items-center gap-1">
+              <Link
+                to={`/contratos/${c.id}/editar`}
+                className="p-2 text-gray-600 hover:text-brand-secondary hover:bg-brand-secondary-muted rounded-lg"
+                title="Editar contrato"
+                aria-label="Editar contrato"
+              >
+                <Pencil size={16} aria-hidden />
+              </Link>
               <button
                 type="button"
                 onClick={() => handleBaixarPdf(c.id)}
