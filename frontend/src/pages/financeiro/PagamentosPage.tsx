@@ -150,6 +150,19 @@ export default function PagamentosPage() {
         </span>
       ),
     },
+    {
+      strLabel: 'Data real de pagamento',
+      strKey: 'data_pagamento',
+      render: (p) =>
+        p.status === 'PAGO' && p.data_pagamento ? (
+          <span className="text-gray-700">
+            {new Date(p.data_pagamento).toLocaleDateString('pt-BR')}
+          </span>
+        ) : (
+          <span className="text-gray-400">—</span>
+        ),
+      bolHideMobile: true,
+    },
   ]
 
   return (
@@ -177,7 +190,7 @@ export default function PagamentosPage() {
           bolLoading={isLoading}
           strEmptyMessage="Nenhum pagamento encontrado."
           fnRenderCardHeader={(p) => (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <div>
                 <p className="font-medium text-gray-900">
                   {p.condutor?.nome ?? `#${p.condutor_id}`}
@@ -187,8 +200,13 @@ export default function PagamentosPage() {
                   {' - '}
                   {p.veiculo?.placa ?? `#${p.veiculo_id}`}
                 </p>
+                {p.status === 'PAGO' && p.data_pagamento && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    Pago em {new Date(p.data_pagamento).toLocaleDateString('pt-BR')}
+                  </p>
+                )}
               </div>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusCores[p.status] ?? ''}`}>
+              <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${statusCores[p.status] ?? ''}`}>
                 {p.status}
               </span>
             </div>
@@ -224,32 +242,6 @@ export default function PagamentosPage() {
             </p>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Comprovante (opcional)</label>
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-              onChange={(e) =>
-                setFormRegistrar((f) => ({ ...f, comprovante: e.target.files?.[0] ?? null }))
-              }
-              className="w-full text-sm"
-            />
-            <p className="text-xs text-gray-500 mt-1">JPG, PNG ou PDF (max. 10 MB).</p>
-          </div>
-          {formRegistrar.status === 'PAGO' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Data do pagamento</label>
-              <input
-                type="date"
-                value={formRegistrar.strDataPagamento}
-                onChange={(e) =>
-                  setFormRegistrar((f) => ({ ...f, strDataPagamento: e.target.value }))
-                }
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-1">Padrão: data de referência da parcela.</p>
-            </div>
-          )}
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label>
             <input
               type="text"
@@ -276,6 +268,38 @@ export default function PagamentosPage() {
               <option value="PENDENTE">Pendente</option>
               <option value="ATRASADO">Atrasado</option>
             </select>
+          </div>
+          {formRegistrar.status === 'PAGO' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Data real de pagamento <span className="font-normal text-gray-500">(opcional)</span>
+              </label>
+              <input
+                type="date"
+                value={formRegistrar.strDataPagamento}
+                onChange={(e) =>
+                  setFormRegistrar((f) => ({ ...f, strDataPagamento: e.target.value }))
+                }
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Se não informar, será usada a data de referência da parcela no sistema.
+              </p>
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Comprovante <span className="font-normal text-gray-500">(opcional)</span>
+            </label>
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+              onChange={(e) =>
+                setFormRegistrar((f) => ({ ...f, comprovante: e.target.files?.[0] ?? null }))
+              }
+              className="w-full text-sm"
+            />
+            <p className="text-xs text-gray-500 mt-1">JPG, PNG ou PDF (máx. 10 MB). Anexe se houver arquivo.</p>
           </div>
           {msgErroRegistrar && <p className="text-sm text-red-600">{msgErroRegistrar}</p>}
           <div className="flex justify-end gap-2 pt-2">
