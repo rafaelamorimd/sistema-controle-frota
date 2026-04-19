@@ -324,21 +324,29 @@ export default function ChecklistRevisaoPage() {
       strLabel: 'Ações',
       strKey: 'acoes',
       render: (c) => (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-1">
           <button
             type="button"
             onClick={() => fnAbrirEditar(c)}
-            className="inline-flex items-center gap-1 text-sm text-brand-secondary font-medium hover:underline"
+            className="p-2 text-brand-secondary hover:bg-brand-secondary-muted rounded-lg"
+            title="Editar checklist"
+            aria-label="Editar checklist"
           >
-            <Pencil size={14} /> Editar
+            <Pencil size={16} aria-hidden />
           </button>
           <button
             type="button"
             disabled={numBaixandoPdf === c.id}
             onClick={() => fnBaixarPdf(c.id)}
-            className="inline-flex items-center gap-1 text-sm text-gray-700 hover:text-brand-primary"
+            className="p-2 text-gray-700 hover:text-brand-primary hover:bg-gray-100 rounded-lg disabled:opacity-50"
+            title={numBaixandoPdf === c.id ? 'Gerando PDF…' : 'Baixar PDF do checklist'}
+            aria-label={numBaixandoPdf === c.id ? 'Gerando PDF' : 'Baixar PDF do checklist'}
           >
-            <FileDown size={14} /> PDF
+            {numBaixandoPdf === c.id ? (
+              <Loader2 size={16} className="animate-spin" aria-hidden />
+            ) : (
+              <FileDown size={16} aria-hidden />
+            )}
           </button>
         </div>
       ),

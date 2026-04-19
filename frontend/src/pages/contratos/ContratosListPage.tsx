@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Plus, FileText, RefreshCw } from 'lucide-react'
+import { Ban, FileText, Loader2, Plus, RefreshCw } from 'lucide-react'
 import Modal from '../../components/shared/Modal'
 import { contratoService } from '../../services/contratoService'
 import { relatorioService } from '../../services/relatorioService'
@@ -156,32 +156,44 @@ export default function ContratosListPage() {
             </div>
           )}
           fnRenderActions={(c) => (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={() => handleBaixarPdf(c.id)}
                 disabled={numBaixando === c.id}
-                className="text-brand-secondary hover:text-brand-secondary-hover disabled:opacity-50 flex items-center gap-1 text-sm"
-                title="Baixar PDF"
+                className="p-2 text-brand-secondary hover:text-brand-secondary-hover hover:bg-brand-secondary-muted rounded-lg disabled:opacity-50"
+                title={numBaixando === c.id ? 'Baixando PDF…' : 'Baixar PDF do contrato'}
+                aria-label={numBaixando === c.id ? 'Baixando PDF' : 'Baixar PDF do contrato'}
               >
-                <FileText size={16} />
-                {numBaixando === c.id ? 'Baixando...' : 'PDF'}
+                {numBaixando === c.id ? (
+                  <Loader2 size={16} className="animate-spin" aria-hidden />
+                ) : (
+                  <FileText size={16} aria-hidden />
+                )}
               </button>
               <button
+                type="button"
                 onClick={() => handleGerarPdf(c.id)}
                 disabled={numGerando === c.id}
-                className="text-green-600 hover:text-green-800 disabled:opacity-50 flex items-center gap-1 text-sm"
-                title="Gerar contrato"
+                className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg disabled:opacity-50"
+                title={numGerando === c.id ? 'Gerando PDF…' : 'Gerar e baixar PDF do contrato'}
+                aria-label={numGerando === c.id ? 'Gerando PDF' : 'Gerar e baixar PDF do contrato'}
               >
-                <RefreshCw size={16} />
-                {numGerando === c.id ? 'Gerando...' : 'Gerar'}
+                {numGerando === c.id ? (
+                  <Loader2 size={16} className="animate-spin" aria-hidden />
+                ) : (
+                  <RefreshCw size={16} aria-hidden />
+                )}
               </button>
               {c.status === 'ATIVO' && (
                 <button
+                  type="button"
                   onClick={() => abrirModalEncerrar(c)}
-                  className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm"
+                  className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
                   title="Encerrar contrato"
+                  aria-label="Encerrar contrato"
                 >
-                  Encerrar
+                  <Ban size={16} aria-hidden />
                 </button>
               )}
             </div>

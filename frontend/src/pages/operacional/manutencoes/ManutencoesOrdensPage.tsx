@@ -186,9 +186,12 @@ export default function ManutencoesOrdensPage() {
               <button
                 type="button"
                 onClick={() => concluirMutation.mutate(m)}
-                className="text-green-600 hover:underline inline-flex items-center gap-1 text-sm"
+                disabled={concluirMutation.isPending}
+                className="p-2 text-green-600 hover:bg-green-50 rounded-lg disabled:opacity-50"
+                title="Concluir ordem de serviço"
+                aria-label="Concluir ordem de serviço"
               >
-                <CheckCircle size={16} /> Concluir
+                <CheckCircle size={18} aria-hidden />
               </button>
             ) : null
           }

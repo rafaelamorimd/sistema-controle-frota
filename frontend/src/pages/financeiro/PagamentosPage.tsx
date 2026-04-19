@@ -197,9 +197,11 @@ export default function PagamentosPage() {
             <button
               type="button"
               onClick={() => abrirRegistrar(p)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-brand-primary bg-brand-primary-muted rounded-lg hover:bg-brand-primary-border/50"
+              className="inline-flex items-center justify-center p-2 text-brand-primary bg-brand-primary-muted rounded-lg hover:bg-brand-primary-border/50"
+              title="Registrar pagamento"
+              aria-label="Registrar pagamento"
             >
-              <Receipt size={16} /> Registrar
+              <Receipt size={18} aria-hidden />
             </button>
           )}
         />

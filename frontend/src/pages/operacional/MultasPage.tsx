@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Gavel, Plus } from 'lucide-react'
+import { Banknote, Gavel, Pencil, Plus } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
@@ -171,22 +171,27 @@ export default function MultasPage() {
             </div>
           )}
           fnRenderActions={(m) => (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {m.status === 'PENDENTE' && (
                 <button
                   type="button"
-                  className="text-green-600 text-sm font-medium"
+                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg disabled:opacity-50"
                   onClick={() => pagarMutation.mutate(m.id)}
+                  disabled={pagarMutation.isPending}
+                  title="Marcar multa como paga"
+                  aria-label="Marcar multa como paga"
                 >
-                  Pagar
+                  <Banknote size={16} aria-hidden />
                 </button>
               )}
               <button
                 type="button"
-                className="text-brand-secondary text-sm hover:text-brand-secondary-hover font-medium"
+                className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
                 onClick={() => abrirEditar(m)}
+                title="Editar multa"
+                aria-label="Editar multa"
               >
-                Editar
+                <Pencil size={16} aria-hidden />
               </button>
             </div>
           )}

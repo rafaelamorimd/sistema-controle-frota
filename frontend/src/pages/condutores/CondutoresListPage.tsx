@@ -94,12 +94,22 @@ export default function CondutoresListPage() {
           )}
           fnRenderActions={(c) => (
             <div className="flex items-center gap-2">
-              <Link to={`/condutores/${c.id}/editar`} className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted">
-                <Pencil size={16} />
+              <Link
+                to={`/condutores/${c.id}/editar`}
+                className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+                title="Editar condutor"
+                aria-label="Editar condutor"
+              >
+                <Pencil size={16} aria-hidden />
               </Link>
-              <button onClick={() => { if (confirm('Excluir este condutor?')) deleteMutation.mutate(c.id) }}
-                className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50">
-                <Trash2 size={16} />
+              <button
+                type="button"
+                onClick={() => { if (confirm('Excluir este condutor?')) deleteMutation.mutate(c.id) }}
+                className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50"
+                title="Excluir condutor"
+                aria-label="Excluir condutor"
+              >
+                <Trash2 size={16} aria-hidden />
               </button>
             </div>
           )}

@@ -204,8 +204,10 @@ export default function DespesasPage() {
                 type="button"
                 onClick={() => abrirEditar(d)}
                 className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+                title="Editar despesa"
+                aria-label="Editar despesa"
               >
-                <Pencil size={16} />
+                <Pencil size={16} aria-hidden />
               </button>
             </div>
           )}

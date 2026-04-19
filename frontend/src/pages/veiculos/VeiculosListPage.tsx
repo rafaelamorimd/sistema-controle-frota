@@ -92,14 +92,22 @@ export default function VeiculosListPage() {
           )}
           fnRenderActions={(v) => (
             <div className="flex items-center gap-2">
-              <Link to={`/veiculos/${v.id}/editar`} className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted">
-                <Pencil size={16} />
+              <Link
+                to={`/veiculos/${v.id}/editar`}
+                className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+                title="Editar veículo"
+                aria-label="Editar veículo"
+              >
+                <Pencil size={16} aria-hidden />
               </Link>
               <button
+                type="button"
                 onClick={() => { if (confirm('Excluir este veículo?')) deleteMutation.mutate(v.id) }}
                 className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50"
+                title="Excluir veículo"
+                aria-label="Excluir veículo"
               >
-                <Trash2 size={16} />
+                <Trash2 size={16} aria-hidden />
               </button>
             </div>
           )}

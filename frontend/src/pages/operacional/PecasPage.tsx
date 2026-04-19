@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Package, Pencil, Plus } from 'lucide-react'
+import { ArrowLeftRight, History, Package, Pencil, Plus } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
@@ -186,27 +186,33 @@ export default function PecasPage() {
             </div>
           )}
           fnRenderActions={(p) => (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setModalMov(p)}
-                className="text-brand-secondary text-sm hover:text-brand-secondary-hover font-medium"
+                className="p-2 text-brand-secondary hover:text-brand-secondary-hover rounded-lg hover:bg-brand-secondary-muted"
+                title="Movimentar estoque"
+                aria-label="Movimentar estoque"
               >
-                Movimentar
+                <ArrowLeftRight size={16} aria-hidden />
               </button>
               <button
                 type="button"
                 onClick={() => setModalHistorico(p)}
-                className="text-blue-600 text-sm hover:text-blue-700 font-medium"
+                className="p-2 text-blue-600 hover:text-blue-800 rounded-lg hover:bg-blue-50"
+                title="Histórico de movimentações"
+                aria-label="Histórico de movimentações"
               >
-                Histórico
+                <History size={16} aria-hidden />
               </button>
               <button
                 type="button"
                 onClick={() => abrirEditar(p)}
                 className="p-2 text-gray-500 hover:text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+                title="Editar peça"
+                aria-label="Editar peça"
               >
-                <Pencil size={14} />
+                <Pencil size={14} aria-hidden />
               </button>
             </div>
           )}

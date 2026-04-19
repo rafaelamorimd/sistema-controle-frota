@@ -140,22 +140,26 @@ export default function RevisaoCategoriasPage() {
                     {cat.slug} · ordem {cat.ordem}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <button
                     type="button"
                     onClick={() => abrirEditarCategoria(cat)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"
+                    className="p-2 border border-gray-300 rounded-lg hover:bg-white"
+                    title="Editar categoria"
+                    aria-label="Editar categoria"
                   >
-                    <Pencil size={16} /> Editar
+                    <Pencil size={16} aria-hidden />
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       if (confirm('Excluir esta categoria e todos os itens?')) excluirCatMutation.mutate(cat.id)
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-700 border border-red-200 rounded-lg hover:bg-red-50"
+                    className="p-2 text-red-700 border border-red-200 rounded-lg hover:bg-red-50"
+                    title="Excluir categoria"
+                    aria-label="Excluir categoria"
                   >
-                    <Trash2 size={16} /> Excluir
+                    <Trash2 size={16} aria-hidden />
                   </button>
                 </div>
               </div>
@@ -165,9 +169,11 @@ export default function RevisaoCategoriasPage() {
                   <button
                     type="button"
                     onClick={() => abrirNovoItem(cat.id)}
-                    className="text-sm text-brand-secondary font-medium hover:underline inline-flex items-center gap-1"
+                    className="p-2 text-brand-secondary rounded-lg hover:bg-brand-secondary-muted"
+                    title="Adicionar item ao checklist"
+                    aria-label="Adicionar item ao checklist"
                   >
-                    <Plus size={16} /> Novo item
+                    <Plus size={16} aria-hidden />
                   </button>
                 </div>
                 {!cat.itens_checklist?.length ? (
