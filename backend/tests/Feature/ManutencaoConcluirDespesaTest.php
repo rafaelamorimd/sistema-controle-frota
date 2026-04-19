@@ -29,6 +29,7 @@ class ManutencaoConcluirDespesaTest extends TestCase
             'renavam' => '98765432109',
             'cor' => 'Preto',
             'combustivel' => 'Flex',
+            'km_inicial' => 20000,
             'km_atual' => 20000,
             'status' => StatusVeiculo::ALUGADO,
         ]);
@@ -79,6 +80,7 @@ class ManutencaoConcluirDespesaTest extends TestCase
             'renavam' => '11122233344',
             'cor' => 'Prata',
             'combustivel' => 'Flex',
+            'km_inicial' => 30000,
             'km_atual' => 30000,
             'status' => StatusVeiculo::ALUGADO,
         ]);

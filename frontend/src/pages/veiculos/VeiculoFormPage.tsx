@@ -13,7 +13,7 @@ export default function VeiculoFormPage() {
   const [form, setForm] = useState({
     placa: '', modelo: '', ano: new Date().getFullYear(), renavam: '',
     chassi: '', cor: '', combustivel: 'FLEX', kit_gas: false,
-    vencimento_gnv: '', km_atual: 0, km_ultima_troca_oleo: 0,
+    vencimento_gnv: '', km_inicial: 0, km_atual: 0, km_ultima_troca_oleo: 0,
     numero_rastreador: '', veiculo_id_externo: '', rastreador_ativo: false, valor_rastreador: '53',
     vencimento_ipva: '', vencimento_seguro: '', observacoes: '',
   })
@@ -38,6 +38,7 @@ export default function VeiculoFormPage() {
         renavam: veiculo.renavam, chassi: veiculo.chassi || '',
         cor: veiculo.cor, combustivel: veiculo.combustivel,
         kit_gas: veiculo.kit_gas, vencimento_gnv: veiculo.vencimento_gnv || '',
+        km_inicial: veiculo.km_inicial ?? veiculo.km_atual,
         km_atual: veiculo.km_atual, km_ultima_troca_oleo: veiculo.km_ultima_troca_oleo,
         numero_rastreador: veiculo.numero_rastreador || '',
         veiculo_id_externo: veiculo.veiculo_id_externo || '',
@@ -52,11 +53,16 @@ export default function VeiculoFormPage() {
 
   const mutation = useMutation({
     mutationFn: (data: typeof form) => {
-      const objPayload = {
+      const objPayload: Record<string, unknown> = {
         ...data,
         veiculo_id_externo: data.veiculo_id_externo.trim() === '' ? null : data.veiculo_id_externo.trim(),
       }
-      return isEditing ? veiculoService.atualizar(Number(id), objPayload) : veiculoService.criar(objPayload)
+      if (isEditing) {
+        delete objPayload.km_inicial
+      }
+      return isEditing
+        ? veiculoService.atualizar(Number(id), objPayload as typeof data)
+        : veiculoService.criar(objPayload as typeof data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['veiculos'] })
@@ -124,11 +130,30 @@ export default function VeiculoFormPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">KM Atual *</label>
-            <input type="number" value={form.km_atual} onChange={(e) => set('km_atual', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none" required />
+            <label className="block text-sm font-medium text-gray-700 mb-1">KM inicial *</label>
+            <input
+              type="number"
+              value={form.km_inicial}
+              onChange={(e) => set('km_inicial', Number(e.target.value))}
+              disabled={isEditing}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none disabled:bg-gray-100 disabled:text-gray-600"
+              required={!isEditing}
+            />
+            {isEditing && (
+              <p className="text-xs text-gray-500 mt-1">Registrado no cadastro.</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">KM atual *</label>
+            <input
+              type="number"
+              value={form.km_atual}
+              onChange={(e) => set('km_atual', Number(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none"
+              required
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">KM última troca de óleo *</label>
@@ -161,13 +186,13 @@ export default function VeiculoFormPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">ID no sistema de rastreamento</label>
-            <p className="text-xs text-gray-500 mb-1">Opcional: vincula ao veiculo retornado pelo provedor configurado no servidor.</p>
+            <p className="text-xs text-gray-500 mb-1">Opcional: vincule ao veículo retornado pelo provedor configurado no servidor.</p>
             <select
               value={form.veiculo_id_externo}
               onChange={(e) => set('veiculo_id_externo', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-secondary outline-none"
             >
-              <option value="">Nao vinculado</option>
+              <option value="">Não vinculado</option>
               {arrVeiculosExternos.map((v) => (
                 <option key={v.ras_vei_id} value={String(v.ras_vei_id)}>
                   {v.ras_vei_placa} — {v.ras_vei_veiculo}

@@ -41,6 +41,7 @@ class PagamentoRegistrarTest extends TestCase
             'renavam' => '12345678901',
             'cor' => 'Branco',
             'combustivel' => 'Flex',
+            'km_inicial' => 10000,
             'km_atual' => 10000,
             'status' => StatusVeiculo::ALUGADO,
         ]);

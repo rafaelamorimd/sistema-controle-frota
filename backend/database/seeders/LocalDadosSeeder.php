@@ -70,6 +70,7 @@ class LocalDadosSeeder extends Seeder
         foreach ($arrDefinicoes as $arrDados) {
             $strPlaca = $arrDados['placa'];
             unset($arrDados['placa']);
+            $arrDados['km_inicial'] = $arrDados['km_inicial'] ?? $arrDados['km_atual'];
             $arrDados['km_ultima_troca_oleo'] = max(0, ($arrDados['km_atual'] ?? 0) - 5000);
             $arrDados['vencimento_ipva'] = $arrDados['vencimento_ipva'] ?? now()->addMonths(4)->startOfMonth();
             $arrDados['vencimento_seguro'] = $arrDados['vencimento_seguro'] ?? now()->addMonths(6);

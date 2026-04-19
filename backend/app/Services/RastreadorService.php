@@ -365,6 +365,16 @@ class RastreadorService
                 }
             }
 
+            $numHodometro = $this->extrairHodometroFulltrack($arrMatch);
+            if ($numHodometro !== null) {
+                $veiculo->refresh();
+                $veiculo->update([
+                    'km_rastreador' => $numHodometro,
+                    'dth_ultimo_km_rastreador' => now(),
+                    'km_atual' => max((int) $veiculo->km_atual, $numHodometro),
+                ]);
+            }
+
             $strJson = json_encode($arrMatch, JSON_UNESCAPED_UNICODE);
 
             return RastreadorEvento::create([
@@ -390,6 +400,36 @@ class RastreadorService
     private function normalizarPlaca(string $strPlaca): string
     {
         return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $strPlaca));
+    }
+
+    /**
+     * Eventos Fulltrack: tenta ras_eve_hodometro, ras_eve_odometro, ras_eve_km (confirmar no JSON do provedor).
+     *
+     * @param  array<string, mixed>  $arrMatch
+     */
+    private function extrairHodometroFulltrack(array $arrMatch): ?int
+    {
+        $arrChavesHodometro = ['ras_eve_hodometro', 'ras_eve_odometro', 'ras_eve_km'];
+        foreach ($arrChavesHodometro as $strChave) {
+            if (! array_key_exists($strChave, $arrMatch)) {
+                continue;
+            }
+            $mixValor = $arrMatch[$strChave];
+            if ($mixValor === null || $mixValor === '') {
+                continue;
+            }
+            if (is_numeric($mixValor)) {
+                $num = (int) $mixValor;
+            } else {
+                $strDigits = preg_replace('/\D/', '', (string) $mixValor);
+                $num = $strDigits !== '' ? (int) $strDigits : -1;
+            }
+            if ($num >= 0) {
+                return $num;
+            }
+        }
+
+        return null;
     }
 
     /**

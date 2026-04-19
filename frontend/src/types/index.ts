@@ -17,7 +17,10 @@ export interface Veiculo {
   combustivel: string
   kit_gas: boolean
   vencimento_gnv: string | null
+  km_inicial: number
   km_atual: number
+  km_rastreador: number | null
+  dth_ultimo_km_rastreador: string | null
   km_ultima_troca_oleo: number
   status: 'DISPONIVEL' | 'ALUGADO' | 'MANUTENCAO' | 'INATIVO'
   numero_rastreador: string | null

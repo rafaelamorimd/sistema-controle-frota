@@ -27,12 +27,18 @@ class VeiculoService
 
     public function criar(array $dados): Veiculo
     {
+        $numKmInicial = (int) ($dados['km_inicial'] ?? $dados['km_atual']);
+        $dados['km_inicial'] = $numKmInicial;
+
         return Veiculo::create($dados);
     }
 
     public function atualizar(Veiculo $veiculo, array $dados): Veiculo
     {
+        unset($dados['km_inicial']);
+
         $veiculo->update($dados);
+
         return $veiculo->fresh();
     }
 

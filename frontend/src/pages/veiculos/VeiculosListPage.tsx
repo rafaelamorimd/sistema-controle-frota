@@ -45,9 +45,18 @@ export default function VeiculosListPage() {
       render: (v) => <span className="text-gray-700">{v.ano}</span>,
     },
     {
-      strLabel: 'KM Atual',
+      strLabel: 'KM inicial',
+      strKey: 'km_inicial',
+      render: (v) => (
+        <span className="text-gray-700">{(v.km_inicial ?? 0).toLocaleString('pt-BR')} km</span>
+      ),
+    },
+    {
+      strLabel: 'KM atual',
       strKey: 'km_atual',
-      render: (v) => <span className="text-gray-700">{v.km_atual.toLocaleString()} km</span>,
+      render: (v) => (
+        <span className="text-gray-700">{v.km_atual.toLocaleString('pt-BR')} km</span>
+      ),
     },
     {
       strLabel: 'Status',

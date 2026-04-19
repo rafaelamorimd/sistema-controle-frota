@@ -40,7 +40,11 @@ class LeituraKmService
             $numKmSolicitado = (int) $dados['km'];
 
             $numUltimaLeitura = (int) ($veiculo->leiturasKm()->max('km') ?? 0);
-            $numKmMinimo = max((int) $veiculo->km_atual, $numUltimaLeitura);
+            $numBaseVeiculo = max(
+                (int) $veiculo->km_atual,
+                (int) ($veiculo->km_rastreador ?? 0)
+            );
+            $numKmMinimo = max($numBaseVeiculo, $numUltimaLeitura);
 
             if ($numKmSolicitado < $numKmMinimo) {
                 throw new \DomainException(

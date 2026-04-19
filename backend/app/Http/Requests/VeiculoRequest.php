@@ -34,6 +34,7 @@ class VeiculoRequest extends FormRequest
             'kit_gas' => 'required|boolean',
             'vencimento_gnv' => 'required_if:kit_gas,true|nullable|date',
             'km_atual' => 'required|integer|min:0',
+            'km_inicial' => 'nullable|integer|min:0|lte:km_atual',
             'km_ultima_troca_oleo' => 'required|integer|min:0',
             'numero_rastreador' => 'nullable|string|max:50',
             'veiculo_id_externo' => [
@@ -53,6 +54,7 @@ class VeiculoRequest extends FormRequest
         return [
             'placa.regex' => 'Formato de placa invalido. Use ABC1D23 ou ABC1234.',
             'vencimento_gnv.required_if' => 'Data de vencimento do GNV obrigatoria quando kit gas esta ativo.',
+            'km_inicial.lte' => 'KM inicial nao pode ser maior que KM atual.',
         ];
     }
 }

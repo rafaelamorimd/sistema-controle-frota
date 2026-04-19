@@ -40,6 +40,7 @@ class CicloContratoKmTest extends TestCase
             'renavam' => '12345678901',
             'cor' => 'Branco',
             'combustivel' => 'Flex',
+            'km_inicial' => 70000,
             'km_atual' => 70000,
             'status' => StatusVeiculo::ALUGADO,
         ]);
@@ -121,6 +122,7 @@ class CicloContratoKmTest extends TestCase
             'renavam' => '98765432109',
             'cor' => 'Preto',
             'combustivel' => 'Flex',
+            'km_inicial' => 50000,
             'km_atual' => 50000,
             'status' => StatusVeiculo::ALUGADO,
         ]);
@@ -171,6 +173,7 @@ class CicloContratoKmTest extends TestCase
             'renavam' => '11122233344',
             'cor' => 'Prata',
             'combustivel' => 'Gasolina',
+            'km_inicial' => 40000,
             'km_atual' => 40000,
             'status' => StatusVeiculo::ALUGADO,
         ]);

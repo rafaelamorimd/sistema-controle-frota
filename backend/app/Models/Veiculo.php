@@ -15,7 +15,8 @@ class Veiculo extends Model
 
     protected $fillable = [
         'placa', 'modelo', 'ano', 'renavam', 'chassi', 'cor',
-        'combustivel', 'kit_gas', 'vencimento_gnv', 'km_atual',
+        'combustivel', 'kit_gas', 'vencimento_gnv', 'km_atual', 'km_inicial',
+        'km_rastreador', 'dth_ultimo_km_rastreador',
         'km_ultima_troca_oleo', 'status', 'numero_rastreador', 'veiculo_id_externo',
         'rastreador_ativo', 'valor_rastreador', 'vencimento_ipva',
         'vencimento_seguro', 'observacoes',
@@ -31,6 +32,7 @@ class Veiculo extends Model
             'vencimento_ipva' => 'date',
             'vencimento_seguro' => 'date',
             'valor_rastreador' => 'decimal:2',
+            'dth_ultimo_km_rastreador' => 'datetime',
         ];
     }
 
