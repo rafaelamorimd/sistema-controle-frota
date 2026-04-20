@@ -56,7 +56,7 @@ export default function LeiturasKmPage() {
 
   const { data: pagamentosElegiveisData } = useQuery({
     queryKey: ['pagamentos-elegiveis-km', veiculoId],
-    queryFn: () => leituraKmService.listarPagamentosElegiveis(veiculoId!, { por_pagina: 200 }),
+    queryFn: () => leituraKmService.listarPagamentosElegiveis(veiculoId!, { por_pagina: 100 }),
     enabled: veiculoId != null && modalAberto,
   })
 

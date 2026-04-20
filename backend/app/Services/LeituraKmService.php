@@ -77,7 +77,7 @@ class LeituraKmService
 
             if ($numKmSolicitado < $numKmMinimo) {
                 throw new \DomainException(
-                    'Quilometragem nao pode ser inferior a '.$numKmMinimo.' (ultima leitura ou km atual do veiculo).'
+                    'Quilometragem nao pode ser inferior a ' . $numKmMinimo . ' (ultima leitura ou km atual do veiculo).'
                 );
             }
 
@@ -137,7 +137,7 @@ class LeituraKmService
             $numMin = $this->resolverKmMinimoPermitido($veiculo, $objLeituraExistente->id);
             if ($numKm < $numMin) {
                 throw new \DomainException(
-                    'Quilometragem nao pode ser inferior a '.$numMin.' (ultima leitura ou km atual do veiculo).'
+                    'Quilometragem nao pode ser inferior a ' . $numMin . ' (ultima leitura ou km atual do veiculo).'
                 );
             }
             $objLeituraExistente->update([
@@ -149,7 +149,7 @@ class LeituraKmService
             $numMin = $this->resolverKmMinimoPermitido($veiculo, null);
             if ($numKm < $numMin) {
                 throw new \DomainException(
-                    'Quilometragem nao pode ser inferior a '.$numMin.' (ultima leitura ou km atual do veiculo).'
+                    'Quilometragem nao pode ser inferior a ' . $numMin . ' (ultima leitura ou km atual do veiculo).'
                 );
             }
             $this->criarLeituraKmOuLancarDuplicata([
@@ -248,7 +248,7 @@ class LeituraKmService
             'tipo_alerta' => TipoAlerta::TROCA_OLEO,
             'entidade_tipo' => Veiculo::class,
             'entidade_id' => $veiculo->id,
-            'mensagem' => 'Veiculo '.$veiculo->placa.' atingiu '.$numKmDesdeTroca.' km desde a ultima troca de oleo (limite '.self::NUM_KM_TROCA_OLEO.' km).',
+            'mensagem' => 'Veiculo ' . $veiculo->placa . ' atingiu ' . $numKmDesdeTroca . ' km desde a ultima troca de oleo (limite ' . self::NUM_KM_TROCA_OLEO . ' km).',
             'prioridade' => PrioridadeAlerta::ALTA,
         ]);
     }
