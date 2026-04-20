@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('pagamentos/{pagamento}/registrar', [PagamentoController::class, 'registrar']);
     Route::get('contratos/{contrato}/pagamentos', [PagamentoController::class, 'indexPorContrato']);
 
+    Route::get('veiculos/{veiculo}/pagamentos-elegiveis-leitura-km', [LeituraKmController::class, 'pagamentosElegiveis']);
     Route::get('veiculos/{veiculo}/leituras-km', [LeituraKmController::class, 'index']);
     Route::post('veiculos/{veiculo}/leituras-km', [LeituraKmController::class, 'store']);
 

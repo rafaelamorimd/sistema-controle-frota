@@ -18,6 +18,7 @@ class PagamentoRegistrarRequest extends FormRequest
             'valor' => 'required|numeric|min:0.01',
             'status' => 'required|string|in:PAGO,PENDENTE,ATRASADO',
             'data_pagamento' => 'nullable|date',
+            'km' => ['nullable', 'integer', 'min:0', 'prohibited_unless:status,PAGO'],
         ];
     }
 }

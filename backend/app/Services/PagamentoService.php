@@ -6,6 +6,7 @@ use App\Enums\StatusContrato;
 use App\Enums\StatusPagamento;
 use App\Models\Contrato;
 use App\Models\Pagamento;
+use App\Models\Veiculo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +14,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PagamentoService
 {
+    public function __construct(private LeituraKmService $leituraKmService) {}
+
     public function listar(array $filtros = []): LengthAwarePaginator
     {
-        $query = Pagamento::with(['contrato', 'veiculo', 'condutor']);
+        $query = Pagamento::with(['contrato', 'veiculo', 'condutor', 'leituraKm']);
 
         if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
@@ -41,7 +44,7 @@ class PagamentoService
 
     public function listarPorContrato(Contrato $contrato, array $filtros = []): LengthAwarePaginator
     {
-        $query = $contrato->pagamentos()->with(['contrato', 'veiculo', 'condutor']);
+        $query = $contrato->pagamentos()->with(['contrato', 'veiculo', 'condutor', 'leituraKm']);
 
         if (! empty($filtros['status'])) {
             $query->where('status', $filtros['status']);
@@ -52,7 +55,7 @@ class PagamentoService
 
     public function listarInadimplentes(array $filtros = []): LengthAwarePaginator
     {
-        $query = Pagamento::with(['contrato', 'veiculo', 'condutor'])
+        $query = Pagamento::with(['contrato', 'veiculo', 'condutor', 'leituraKm'])
             ->where('status', '!=', StatusPagamento::PAGO)
             ->whereDate('data_referencia', '<', now()->toDateString());
 
@@ -64,9 +67,10 @@ class PagamentoService
         ?UploadedFile $arquivoComprovante,
         float $numValor,
         StatusPagamento $statusPagamento,
-        ?string $strDataPagamentoReal = null
+        ?string $strDataPagamentoReal = null,
+        ?int $numKm = null
     ): Pagamento {
-        return DB::transaction(function () use ($pagamento, $arquivoComprovante, $numValor, $statusPagamento, $strDataPagamentoReal) {
+        return DB::transaction(function () use ($pagamento, $arquivoComprovante, $numValor, $statusPagamento, $strDataPagamentoReal, $numKm) {
             $dados = [
                 'valor' => $numValor,
                 'status' => $statusPagamento,
@@ -87,9 +91,31 @@ class PagamentoService
             }
 
             $pagamento->update($dados);
+            $pagamento->refresh();
 
-            return $pagamento->fresh(['contrato', 'veiculo', 'condutor']);
+            if ($numKm !== null && $statusPagamento === StatusPagamento::PAGO) {
+                $this->leituraKmService->sincronizarKmDoPagamento(
+                    $pagamento,
+                    $numKm,
+                    $statusPagamento,
+                    $strDataPagamentoReal
+                );
+            }
+
+            return $pagamento->fresh(['contrato', 'veiculo', 'condutor', 'leituraKm']);
         });
+    }
+
+    public function listarElegiveisLeituraKmPorVeiculo(Veiculo $veiculo, array $filtros = []): LengthAwarePaginator
+    {
+        $query = Pagamento::query()
+            ->where('veiculo_id', $veiculo->id)
+            ->where('status', StatusPagamento::PAGO)
+            ->whereDoesntHave('leituraKm')
+            ->with(['contrato', 'condutor'])
+            ->orderByDesc('data_referencia');
+
+        return $query->paginate($filtros['por_pagina'] ?? 100);
     }
 
     public function marcarAtrasadosPorDataReferencia(): int

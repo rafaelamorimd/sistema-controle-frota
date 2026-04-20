@@ -156,4 +156,67 @@ class PagamentoRegistrarTest extends TestCase
         $this->assertNull($objPagamento->data_pagamento);
         $this->assertSame(StatusPagamento::PENDENTE, $objPagamento->status);
     }
+
+    public function test_registrar_com_km_cria_leitura_vinculada(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $objPagamento = $this->criarPagamentoPendente();
+
+        $response = $this->post("/api/pagamentos/{$objPagamento->id}/registrar", [
+            'valor' => '500.00',
+            'status' => 'PAGO',
+            'data_pagamento' => '2026-04-05',
+            'km' => 12000,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('leituras_km', [
+            'pagamento_id' => $objPagamento->id,
+            'km' => 12000,
+            'veiculo_id' => $objPagamento->veiculo_id,
+        ]);
+    }
+
+    public function test_registrar_pendente_com_km_rejeita_validacao(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $objPagamento = $this->criarPagamentoPendente();
+
+        $response = $this->postJson("/api/pagamentos/{$objPagamento->id}/registrar", [
+            'valor' => '500.00',
+            'status' => 'PENDENTE',
+            'km' => 12000,
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_registrar_pago_segunda_vez_atualiza_km_da_leitura(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $objPagamento = $this->criarPagamentoPendente();
+
+        $this->postJson("/api/pagamentos/{$objPagamento->id}/registrar", [
+            'valor' => '500.00',
+            'status' => 'PAGO',
+            'data_pagamento' => '2026-04-05',
+            'km' => 12000,
+        ])->assertOk();
+
+        $this->postJson("/api/pagamentos/{$objPagamento->id}/registrar", [
+            'valor' => '500.00',
+            'status' => 'PAGO',
+            'data_pagamento' => '2026-04-06',
+            'km' => 12500,
+        ])->assertOk();
+
+        $this->assertDatabaseCount('leituras_km', 1);
+        $this->assertDatabaseHas('leituras_km', [
+            'pagamento_id' => $objPagamento->id,
+            'km' => 12500,
+        ]);
+    }
 }

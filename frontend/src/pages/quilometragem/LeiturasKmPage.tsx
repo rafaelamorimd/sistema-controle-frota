@@ -5,18 +5,15 @@ import { useMemo, useState } from 'react'
 import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
 import type { Column } from '../../components/shared/ResponsiveTable'
-import { condutorService } from '../../services/condutorService'
-import { contratoService } from '../../services/contratoService'
 import { leituraKmService } from '../../services/leituraKmService'
 import { veiculoService } from '../../services/veiculoService'
-import type { Contrato, LeituraKm } from '../../types'
+import type { LeituraKm, Pagamento } from '../../types'
 
 type FormNovaLeitura = {
   km: string
   foto: File | null
   strDataLeitura: string
-  contrato_id: string
-  condutor_id: string
+  pagamento_id: string
   observacoes: string
 }
 
@@ -24,8 +21,7 @@ const formVazio: FormNovaLeitura = {
   km: '',
   foto: null,
   strDataLeitura: new Date().toISOString().slice(0, 10),
-  contrato_id: '',
-  condutor_id: '',
+  pagamento_id: '',
   observacoes: '',
 }
 
@@ -58,14 +54,10 @@ export default function LeiturasKmPage() {
     enabled: veiculoId != null,
   })
 
-  const { data: contratosData } = useQuery({
-    queryKey: ['contratos', 'select'],
-    queryFn: () => contratoService.listar({ por_pagina: 500 }),
-  })
-
-  const { data: condutoresData } = useQuery({
-    queryKey: ['condutores', 'select'],
-    queryFn: () => condutorService.listar({ por_pagina: 500 }),
+  const { data: pagamentosElegiveisData } = useQuery({
+    queryKey: ['pagamentos-elegiveis-km', veiculoId],
+    queryFn: () => leituraKmService.listarPagamentosElegiveis(veiculoId!, { por_pagina: 200 }),
+    enabled: veiculoId != null && modalAberto,
   })
 
   const salvarMutation = useMutation({
@@ -73,6 +65,8 @@ export default function LeiturasKmPage() {
       leituraKmService.criar(vid, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leituras-km', veiculoId] })
+      queryClient.invalidateQueries({ queryKey: ['pagamentos-elegiveis-km', veiculoId] })
+      queryClient.invalidateQueries({ queryKey: ['pagamentos'] })
       queryClient.invalidateQueries({ queryKey: ['veiculos'] })
       setModalAberto(false)
       setForm(formVazio)
@@ -81,8 +75,7 @@ export default function LeiturasKmPage() {
 
   const leiturasBrutas = data?.data ?? []
   const veiculos = veiculosData?.data ?? []
-  const contratos = contratosData?.data ?? []
-  const condutores = condutoresData?.data ?? []
+  const pagamentosElegiveis = pagamentosElegiveisData?.data ?? []
 
   const leiturasComCalculo: LeituraComCalculo[] = useMemo(() => {
     const asc = [...leiturasBrutas].sort(
@@ -111,12 +104,14 @@ export default function LeiturasKmPage() {
   function enviar(e: React.FormEvent) {
     e.preventDefault()
     if (veiculoId == null) return
+    if (!form.pagamento_id) return
+    const numKm = parseInt(form.km, 10)
+    if (Number.isNaN(numKm)) return
     const fd = new FormData()
-    fd.append('km', String(parseInt(form.km, 10)))
+    fd.append('km', String(numKm))
     if (form.foto) fd.append('foto', form.foto)
     fd.append('data_leitura', form.strDataLeitura)
-    if (form.contrato_id) fd.append('contrato_id', form.contrato_id)
-    if (form.condutor_id) fd.append('condutor_id', form.condutor_id)
+    fd.append('pagamento_id', form.pagamento_id)
     if (form.observacoes.trim()) fd.append('observacoes', form.observacoes.trim())
     salvarMutation.mutate({ vid: veiculoId, formData: fd })
   }
@@ -172,6 +167,18 @@ export default function LeiturasKmPage() {
       render: (l) => (
         <span className="text-gray-700">
           {l.condutor?.nome ?? (l.condutor_id ? `#${l.condutor_id}` : '\u2014')}
+        </span>
+      ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'Pagamento',
+      strKey: 'pagamento',
+      render: (l) => (
+        <span className="text-gray-600 text-sm">
+          {l.pagamento_id != null
+            ? `#${l.pagamento_id} (${l.pagamento?.data_referencia ? new Date(l.pagamento.data_referencia).toLocaleDateString('pt-BR') : ''})`
+            : '\u2014'}
         </span>
       ),
       bolHideMobile: true,
@@ -296,6 +303,31 @@ export default function LeiturasKmPage() {
       >
         <form onSubmit={enviar} className="space-y-4">
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pagamento (pago, sem leitura) *
+            </label>
+            <select
+              required
+              value={form.pagamento_id}
+              onChange={(e) => setForm((f) => ({ ...f, pagamento_id: e.target.value }))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="">Selecione...</option>
+              {(pagamentosElegiveis as Pagamento[]).map((p) => (
+                <option key={p.id} value={p.id}>
+                  #{p.id} — ref. {new Date(p.data_referencia).toLocaleDateString('pt-BR')} —{' '}
+                  {p.condutor?.nome ?? `#${p.condutor_id}`}
+                </option>
+              ))}
+            </select>
+            {pagamentosElegiveis.length === 0 && (
+              <p className="text-xs text-amber-700 mt-1">
+                Não há pagamentos pagos sem quilometragem vinculada para este veículo. Registre ou edite um pagamento
+                informando a KM, ou aguarde novos pagamentos.
+              </p>
+            )}
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Quilometragem (km) *</label>
             <input
               type="number"
@@ -324,36 +356,9 @@ export default function LeiturasKmPage() {
               className="w-full text-sm"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contrato (opcional)</label>
-            <select
-              value={form.contrato_id}
-              onChange={(e) => setForm((f) => ({ ...f, contrato_id: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="">Nenhum</option>
-              {(contratos as Contrato[]).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.numero_contrato}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Condutor (opcional)</label>
-            <select
-              value={form.condutor_id}
-              onChange={(e) => setForm((f) => ({ ...f, condutor_id: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="">Nenhum</option>
-              {condutores.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nome}
-                </option>
-              ))}
-            </select>
-          </div>
+          <p className="text-xs text-gray-500">
+            Contrato e condutor vêm automaticamente do pagamento selecionado.
+          </p>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
             <textarea
@@ -377,7 +382,7 @@ export default function LeiturasKmPage() {
             </button>
             <button
               type="submit"
-              disabled={salvarMutation.isPending}
+              disabled={salvarMutation.isPending || pagamentosElegiveis.length === 0 || !form.pagamento_id}
               className="px-4 py-2 text-sm bg-brand-secondary text-white rounded-lg hover:bg-brand-secondary-hover disabled:opacity-60"
             >
               {salvarMutation.isPending ? 'Salvando...' : 'Salvar'}

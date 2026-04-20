@@ -11,7 +11,7 @@ class LeituraKm extends Model
     protected $table = 'leituras_km';
 
     protected $fillable = [
-        'veiculo_id', 'contrato_id', 'condutor_id', 'km', 'data_referencia', 'data_leitura',
+        'veiculo_id', 'contrato_id', 'condutor_id', 'pagamento_id', 'km', 'data_referencia', 'data_leitura',
         'caminho_foto', 'observacoes',
     ];
 
@@ -37,6 +37,11 @@ class LeituraKm extends Model
     public function condutor(): BelongsTo
     {
         return $this->belongsTo(Condutor::class);
+    }
+
+    public function pagamento(): BelongsTo
+    {
+        return $this->belongsTo(Pagamento::class);
     }
 
     /**

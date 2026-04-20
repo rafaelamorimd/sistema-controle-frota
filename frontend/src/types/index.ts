@@ -162,6 +162,7 @@ export interface Pagamento {
   contrato?: Contrato
   veiculo?: Veiculo
   condutor?: Condutor
+  leitura_km?: LeituraKm | null
   created_at: string
   updated_at: string
 }
@@ -172,6 +173,7 @@ export interface LeituraKm {
   veiculo_id: number
   contrato_id: number | null
   condutor_id: number | null
+  pagamento_id?: number | null
   data_referencia?: string | null
   data_leitura?: string
   km: number
@@ -182,6 +184,7 @@ export interface LeituraKm {
   contrato?: Contrato
   veiculo?: Veiculo
   condutor?: Condutor
+  pagamento?: Pagamento
   created_at: string
   updated_at: string
 }

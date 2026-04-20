@@ -40,13 +40,18 @@ class PagamentoController extends Controller
     {
         $dados = $request->validated();
 
-        $pagamento = $this->service->registrar(
-            $pagamento,
-            $request->file('comprovante'),
-            (float) $dados['valor'],
-            StatusPagamento::from($dados['status']),
-            $dados['data_pagamento'] ?? null
-        );
+        try {
+            $pagamento = $this->service->registrar(
+                $pagamento,
+                $request->file('comprovante'),
+                (float) $dados['valor'],
+                StatusPagamento::from($dados['status']),
+                $dados['data_pagamento'] ?? null,
+                isset($dados['km']) ? (int) $dados['km'] : null
+            );
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json($pagamento);
     }

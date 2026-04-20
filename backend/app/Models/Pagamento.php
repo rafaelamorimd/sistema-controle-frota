@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\StatusPagamento;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Pagamento extends Model
 {
@@ -36,5 +37,10 @@ class Pagamento extends Model
     public function condutor(): BelongsTo
     {
         return $this->belongsTo(Condutor::class);
+    }
+
+    public function leituraKm(): HasOne
+    {
+        return $this->hasOne(LeituraKm::class);
     }
 }

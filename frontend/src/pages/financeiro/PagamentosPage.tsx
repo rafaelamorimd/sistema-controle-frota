@@ -6,7 +6,7 @@ import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
 import type { Column } from '../../components/shared/ResponsiveTable'
 import { pagamentoService } from '../../services/pagamentoService'
-import type { Pagamento } from '../../types'
+import type { LeituraKm, Pagamento } from '../../types'
 import { formatarMoedaBrl } from '../../utils/format'
 
 const statusCores: Record<string, string> = {
@@ -22,6 +22,7 @@ type FormRegistrar = {
   valor: string
   status: 'PAGO' | 'PENDENTE' | 'ATRASADO'
   strDataPagamento: string
+  strKm: string
 }
 
 const formRegistrarVazio: FormRegistrar = {
@@ -29,6 +30,7 @@ const formRegistrarVazio: FormRegistrar = {
   valor: '',
   status: 'PAGO',
   strDataPagamento: '',
+  strKm: '',
 }
 
 export default function PagamentosPage() {
@@ -51,6 +53,7 @@ export default function PagamentosPage() {
       pagamentoService.registrar(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pagamentos'] })
+      queryClient.invalidateQueries({ queryKey: ['leituras-km'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       setModalRegistrar(false)
       setPagamentoAlvo(null)
@@ -63,11 +66,13 @@ export default function PagamentosPage() {
   function abrirRegistrar(p: Pagamento) {
     setPagamentoAlvo(p)
     const strRef = p.data_referencia.slice(0, 10)
+    const lk = p.leitura_km
     setFormRegistrar({
       ...formRegistrarVazio,
       valor: p.valor,
       status: p.status === 'ATRASADO' ? 'PAGO' : p.status,
       strDataPagamento: strRef,
+      strKm: lk?.km != null ? String(lk.km) : '',
     })
     setModalRegistrar(true)
   }
@@ -83,6 +88,10 @@ export default function PagamentosPage() {
     fd.append('status', formRegistrar.status)
     if (formRegistrar.status === 'PAGO' && formRegistrar.strDataPagamento) {
       fd.append('data_pagamento', formRegistrar.strDataPagamento)
+    }
+    const numKm = parseInt(formRegistrar.strKm.trim(), 10)
+    if (!Number.isNaN(numKm) && formRegistrar.strKm.trim() !== '') {
+      fd.append('km', String(numKm))
     }
     registrarMutation.mutate({ id: pagamentoAlvo.id, formData: fd })
   }
@@ -161,6 +170,19 @@ export default function PagamentosPage() {
         ) : (
           <span className="text-gray-400">—</span>
         ),
+      bolHideMobile: true,
+    },
+    {
+      strLabel: 'KM (vínculo)',
+      strKey: 'leitura_km',
+      render: (p) => {
+        const lk = p.leitura_km as LeituraKm | null | undefined
+        return lk?.km != null ? (
+          <span className="font-mono text-gray-800">{lk.km.toLocaleString('pt-BR')} km</span>
+        ) : (
+          <span className="text-gray-400">—</span>
+        )
+      },
       bolHideMobile: true,
     },
   ]
@@ -256,12 +278,14 @@ export default function PagamentosPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
             <select
               value={formRegistrar.status}
-              onChange={(e) =>
+              onChange={(e) => {
+                const strStatus = e.target.value as FormRegistrar['status']
                 setFormRegistrar((f) => ({
                   ...f,
-                  status: e.target.value as FormRegistrar['status'],
+                  status: strStatus,
+                  strKm: strStatus === 'PAGO' ? f.strKm : '',
                 }))
-              }
+              }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             >
               <option value="PAGO">Pago</option>
@@ -269,6 +293,24 @@ export default function PagamentosPage() {
               <option value="ATRASADO">Atrasado</option>
             </select>
           </div>
+          {formRegistrar.status === 'PAGO' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quilometragem no pagamento <span className="font-normal text-gray-500">(opcional)</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                placeholder="Ex.: 45200"
+                value={formRegistrar.strKm}
+                onChange={(e) => setFormRegistrar((f) => ({ ...f, strKm: e.target.value }))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Só disponível com status Pago. Será criada ou atualizada a leitura de km vinculada a este pagamento.
+              </p>
+            </div>
+          )}
           {formRegistrar.status === 'PAGO' && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
