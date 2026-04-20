@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import Modal from '../../components/shared/Modal'
 import ResponsiveTable from '../../components/shared/ResponsiveTable'
@@ -95,7 +96,12 @@ export default function ChecklistRevisaoPage() {
       if (e.key === 'Escape') setStrUrlFotoAmpliada(null)
     }
     document.addEventListener('keydown', fnTecla)
-    return () => document.removeEventListener('keydown', fnTecla)
+    const strOverflowPrev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', fnTecla)
+      document.body.style.overflow = strOverflowPrev
+    }
   }, [strUrlFotoAmpliada])
 
   const { data: arrCategorias = [], isLoading: bolCarregandoCategorias } = useQuery({
@@ -683,30 +689,33 @@ export default function ChecklistRevisaoPage() {
         </div>
       </Modal>
 
-      {strUrlFotoAmpliada ? (
-        <div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Visualizar foto"
-          onClick={() => setStrUrlFotoAmpliada(null)}
-        >
-          <button
-            type="button"
-            className="absolute top-4 right-4 p-2 rounded-lg bg-white/15 text-white hover:bg-white/25 z-10"
-            onClick={() => setStrUrlFotoAmpliada(null)}
-            aria-label="Fechar"
-          >
-            <X size={24} />
-          </button>
-          <img
-            src={strUrlFotoAmpliada}
-            alt=""
-            className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      ) : null}
+      {strUrlFotoAmpliada
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-110 flex min-h-full items-center justify-center overflow-y-auto overscroll-contain bg-black/85 p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Visualizar foto"
+              onClick={() => setStrUrlFotoAmpliada(null)}
+            >
+              <button
+                type="button"
+                className="fixed top-4 right-4 z-10 rounded-lg bg-white/15 p-2 text-white hover:bg-white/25"
+                onClick={() => setStrUrlFotoAmpliada(null)}
+                aria-label="Fechar"
+              >
+                <X size={24} />
+              </button>
+              <img
+                src={strUrlFotoAmpliada}
+                alt=""
+                className="my-auto max-h-[min(90dvh,100dvh)] w-auto max-w-full object-contain rounded-lg shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }

@@ -29,15 +29,13 @@
   }
 }
 
-/* Entrada suave do conteúdo ao trocar de rota */
+/* Entrada suave ao trocar de rota — só opacity: transform no ancestral quebra position:fixed dos modais/overlays */
 @keyframes gef-main-enter {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
